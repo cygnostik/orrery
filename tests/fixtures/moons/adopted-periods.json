@@ -1,0 +1,16 @@
+{
+  "io": {
+    "periodDays": 1.77,
+    "sourceId": 7,
+    "evidencePath": "io-horizons-header.txt",
+    "sourceText": "Orbital period    ~ 1.77 d",
+    "approximate": true
+  },
+  "europa": {
+    "periodDays": 3.55,
+    "sourceId": 8,
+    "evidencePath": "europa-horizons-header.txt",
+    "sourceText": "Orbital period   ~ 3.55 d",
+    "approximate": true
+  }
+}

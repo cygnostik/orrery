@@ -1,0 +1,33 @@
+Orrery — credits and third-party notices
+
+Original application code, procedural geometry, authored material and moon
+surface code, and the ProDyn CSS adaptations included in this project:
+Copyright (c) 2026 Chris M. / Promethean Dynamic. MIT License (MIT.txt).
+The license applies to the material included here, not to other design-system
+repositories or resources referenced by this project.
+
+Three.js 0.185.1: MIT License. Copyright 2010-2026 three.js authors.
+See Threejs-MIT.txt. https://threejs.org/
+
+Planet and Sun maps: Solar System Scope, CC BY 4.0.
+https://www.solarsystemscope.com/textures/
+https://creativecommons.org/licenses/by/4.0/
+See SolarSystemScope.txt for filenames, derivations and source limitations.
+Planet portraits, screenshots, social cards and app icons render these maps
+with original geometry, framing and lighting. Their imagery-derived portions
+retain the same CC BY 4.0 attribution and are not relicensed as MIT.
+
+Oxanium and Departure Mono fonts: SIL Open Font License 1.1.
+See Oxanium-OFL.txt and DepartureMono-OFL.txt.
+
+NASA and JPL reference data are cited in the app and source documentation.
+NASA, JPL, Solar System Scope and the dependency authors do not endorse Orrery.
+
+ProDyn.ai / Promethean Dynamic and TrustEdge.gt names and logos identify the
+project's creator and host. The MIT code license does not grant trademark
+rights or permission to imply affiliation or endorsement. The supplied brand
+logo is retained for attribution in this project, not offered as a generic
+brand asset for unrelated products.
+
+Made by Promethean Dynamic Nerdiness.
+Powered by TrustEdge.gt Engineered Infrastructure. https://TrustEdge.gt/

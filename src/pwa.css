@@ -1,0 +1,25 @@
+/* Footer-only progressive enhancement; no instrument or ambient motion rules. */
+.footer > .footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: var(--sp-5);
+  row-gap: var(--sp-2);
+  max-width: 36rem;
+}
+#pwa-install, #pwa-help-open, #pwa-update {
+  min-height: 44px;
+  white-space: normal;
+  text-align: left;
+}
+#pwa-status {
+  flex-basis: 100%;
+  color: var(--pd-ivory-muted);
+  font: var(--fs-micro)/var(--lh-body) var(--pd-font-hud);
+  text-align: right;
+}
+@media (max-width: 767px) {
+  .footer > .footer-actions { justify-content: flex-start; justify-self: start; }
+  #pwa-status { text-align: left; }
+}

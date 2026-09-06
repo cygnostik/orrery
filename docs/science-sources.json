@@ -1,0 +1,705 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 1,
+      "url": "https://ssd.jpl.nasa.gov/planets/approx_pos.html",
+      "title": "JPL approximate planetary positions",
+      "quotes": [
+        {
+          "text": "the elements are not valid outside the given time-interval over which they were fit."
+        },
+        {
+          "text": "Keplerian elements and their rates, with respect to the mean ecliptic and equinox of J2000, valid for the time-interval 1800 AD - 2050 AD."
+        },
+        {
+          "text": "EM Bary = Earth/Moon Barycenter"
+        },
+        {
+          "text": "The former planet Pluto has also been removed."
+        },
+        {
+          "text": "given Julian ephemeris date, T\\(_{\\rm eph}\\) (equivalent to the post-2006 IAU Barycentric Dynamical Timescale, JDTDB),"
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-01.txt"
+    },
+    {
+      "id": 2,
+      "url": "https://ssd.jpl.nasa.gov/planets/phys_par.html",
+      "title": "jpl-physical",
+      "quotes": [
+        {
+          "text": "Radius of a sphere with the equivalent volume of the planet."
+        },
+        {
+          "text": "Time required for the planet to make one complete orbit around the sun relative to fixed stars."
+        },
+        {
+          "text": "Mercury | 2440.53 [D] ±0.04 | 2439.4 [D] ±0.1 | 0.330103 [F] ±0.000021 | 5.4289 [*] ±0.0007 | 58.6462 [C] | 0.2408467 [B] | -0.60 [E] ±0.10 | 0.106 [B] | 3.70 [*] | 4.25 [*]"
+        },
+        {
+          "text": "Venus | 6051.8 [D] ±1.0 | 6051.8 [D] ±1.0 | 4.86731 [G] ±0.00023 | 5.243 [*] ±0.003 | -243.018 [C] | 0.61519726 [B] | -4.47 [E] ±0.07 | 0.65 [B] | 8.87 [*] | 10.36 [*]"
+        },
+        {
+          "text": "Earth | 6378.1366 [D] ±0.0001 | 6371.0084 [D] ±0.0001 | 5.97217 [H] ±0.00028 | 5.5134 [*] ±0.0003 | 0.99726968 [B] | 1.0000174 [B] | -3.86 [B] | 0.367 [B] | 9.80 [*] | 11.19 [*]"
+        },
+        {
+          "text": "Mars | 3396.19 [D] ±0.1 | 3389.50 [D] ±0.2 | 0.641691 [I] ±0.000030 | 3.9340 [*] ±0.0007 | 1.02595676 [C] | 1.8808476 [B] | -1.52 [B] | 0.150 [B] | 3.71 [*] | 5.03 [*]"
+        },
+        {
+          "text": "Jupiter | 71492 [D] ±4 | 69911 [D] ±6 | 1898.125 [J] ±0.088 | 1.3262 [*] ±0.0003 | 0.41354 [C] | 11.862615 [B] | -9.40 [B] | 0.52 [B] | 24.79 [*] | 60.20 [*]"
+        },
+        {
+          "text": "Saturn | 60268 [D] ±4 | 58232 [D] ±6 | 568.317 [K] ±0.026 | 0.6871 [*] ±0.0002 | 0.44401 [C] | 29.447498 [B] | -8.88 [B] | 0.47 [B] | 10.44 [*] | 36.09 [*]"
+        },
+        {
+          "text": "Uranus | 25559 [D] ±4 | 25362 [D] ±7 | 86.8099 [L] ±0.0040 | 1.270 [*] ±0.001 | -0.71833 [C] | 84.016846 [B] | -7.19 [B] | 0.51 [B] | 8.87 [*] | 21.38 [*]"
+        },
+        {
+          "text": "Neptune | 24764 [D] ±15 | 24622 [D] ±19 | 102.4092 [M] ±0.0048 | 1.638 [*] ±0.004 | 0.67125 [C] | 164.79132 [B] | -6.87 [B] | 0.41 [B] | 11.15 [*] | 23.56 [*]"
+        },
+        {
+          "text": "Pluto | 1188.3 [D] ±1.6 | 1188.3 [D] ±1.6 | 13024.6 [N] ±6.0 | 1.853 [N] ±0.004 | -6.3872 [C] | 247.92065 [B] | -1.0 [Q] | 0.3 [B] | 0.62 [*] | 1.21 [*]"
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-02.txt"
+    },
+    {
+      "id": 3,
+      "url": "https://science.nasa.gov/mercury/facts",
+      "title": "mercury",
+      "quotes": [
+        {
+          "text": "Mercury is the smallest planet in our solar system and nearest to the Sun. It's only slightly larger than Earth's Moon. From the surface of Mercury, the Sun would appear more than three times as large as it does when viewed from Earth, and the sunlight would be as much as seven times brighter."
+        },
+        {
+          "text": "Mercury's axis of rotation is tilted just 2 degrees with respect to the plane of its orbit around the Sun. That means it spins nearly perfectly upright and so does not experience seasons as many other planets do."
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-03.txt"
+    },
+    {
+      "id": 4,
+      "url": "https://science.nasa.gov/venus/facts",
+      "title": "venus",
+      "quotes": [
+        {
+          "text": "Venus is the hottest planet in our solar system, with surface temperatures about 872 degrees Fahrenheit (467 Celsius). And atmospheric pressure at the surface squeezes with the same force as being more than 3,000 feet underwater on Earth (930 meters). The Soviet Union sent a series of probes to Venus between 1961 and 1984 as part of its Venera program (Venera is Russian for Venus). Ten probes made it to the surface, and a few functioned briefly after landing. The longest survivor lasted two hours; the shortest, 23 minutes. Photos they snapped before the landers cooked show a barren, dim, and rocky landscape, and a sky that is likely some shade of sulfur yellow."
+        },
+        {
+          "text": "While you’re waiting, don’t expect any seasonal relief from the unrelenting temperatures. On Earth, with its spin axis tilted by about 23 degrees, we experience summer when our part of the planet (our hemisphere) receives the Sun’s rays more directly — a result of that tilt. In winter, the tilt means the rays are less direct. No such luck on Venus: Its very slight tilt is only three degrees, which is too little to produce noticeable seasons."
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-04.txt"
+    },
+    {
+      "id": 5,
+      "url": "https://science.nasa.gov/earth/facts",
+      "title": "earth",
+      "quotes": [
+        {
+          "text": "Earth – our home planet – is the third planet from the Sun, and the fifth largest planet. It's the only place we know of inhabited by living things."
+        },
+        {
+          "text": "Earth's axis of rotation is tilted 23.4 degrees with respect to the plane of Earth's orbit around the Sun. This tilt causes our yearly cycle of seasons. During part of the year, the northern hemisphere is tilted toward the Sun, and the southern hemisphere is tilted away. With the Sun higher in the sky, solar heating is greater in the north producing summer there. Less direct solar heating produces winter in the south. Six months later, the situation is reversed. When spring and fall begin, both hemispheres receive roughly equal amounts of heat from the Sun."
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-05.txt"
+    },
+    {
+      "id": 6,
+      "url": "https://science.nasa.gov/mars/facts",
+      "title": "mars",
+      "quotes": [
+        {
+          "text": "Mars is home to the largest volcano in the solar system, Olympus Mons. It dwarfs Earth's highest peak, Mount Everest, which rises 29,029 feet, or 8,848 meters, above the Earth's surface. Olympus Mons stands more than 25 miles (that's more than 132,000 feet, or 40 kilometers) tall from base to summit, with the base covering an area as large as the state of Arizona."
+        },
+        {
+          "text": "Mars' axis of rotation is tilted 25 degrees with respect to the plane of its orbit around the Sun. This is another similarity with Earth, which has an axial tilt of 23.4 degrees. Like Earth, Mars has distinct seasons, but they last longer than seasons here on Earth since Mars takes longer to orbit the Sun (because it's farther away). And while here on Earth the seasons are evenly spread over the year, lasting 3 months (or one quarter of a year), on Mars the seasons vary in length because of Mars' elliptical, egg-shaped orbit around the Sun."
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-06.txt"
+    },
+    {
+      "id": 7,
+      "url": "https://science.nasa.gov/jupiter/facts",
+      "title": "jupiter",
+      "quotes": [
+        {
+          "text": "Jupiter is a world of extremes. It's the largest planet in our solar system – if it were a hollow shell, 1,000 Earths could fit inside. It's also the oldest planet, forming from the dust and gases left over from the Sun's formation 4.6 billion years ago. But it has the shortest day in the solar system, taking about 9.9 hours to spin around once on its axis."
+        },
+        {
+          "text": "Its equator is tilted with respect to its orbital path around the Sun by just 3 degrees. This means Jupiter spins nearly upright and does not have seasons as extreme as other planets do."
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-07.txt"
+    },
+    {
+      "id": 8,
+      "url": "https://science.nasa.gov/saturn/facts",
+      "title": "saturn",
+      "quotes": [
+        {
+          "text": "It's hard to imagine, but Saturn is the only planet in our solar system with an average density that is less than water. The giant gas planet could float in a bathtub if such a colossal thing existed."
+        },
+        {
+          "text": "Its axis is tilted by 26.73 degrees with respect to its orbit around the Sun, which is similar to Earth's 23.5-degree tilt. This means that, like Earth, Saturn experiences seasons."
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-08.txt"
+    },
+    {
+      "id": 9,
+      "url": "https://science.nasa.gov/uranus/facts",
+      "title": "uranus",
+      "quotes": [
+        {
+          "text": "Uranus is the only planet whose equator is nearly at a right angle to its orbit, with a tilt of 97.77 degrees. This may be the result of a collision with an Earth-sized object long ago. This unique tilt causes Uranus to have the most extreme seasons in the solar system. For nearly a quarter of each Uranian year, the Sun shines directly over each pole, plunging the other half of the planet into a 21-year-long, dark winter."
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-09.txt"
+    },
+    {
+      "id": 10,
+      "url": "https://science.nasa.gov/neptune/facts",
+      "title": "neptune",
+      "quotes": [
+        {
+          "text": "Galileo recorded Neptune as a fixed star during observations with his small telescope in 1612 and 1613. More than 200 years later, the ice giant became the first planet located through mathematical predictions rather than through regular observations of the sky. Because Uranus didn't travel exactly as astronomers expected it to, French mathematician Urbain Joseph Le Verrier proposed the position and mass of a then-unknown planet that could cause the observed changes to Uranus' orbit. Le Verrier sent his predictions to Johann Gottfried Galle at the Berlin Observatory, who found Neptune on his first night of searching in 1846. Seventeen days later, Neptune's largest moon Triton was discovered as well."
+        },
+        {
+          "text": "Neptune’s axis of rotation is tilted 28 degrees with respect to the plane of its orbit around the Sun, which is similar to the axial tilts of Mars and Earth. This means that Neptune experiences seasons just like we do on Earth; however, since its year is so long, each of the four seasons lasts for over 40 years."
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-10.txt"
+    },
+    {
+      "id": 11,
+      "url": "https://science.nasa.gov/dwarf-planets/pluto/facts",
+      "title": "dwarf-planets-pluto",
+      "quotes": [
+        {
+          "text": "Charon's orbit around Pluto takes 153 hours – the same time it takes Pluto to complete one rotation. This means Charon neither rises nor sets, but hovers over the same spot on Pluto's surface. The same side of Charon always faces Pluto, a state called tidal locking."
+        },
+        {
+          "text": "One day on Pluto takes about 153 hours. Its axis of rotation is tilted 57 degrees with respect to the plane of its orbit around the Sun, so it spins almost on its side. Pluto also exhibits a retrograde rotation; spinning from east to west like Venus and Uranus."
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-11.txt"
+    },
+    {
+      "id": 12,
+      "url": "https://ssd.jpl.nasa.gov/ftp/eph/planets/ioms/ExplSupplChap8.pdf",
+      "title": "Standish and Williams: Orbital Ephemerides, chapter 8, Tables 8.10.1–2",
+      "quotes": [
+        {
+          "text": "Mercury  0.38709927          0.20563593     7.00497902    252.25032350 77.45779628 48.33076593\n         0.00000037          0.00001906    -0.00594749 149472.67411175   0.16047689 -0.12534081"
+        },
+        {
+          "text": "Venus    0.72333566          0.00677672     3.39467605    181.97909950 131.60246718 76.67984255\n         0.00000390         -0.00004107    -0.00078890 58517.81538729    0.00268329 -0.27769418"
+        },
+        {
+          "text": "EM Bary 1.00000261           0.01671123    -0.00001531    100.46457166 102.93768193         0.0\n         0.00000562         -0.00004392    -0.01294668 35999.37244981    0.32327364         0.0"
+        },
+        {
+          "text": "Mars     1.52371034          0.09339410     1.84969142     -4.55343205 -23.94362959 49.55953891\n         0.00001847          0.00007882    -0.00813131 19140.30268499    0.44441088 -0.29257343"
+        },
+        {
+          "text": "Jupiter  5.20288700          0.04838624     1.30439695     34.39644051 14.72847983 100.47390909\n        -0.00011607         -0.00013253    -0.00183714   3034.74612775   0.21252668  0.20469106"
+        },
+        {
+          "text": "Saturn   9.53667594          0.05386179     2.48599187     49.95424423 92.59887831 113.66242448\n        -0.00125060         -0.00050991     0.00193609   1222.49362201 -0.41897216 -0.28867794"
+        },
+        {
+          "text": "Uranus     19.18916464          0.04725744    0.77263783       313.23810451 170.95427630 74.01692503\n           -0.00196176         -0.00004397   -0.00242939       428.48202785   0.40805281   0.04240589"
+        },
+        {
+          "text": "Neptune    30.06992276          0.00859048    1.77004347       -55.12002969 44.96476227 131.78422574\n            0.00026291          0.00005105    0.00035372       218.45945325 -0.32241464 -0.00508664"
+        },
+        {
+          "text": "Pluto      39.48211675          0.24882730   17.14001206       238.92903833 224.06891629 110.30393684\n           -0.00031596          0.00005170    0.00004818       145.20780515 -0.04062942 -0.01183482"
+        },
+        {
+          "text": "Pluto          5            2        300                   400       100           2500"
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-12.txt"
+    },
+    {
+      "id": 13,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=199",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Obliquity to orbit[1] = 2.11' +/- 0.1' Hill's sphere rad. Rp = 94.4"
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-13.txt"
+    },
+    {
+      "id": 14,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=299",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Obliquity to orbit = 177.3 deg Hill's sphere rad.,Rp = 167.1"
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-14.txt"
+    },
+    {
+      "id": 15,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=999",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Sidereal orbit period = 249.58932 yr Escape speed, km/s = 1.21"
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-15.txt"
+    },
+    {
+      "id": 16,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%273%27&CENTER=%27500%4010%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&TLIST=%272378496.5%2C2415020.5%2C2451545.0%2C2461288.5%2C2469806.5%2C2469807.5%27&TIME_TYPE=%27TDB%27&OUT_UNITS=%27AU-D%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_CORR=%27NONE%27&VEC_TABLE=%272%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27YES%27",
+      "title": "Horizons earth barycenter geometric vectors, J2000 ecliptic",
+      "quotes": [
+        {
+          "text": "Target body name: Earth-Moon Barycenter (3)       {source: DE441}"
+        },
+        {
+          "text": "Center body name: Sun (10)                        {source: DE441}"
+        },
+        {
+          "text": "Reference frame : Ecliptic of J2000.0"
+        },
+        {
+          "text": "2378496.500000000, A.D. 1800-Jan-01 00:00:00.0000, -2.249851741486615E-01,  9.571208080804570E-01,  4.245450310084849E-04, -1.703050204836069E-02, -3.998708428757957E-03, -2.456407613796017E-06,"
+        },
+        {
+          "text": "2415020.500000000, A.D. 1900-Jan-01 00:00:00.0000, -1.968855472576664E-01,  9.633225046945481E-01,  2.145142891964996E-04, -1.713761634631061E-02, -3.507885350710309E-03, -1.149188735447246E-06,"
+        },
+        {
+          "text": "2451545.000000000, A.D. 2000-Jan-01 12:00:00.0000, -1.771587841839055E-01,  9.672193524609504E-01, -1.139275508446145E-06, -1.720310905522688E-02, -3.163911860749114E-03,  2.424167134816753E-08,"
+        },
+        {
+          "text": "2461288.500000000, A.D. 2026-Sep-05 00:00:00.0000,  9.595320342049625E-01, -3.099667192721539E-01,  1.288308686364742E-05,  5.009642716293184E-03,  1.630691433580602E-02, -1.011669536431420E-06,"
+        },
+        {
+          "text": "2469806.500000000, A.D. 2049-Dec-31 00:00:00.0000, -1.543372806068109E-01,  9.711846361455682E-01, -1.086568376056762E-04, -1.727058905454687E-02, -2.765388248522516E-03,  4.912212814385098E-07,"
+        },
+        {
+          "text": "2469807.500000000, A.D. 2050-Jan-01 00:00:00.0000, -1.715829623696938E-01,  9.682682880886148E-01, -1.081487189538922E-04, -1.721987955350517E-02, -3.067159355751021E-03,  5.249905268501170E-07,"
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-16.txt"
+    },
+    {
+      "id": 17,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%279%27&CENTER=%27500%4010%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&TLIST=%272378496.5%2C2415020.5%2C2451545.0%2C2461288.5%2C2469806.5%2C2469807.5%27&TIME_TYPE=%27TDB%27&OUT_UNITS=%27AU-D%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_CORR=%27NONE%27&VEC_TABLE=%272%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27YES%27",
+      "title": "Horizons pluto barycenter geometric vectors, J2000 ecliptic",
+      "quotes": [
+        {
+          "text": "Target body name: Pluto Barycenter (9)            {source: DE441}"
+        },
+        {
+          "text": "Center body name: Sun (10)                        {source: DE441}"
+        },
+        {
+          "text": "Reference frame : Ecliptic of J2000.0"
+        },
+        {
+          "text": "2378496.500000000, A.D. 1800-Jan-01 00:00:00.0000,  3.632750389810732E+01, -1.670038530070975E+01, -8.717222203698364E+00,  1.511476759268925E-03,  2.055236796521413E-03, -6.596454989771676E-04,"
+        },
+        {
+          "text": "2415020.500000000, A.D. 1900-Jan-01 00:00:00.0000,  1.029714946207823E+01,  4.514572838751266E+01, -7.813889053844278E+00, -2.160985891874333E-03,  2.091879554756605E-04,  6.042227010217557E-04,"
+        },
+        {
+          "text": "2451545.000000000, A.D. 2000-Jan-01 12:00:00.0000, -9.875352229923580E+00, -2.795879662619036E+01,  5.850445916486538E+00,  3.028750846014266E-03, -1.537786167300815E-03, -7.122026507444645E-04,"
+        },
+        {
+          "text": "2461288.500000000, A.D. 2026-Sep-05 00:00:00.0000,  1.989450425273962E+01, -2.939748078002516E+01, -2.608099446839418E+00,  2.683270044901322E-03,  1.055037238579908E-03, -8.909535643762247E-04,"
+        },
+        {
+          "text": "2469806.500000000, A.D. 2049-Dec-31 00:00:00.0000,  3.745354889354093E+01, -1.513496691058695E+01, -9.214080601557365E+00,  1.395882194799019E-03,  2.104221072684914E-03, -6.306311064374654E-04,"
+        },
+        {
+          "text": "2469807.500000000, A.D. 2050-Jan-01 00:00:00.0000,  3.745494469997520E+01, -1.513286266219490E+01, -9.214711213516303E+00,  1.395730678278584E-03,  2.104275715820555E-03, -6.305928110616937E-04,"
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-17.txt"
+    }
+  ],
+  "claims": [
+    {
+      "claim": "Do not extrapolate the fit outside its published interval.",
+      "sourceId": 1,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Table 1 is fitted for the named 1800–2050 interval, in the J2000 mean ecliptic/equinox frame.",
+      "sourceId": 1,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "The Earth orbital coefficients model the Earth–Moon barycenter.",
+      "sourceId": 1,
+      "quoteIndex": 2
+    },
+    {
+      "claim": "The current HTML transcription omits Pluto.",
+      "sourceId": 1,
+      "quoteIndex": 3
+    },
+    {
+      "claim": "JPL expects a dynamical Julian date, not civil UTC.",
+      "sourceId": 1,
+      "quoteIndex": 4
+    },
+    {
+      "claim": "radiusKm uses a volume-equivalent mean, not equatorial radius.",
+      "sourceId": 2,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "The source period is sidereal.",
+      "sourceId": 2,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "mercury.radiusKm = 2439.4.",
+      "sourceId": 2,
+      "quoteIndex": 2
+    },
+    {
+      "claim": "mercury: source sidereal orbital period = 0.2408467 years.",
+      "sourceId": 2,
+      "quoteIndex": 2
+    },
+    {
+      "claim": "venus.radiusKm = 6051.8.",
+      "sourceId": 2,
+      "quoteIndex": 3
+    },
+    {
+      "claim": "venus: source sidereal orbital period = 0.61519726 years.",
+      "sourceId": 2,
+      "quoteIndex": 3
+    },
+    {
+      "claim": "earth.radiusKm = 6371.0084.",
+      "sourceId": 2,
+      "quoteIndex": 4
+    },
+    {
+      "claim": "earth: source sidereal orbital period = 1.0000174 years.",
+      "sourceId": 2,
+      "quoteIndex": 4
+    },
+    {
+      "claim": "mars.radiusKm = 3389.5.",
+      "sourceId": 2,
+      "quoteIndex": 5
+    },
+    {
+      "claim": "mars: source sidereal orbital period = 1.8808476 years.",
+      "sourceId": 2,
+      "quoteIndex": 5
+    },
+    {
+      "claim": "jupiter.radiusKm = 69911.0.",
+      "sourceId": 2,
+      "quoteIndex": 6
+    },
+    {
+      "claim": "jupiter: source sidereal orbital period = 11.862615 years.",
+      "sourceId": 2,
+      "quoteIndex": 6
+    },
+    {
+      "claim": "saturn.radiusKm = 58232.0.",
+      "sourceId": 2,
+      "quoteIndex": 7
+    },
+    {
+      "claim": "saturn: source sidereal orbital period = 29.447498 years.",
+      "sourceId": 2,
+      "quoteIndex": 7
+    },
+    {
+      "claim": "uranus.radiusKm = 25362.0.",
+      "sourceId": 2,
+      "quoteIndex": 8
+    },
+    {
+      "claim": "uranus: source sidereal orbital period = 84.016846 years.",
+      "sourceId": 2,
+      "quoteIndex": 8
+    },
+    {
+      "claim": "neptune.radiusKm = 24622.0.",
+      "sourceId": 2,
+      "quoteIndex": 9
+    },
+    {
+      "claim": "neptune: source sidereal orbital period = 164.79132 years.",
+      "sourceId": 2,
+      "quoteIndex": 9
+    },
+    {
+      "claim": "pluto.radiusKm = 1188.3.",
+      "sourceId": 2,
+      "quoteIndex": 10
+    },
+    {
+      "claim": "pluto: source sidereal orbital period = 247.92065 years.",
+      "sourceId": 2,
+      "quoteIndex": 10
+    },
+    {
+      "claim": "Mercury is the smallest planet and nearest the Sun.",
+      "sourceId": 3,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Venus is the hottest planet.",
+      "sourceId": 4,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Earth is the only place known to be inhabited by living things.",
+      "sourceId": 5,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Mars hosts Olympus Mons, the largest volcano in the solar system.",
+      "sourceId": 6,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Jupiter is the largest planet.",
+      "sourceId": 7,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Saturn has an average density less than water.",
+      "sourceId": 8,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Uranus appears to spin sideways.",
+      "sourceId": 9,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Neptune was first located through mathematical predictions rather than regular sky observations.",
+      "sourceId": 10,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Charon hovers over the same spot on Pluto.",
+      "sourceId": 11,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "NASA popular Mercury page says 2 degrees; rejected in favor of Horizons arcminute data.",
+      "sourceId": 3,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "NASA Venus popular page describes a small tilt without full retrograde obliquity.",
+      "sourceId": 4,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "Earth tiltDeg = 23.4.",
+      "sourceId": 5,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "Mars tiltDeg = 25 (rounded NASA value).",
+      "sourceId": 6,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "Jupiter tiltDeg = 3 (rounded NASA value).",
+      "sourceId": 7,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "Saturn tiltDeg = 26.73.",
+      "sourceId": 8,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "Uranus tiltDeg = 97.77.",
+      "sourceId": 9,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Neptune tiltDeg = 28 (rounded NASA value).",
+      "sourceId": 10,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "Pluto tiltDeg = 123, derived as 180 − 57 to preserve the stated retrograde rotation; approximate.",
+      "sourceId": 11,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "Mercury tiltDeg = 2.11 / 60; source reports arcminutes, uncertainty ±0.1 arcmin.",
+      "sourceId": 13,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Venus tiltDeg = 177.3.",
+      "sourceId": 14,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Modern Horizons Pluto descriptor gives 249.58932 yr, different from the JPL physical-parameter table’s 247.92065 yr; do not conflate these.",
+      "sourceId": 15,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Mercury: six original short-interval coefficients and their six secular rates.",
+      "sourceId": 12,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Venus: six original short-interval coefficients and their six secular rates.",
+      "sourceId": 12,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "EM Bary: six original short-interval coefficients and their six secular rates.",
+      "sourceId": 12,
+      "quoteIndex": 2
+    },
+    {
+      "claim": "Mars: six original short-interval coefficients and their six secular rates.",
+      "sourceId": 12,
+      "quoteIndex": 3
+    },
+    {
+      "claim": "Jupiter: six original short-interval coefficients and their six secular rates.",
+      "sourceId": 12,
+      "quoteIndex": 4
+    },
+    {
+      "claim": "Saturn: six original short-interval coefficients and their six secular rates.",
+      "sourceId": 12,
+      "quoteIndex": 5
+    },
+    {
+      "claim": "Uranus: six original short-interval coefficients and their six secular rates.",
+      "sourceId": 12,
+      "quoteIndex": 6
+    },
+    {
+      "claim": "Neptune: six original short-interval coefficients and their six secular rates.",
+      "sourceId": 12,
+      "quoteIndex": 7
+    },
+    {
+      "claim": "Pluto: six original short-interval coefficients and their six secular rates.",
+      "sourceId": 12,
+      "quoteIndex": 8
+    },
+    {
+      "claim": "Historical Pluto nominal errors: longitude 5 arcsec; latitude 2 arcsec; distance 300,000 km. Not a bound relative to current Horizons.",
+      "sourceId": 12,
+      "quoteIndex": 9
+    },
+    {
+      "claim": "earth independent fixture target and solution identity.",
+      "sourceId": 16,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "earth independent fixture center is Sun.",
+      "sourceId": 16,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "earth independent fixture uses ecliptic J2000 frame.",
+      "sourceId": 16,
+      "quoteIndex": 2
+    },
+    {
+      "claim": "earth independent geometric vector at JD TDB 2378496.500000000.",
+      "sourceId": 16,
+      "quoteIndex": 3
+    },
+    {
+      "claim": "earth independent geometric vector at JD TDB 2415020.500000000.",
+      "sourceId": 16,
+      "quoteIndex": 4
+    },
+    {
+      "claim": "earth independent geometric vector at JD TDB 2451545.000000000.",
+      "sourceId": 16,
+      "quoteIndex": 5
+    },
+    {
+      "claim": "earth independent geometric vector at JD TDB 2461288.500000000.",
+      "sourceId": 16,
+      "quoteIndex": 6
+    },
+    {
+      "claim": "earth independent geometric vector at JD TDB 2469806.500000000.",
+      "sourceId": 16,
+      "quoteIndex": 7
+    },
+    {
+      "claim": "earth independent geometric vector at JD TDB 2469807.500000000.",
+      "sourceId": 16,
+      "quoteIndex": 8
+    },
+    {
+      "claim": "pluto independent fixture target and solution identity.",
+      "sourceId": 17,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "pluto independent fixture center is Sun.",
+      "sourceId": 17,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "pluto independent fixture uses ecliptic J2000 frame.",
+      "sourceId": 17,
+      "quoteIndex": 2
+    },
+    {
+      "claim": "pluto independent geometric vector at JD TDB 2378496.500000000.",
+      "sourceId": 17,
+      "quoteIndex": 3
+    },
+    {
+      "claim": "pluto independent geometric vector at JD TDB 2415020.500000000.",
+      "sourceId": 17,
+      "quoteIndex": 4
+    },
+    {
+      "claim": "pluto independent geometric vector at JD TDB 2451545.000000000.",
+      "sourceId": 17,
+      "quoteIndex": 5
+    },
+    {
+      "claim": "pluto independent geometric vector at JD TDB 2461288.500000000.",
+      "sourceId": 17,
+      "quoteIndex": 6
+    },
+    {
+      "claim": "pluto independent geometric vector at JD TDB 2469806.500000000.",
+      "sourceId": 17,
+      "quoteIndex": 7
+    },
+    {
+      "claim": "pluto independent geometric vector at JD TDB 2469807.500000000.",
+      "sourceId": 17,
+      "quoteIndex": 8
+    }
+  ]
+}

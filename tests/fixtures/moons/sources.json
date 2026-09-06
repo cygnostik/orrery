@@ -1,0 +1,22 @@
+[
+  {
+    "sourceId": 1,
+    "url": "https://ssd.jpl.nasa.gov/sats/phys_par/",
+    "evidencePath": "jpl-physical.txt"
+  },
+  {
+    "sourceId": 2,
+    "url": "https://ssd.jpl.nasa.gov/sats/elem/",
+    "evidencePath": "jpl-elements.txt"
+  },
+  {
+    "sourceId": 3,
+    "url": "https://science.nasa.gov/jupiter/jupiter-moons/",
+    "evidencePath": "nasa-jupiter-moons.txt"
+  },
+  {
+    "sourceId": 4,
+    "url": "https://science.nasa.gov/moon/facts/",
+    "evidencePath": "nasa-moon-facts.txt"
+  }
+]

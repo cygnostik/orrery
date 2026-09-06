@@ -1,0 +1,246 @@
+{
+  "records": [
+    {
+      "id": "enceladus",
+      "parentId": "saturn",
+      "name": "Enceladus",
+      "radiusKm": 252.1,
+      "orbitRadiusKm": 238400,
+      "fact": "Enceladus sprays water vapor and ice particles into space from its icy surface.",
+      "radiusSourceId": 1,
+      "orbitSourceId": 2,
+      "factSourceId": 9,
+      "radiusRow": "| Saturn | Enceladus | 602 | 7.21037 | 0.00009 | SAT441 | 252.10 | 0.20 | 1 | 1.6097 | 0.0038 | * |",
+      "orbitRow": "| Saturn | Enceladus | 602 | SAT441 | Laplace | 2000-01-01.5 | 238400. | 0.005 | 119.5 | 57.0 | 0.0 | 0.0 | 1.370218 | 2.916 | 0.000 | 40.6 | 83.5 | 0.0 | 36 |",
+      "radiusEvidencePath": "jpl-physical.txt",
+      "orbitEvidencePath": "jpl-elements-expansion.txt",
+      "factEvidencePath": "nasa-enceladus-expansion.txt",
+      "factQuote": "Saturn’s moon Enceladus is a small, icy world that has geyser-like jets spewing water vapor and ice particles into space.",
+      "period": {
+        "tableDays": 1.370218,
+        "headerDays": 1.370218,
+        "adoptedDays": 1.370218,
+        "adoptedDecimalPlaces": 6,
+        "sourceId": 14,
+        "evidencePath": "enceladus-horizons-header.txt",
+        "sourceText": "Orbital period    = 1.370218 d"
+      },
+      "surfaceEvidence": [
+        {
+          "sourceId": 9,
+          "evidencePath": "nasa-enceladus-expansion.txt",
+          "quote": "About as wide as Arizona, Enceladus also has the whitest, most reflective surface in the solar system."
+        },
+        {
+          "sourceId": 19,
+          "evidencePath": "nasa-enceladus-fractures.txt",
+          "quote": "These plumes originate from long linear fractures near the south pole of Enceladus."
+        }
+      ]
+    },
+    {
+      "id": "titan",
+      "parentId": "saturn",
+      "name": "Titan",
+      "radiusKm": 2574.76,
+      "orbitRadiusKm": 1221900,
+      "fact": "Titan’s surface is completely obscured by a golden hazy atmosphere.",
+      "radiusSourceId": 1,
+      "orbitSourceId": 2,
+      "factSourceId": 11,
+      "radiusRow": "| Saturn | Titan | 606 | 8978.13710 | 0.00025 | SAT441 | 2574.76 | 0.02 | 1 | 1.8814 | 0.0001 | * |",
+      "orbitRow": "| Saturn | Titan | 606 | SAT441 | Laplace | 2000-01-01.5 | 1221900. | 0.029 | 78.3 | 11.7 | 0.3 | 78.6 | 15.945448 | 346.680 | 687.370 | 36.4 | 84.0 | 0.6 | 36 |",
+      "radiusEvidencePath": "jpl-physical.txt",
+      "orbitEvidencePath": "jpl-elements-expansion.txt",
+      "factEvidencePath": "nasa-titan-expansion.txt",
+      "factQuote": "Saturn's largest moon, Titan, is an icy world whose surface is completely obscured by a golden hazy atmosphere.",
+      "period": {
+        "tableDays": 15.945448,
+        "headerDays": 15.945421,
+        "adoptedDays": 15.9454,
+        "adoptedDecimalPlaces": 4,
+        "sourceId": 15,
+        "evidencePath": "titan-horizons-header.txt",
+        "sourceText": "Orbital period     = 15.945421 d"
+      },
+      "surfaceEvidence": [
+        {
+          "sourceId": 11,
+          "evidencePath": "nasa-titan-expansion.txt",
+          "quote": "Saturn's largest moon, Titan, is an icy world whose surface is completely obscured by a golden hazy atmosphere."
+        }
+      ]
+    },
+    {
+      "id": "miranda",
+      "parentId": "uranus",
+      "name": "Miranda",
+      "radiusKm": 235.8,
+      "orbitRadiusKm": 129846,
+      "fact": "Miranda has lightly cratered ridges and valleys beside more heavily cratered terrain.",
+      "radiusSourceId": 1,
+      "orbitSourceId": 2,
+      "factSourceId": 12,
+      "radiusRow": "| Uranus | Miranda | 705 | 4.3 | 0.2 | URA111 | 235.8 | 0.7 | 1 | 1.178 | 0.053 | * |",
+      "orbitRow": "| Uranus | Miranda | 705 | URA182 | equatorial | 2000-01-01.5 | 129846. | 0.001 | 154.8 | 73.0 | 4.4 | 100.9 | 1.413479 | 8.939 | 17.787 |  |  |  | 45 |",
+      "radiusEvidencePath": "jpl-physical.txt",
+      "orbitEvidencePath": "jpl-elements-expansion.txt",
+      "factEvidencePath": "nasa-miranda-expansion.txt",
+      "factQuote": "They are lightly cratered collections of ridges and valleys, separated from the more heavily cratered (and presumably older) terrain by sharp boundaries like mismatched patches on a moth-eaten coat.",
+      "period": {
+        "tableDays": 1.413479,
+        "headerDays": 1.413,
+        "adoptedDays": 1.413,
+        "adoptedDecimalPlaces": 3,
+        "sourceId": 16,
+        "evidencePath": "miranda-horizons-header.txt",
+        "sourceText": "Orbital period      =  1.413 d"
+      },
+      "surfaceEvidence": [
+        {
+          "sourceId": 12,
+          "evidencePath": "nasa-miranda-expansion.txt",
+          "quote": "They are lightly cratered collections of ridges and valleys, separated from the more heavily cratered (and presumably older) terrain by sharp boundaries like mismatched patches on a moth-eaten coat."
+        }
+      ]
+    },
+    {
+      "id": "triton",
+      "parentId": "neptune",
+      "name": "Triton",
+      "radiusKm": 1352.6,
+      "orbitRadiusKm": 354800,
+      "fact": "Triton orbits Neptune in the opposite direction to the planet’s rotation—a retrograde orbit.",
+      "radiusSourceId": 1,
+      "orbitSourceId": 2,
+      "factSourceId": 13,
+      "radiusRow": "| Neptune | Triton | 801 | 1428.49546 | 0.61603 | NEP097 | 1352.60 | 2.40 | 1 | 2.0649 | 0.0110 | * |",
+      "orbitRow": "| Neptune | Triton | 801 | NEP097 | Laplace | 2000-01-01.5 | 354800. | 0.000 | 0.0 | 63.0 | 157.3 | 178.1 | 5.876994 | 0.000 | 340.379 | 299.8 | 43.1 | 0.4 | 24 |",
+      "radiusEvidencePath": "jpl-physical.txt",
+      "orbitEvidencePath": "jpl-elements-expansion.txt",
+      "factEvidencePath": "nasa-triton-expansion.txt",
+      "factQuote": "It is unusual because it is the only large moon in our solar system that orbits in the opposite direction of its planet's rotation―a retrograde orbit.",
+      "period": {
+        "tableDays": 5.876994,
+        "headerDays": 5.876994,
+        "adoptedDays": 5.876994,
+        "adoptedDecimalPlaces": 6,
+        "sourceId": 17,
+        "evidencePath": "triton-horizons-header.txt",
+        "sourceText": "Orbital period      = 5.876994 d"
+      },
+      "surfaceEvidence": [
+        {
+          "sourceId": 13,
+          "evidencePath": "nasa-triton-expansion.txt",
+          "quote": "It is so cold that most of Triton's nitrogen is condensed as frost, giving its surface an icy sheen that reflects 70 percent of the sunlight that hits it."
+        }
+      ]
+    },
+    {
+      "id": "charon",
+      "parentId": "pluto",
+      "name": "Charon",
+      "radiusKm": 606,
+      "orbitRadiusKm": 19600,
+      "fact": "Charon and Pluto always show the same surfaces to each other: mutual tidal locking.",
+      "radiusSourceId": 1,
+      "orbitSourceId": 2,
+      "factSourceId": 10,
+      "radiusRow": "| Pluto | Charon | 901 | 106.1 | 0.3 | PLU060 | 606.0 | 0.5 | 2 | 1.853 | 0.004 | * |",
+      "orbitRow": "| Pluto | Charon | 901 | PLU060 | equatorial | 2000-01-01.5 | 19600. | 0.000 | 0.0 | 304.1 | 0.0 | 0.0 | 6.387222 | - | - |  |  |  | 6 |",
+      "radiusEvidencePath": "jpl-physical.txt",
+      "orbitEvidencePath": "jpl-elements-expansion.txt",
+      "factEvidencePath": "nasa-charon-expansion.txt",
+      "factQuote": "The same surfaces of Charon and Pluto always face each other, a phenomenon called mutual tidal locking.",
+      "period": {
+        "tableDays": 6.387222,
+        "headerDays": 6.387222,
+        "adoptedDays": 6.387222,
+        "adoptedDecimalPlaces": 6,
+        "sourceId": 18,
+        "evidencePath": "charon-horizons-header.txt",
+        "sourceText": "Orbital period, days  = 6.387222"
+      },
+      "surfaceEvidence": [
+        {
+          "sourceId": 10,
+          "evidencePath": "nasa-charon-expansion.txt",
+          "quote": "Most striking is the reddish north (top) polar region."
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "sourceId": 1,
+      "url": "https://ssd.jpl.nasa.gov/sats/phys_par",
+      "evidencePath": "jpl-physical.txt"
+    },
+    {
+      "sourceId": 2,
+      "url": "https://ssd.jpl.nasa.gov/sats/elem",
+      "evidencePath": "jpl-elements-expansion.txt"
+    },
+    {
+      "sourceId": 9,
+      "url": "https://science.nasa.gov/saturn/moons/enceladus",
+      "evidencePath": "nasa-enceladus-expansion.txt"
+    },
+    {
+      "sourceId": 14,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=602",
+      "evidencePath": "enceladus-horizons-header.txt"
+    },
+    {
+      "sourceId": 19,
+      "url": "https://science.nasa.gov/photojournal/tiger-stripes-on-enceladus-fracture-zones-and-plumes-sources",
+      "evidencePath": "nasa-enceladus-fractures.txt"
+    },
+    {
+      "sourceId": 11,
+      "url": "https://science.nasa.gov/saturn/moons/titan/facts",
+      "evidencePath": "nasa-titan-expansion.txt"
+    },
+    {
+      "sourceId": 15,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=606",
+      "evidencePath": "titan-horizons-header.txt"
+    },
+    {
+      "sourceId": 12,
+      "url": "https://science.nasa.gov/uranus/moons/miranda",
+      "evidencePath": "nasa-miranda-expansion.txt"
+    },
+    {
+      "sourceId": 16,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=705",
+      "evidencePath": "miranda-horizons-header.txt"
+    },
+    {
+      "sourceId": 13,
+      "url": "https://science.nasa.gov/neptune/moons/triton",
+      "evidencePath": "nasa-triton-expansion.txt"
+    },
+    {
+      "sourceId": 17,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=801",
+      "evidencePath": "triton-horizons-header.txt"
+    },
+    {
+      "sourceId": 10,
+      "url": "https://science.nasa.gov/dwarf-planets/pluto/moons/charon",
+      "evidencePath": "nasa-charon-expansion.txt"
+    },
+    {
+      "sourceId": 18,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=901",
+      "evidencePath": "charon-horizons-header.txt"
+    },
+    {
+      "sourceId": 20,
+      "url": "https://science.nasa.gov/photojournal/pluto-and-charon-in-color-barycentric-view-animation",
+      "evidencePath": "nasa-pluto-charon-barycenter.txt"
+    }
+  ]
+}

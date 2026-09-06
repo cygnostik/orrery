@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 1,
+      "url": "https://www.orrerydesign.com/the-genesis-orrery.html",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Each arm of the outer planets (Jupiter through to Pluto) Utilise two independent gear trains."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "url": "https://www.orrerydesign.com/tellurion-orrery.html",
+      "title": "",
+      "quotes": [
+        {
+          "text": "The Orrery is driven by turning the handle which initiates a smooth and positive drive from the worm gear to the worm wheel."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "url": "https://brazosvalleyastronomyclub.org/newsletters/fall-2019/staines-and-son-orrery-makers.html",
+      "title": "",
+      "quotes": [
+        {
+          "text": "The drive for the moons is taken from a large ring gear and then transmitted to the moons on the other end of the shaft."
+        }
+      ]
+    }
+  ]
+}

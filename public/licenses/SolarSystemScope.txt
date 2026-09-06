@@ -1,0 +1,22 @@
+Planet and Sun texture attribution
+
+Textures by Solar System Scope
+Source: https://www.solarsystemscope.com/textures/
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+License link: https://creativecommons.org/licenses/by/4.0/
+
+Files included unchanged: 2k_mercury.jpg, 2k_venus_atmosphere.jpg,
+2k_earth_daymap.jpg, 2k_mars.jpg, 2k_jupiter.jpg, 2k_saturn.jpg,
+2k_uranus.jpg, 2k_neptune.jpg, 2k_sun.jpg.
+
+Orrery applies rendering, lighting and spherical mapping to these images.
+Derived files: assets/portraits/mercury.png, venus.png, earth.png, mars.png,
+jupiter.png, saturn.png, uranus.png, neptune.png. These apply a static
+spherical projection and authored lighting to the corresponding planet maps;
+they retain the Solar System Scope CC BY 4.0 attribution above.
+These are imagery-derived artistic maps: the source notes adjusted saturation,
+seasonal choices, and fictional terrain in unmapped regions. They are not live,
+calibrated planetary observations. Solar System Scope does not endorse Orrery.
+Pluto and any procedural materials are not from this texture collection.
+
+The source page was read live and the linked files retrieved for this project.

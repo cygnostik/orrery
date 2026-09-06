@@ -1,0 +1,23 @@
+{
+  "id": "/",
+  "name": "Orrery",
+  "short_name": "Orrery",
+  "description": "An interactive educational model of the solar system, with mechanical and astronomical views. Distances and body sizes are illustrative, not to scale.",
+  "lang": "en",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050A0F",
+  "theme_color": "#050A0F",
+  "categories": ["education", "science"],
+  "icons": [
+    {"src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "screenshots": [
+    {"src": "/screenshots/desktop.png", "sizes": "1440x1000", "type": "image/png", "form_factor": "wide", "label": "Orrery mechanical instrument and planet inspector on desktop"},
+    {"src": "/screenshots/mobile.png", "sizes": "390x844", "type": "image/png", "form_factor": "narrow", "label": "Orrery mechanical instrument on a narrow mobile screen"}
+  ]
+}

@@ -1,0 +1,103 @@
+import {test,expect} from '@playwright/test';
+import {MOONS} from '../src/moons.js';
+const ready=async page=>{await page.goto('/');await expect.poll(()=>page.evaluate(()=>window.__orrery?.diagnostics().ready),{timeout:15000}).toBe(true);};
+test('the actual 3D crank reverses time without orbiting the camera, and its switch shares playback',async({page})=>{
+ await ready(page);await page.locator('#simulation-date').fill('2026-09-05');await page.evaluate(()=>scrollTo(0,0));await page.waitForTimeout(400);
+ const canvas=page.locator('#universe canvas'),rect=await canvas.boundingBox();
+ const before=await page.evaluate(()=>({state:window.__orrery.getState(),diag:window.__orrery.diagnostics()}));
+ const points=before.diag.controlPoints,grip=points.crankGrip,axle=points.crankAxle;
+ expect(grip.visible).toBe(true);const dx=grip.x-axle.x,dy=grip.y-axle.y;
+ await page.mouse.move(rect.x+grip.x,rect.y+grip.y);await page.mouse.down();
+ expect(await page.evaluate(()=>window.__orrery.diagnostics().draggingCrank)).toBe(true);
+ await page.mouse.move(rect.x+axle.x-dy,rect.y+axle.y+dx);
+ await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().date)).not.toBe(before.state.date);
+ await page.mouse.move(rect.x+grip.x,rect.y+grip.y);await page.mouse.up();await page.waitForTimeout(350);
+ const after=await page.evaluate(()=>({state:window.__orrery.getState(),diag:window.__orrery.diagnostics()}));
+ expect(Math.abs(Date.parse(after.state.date)-Date.parse(before.state.date))).toBeLessThanOrEqual(2);
+ expect(after.state.playing).toBe(false);expect(after.diag.draggingCrank).toBe(false);expect(after.diag.camera).toEqual(before.diag.camera);
+ const sw=after.diag.controlPoints.autoSwitch;expect(sw.visible).toBe(true);
+ await page.mouse.click(rect.x+sw.x,rect.y+sw.y);await expect(page.getByRole('switch',{name:'Automatic movement',exact:true})).toHaveAttribute('aria-checked','true');
+ await expect(page.locator('#play')).toHaveAttribute('aria-label','Pause simulation');
+ await page.mouse.click(rect.x+sw.x,rect.y+sw.y);await expect(page.locator('#play')).toHaveAttribute('aria-label','Play simulation');
+});
+test('new finish and moon combinations have stable warmed GPU resources',async({page})=>{
+ await ready(page);
+ const cycle=async()=>{for(const parent of ['03 Earth','05 Jupiter','06 Saturn','07 Uranus','08 Neptune']){await page.getByRole('button',{name:parent,exact:true}).click();for(const base of ['Obsidian','Nebula glass']){await page.getByRole('button',{name:base,exact:true}).click();await page.waitForTimeout(80);}await page.locator('#moons').uncheck();await page.waitForTimeout(80);expect(await page.evaluate(()=>window.__orrery.diagnostics().moonCount)).toBe(0);await page.locator('#moons').check();await page.waitForTimeout(80);expect(await page.evaluate(()=>window.__orrery.diagnostics().moonCount)).toBe(MOONS.filter(moon=>moon.parentId!=='pluto').length);}};
+ await cycle();await page.waitForTimeout(350);const before=await page.evaluate(()=>window.__orrery.diagnostics());
+ await cycle();await cycle();await page.waitForTimeout(350);const after=await page.evaluate(()=>window.__orrery.diagnostics());
+ expect(after.geometries).toBe(before.geometries);expect(after.textures).toBe(before.textures);
+});
+test('satellite reference follows its parent and explains the schematic model',async({page})=>{
+ await ready(page);const family=page.locator('#moon-family');
+ await expect(family).toBeVisible();await family.locator('summary').click();
+ await expect(family.locator('li')).toHaveCount(1);await expect(family).toContainText('Moon');
+ await page.getByRole('button',{name:'05 Jupiter',exact:true}).click();
+ await expect(family.locator('li')).toHaveCount(4);await expect(family).toContainText('Io');await expect(family).toContainText('Ganymede');
+ await expect(family).toContainText('Illustrative phases');
+ await page.getByLabel('Show moons',{exact:true}).uncheck();await expect(family).toBeHidden();
+ await page.getByLabel('Show moons',{exact:true}).check();await page.getByRole('button',{name:'04 Mars',exact:true}).click();await expect(family).toBeHidden();
+});
+test('footer atmosphere follows playback, visibility and reduced motion',async({page})=>{
+ await ready(page);const footer=page.locator('.footer');await footer.scrollIntoViewIfNeeded();
+ await expect(footer.locator('.blob')).toHaveCount(2);await expect(footer.locator('.pcl')).toHaveCount(3);
+ await expect(footer).toHaveAttribute('data-atmosphere','paused');
+ await page.locator('#play').click();await footer.scrollIntoViewIfNeeded();
+ await expect(footer).toHaveAttribute('data-atmosphere','running');
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await expect(footer).toHaveAttribute('data-atmosphere','paused');
+ const animated=await footer.evaluate(el=>el.getAnimations({subtree:true}).filter(a=>a.playState==='running').length);
+ expect(animated).toBe(0);
+});
+test('selection signal has a finite intermediate stroke and settles on reduced-motion interruption',async({page})=>{
+ await page.setViewportSize({width:1440,height:1400});await ready(page);
+ // Navigation can scroll the signal offscreen, correctly settling it. Keep
+ // this signal-timing test visible; separate UI tests cover pointer selection.
+ await page.evaluate(()=>scrollTo(0,0));
+ await page.getByRole('button',{name:'04 Mars',exact:true}).evaluate(el=>el.click());
+ const path=page.locator('#selection-signal');
+ await expect(path).toHaveAttribute('data-motion-state','running');
+ const offset=await path.evaluate(el=>{const a=el.getAnimations()[0];a.pause();a.currentTime=450;return parseFloat(getComputedStyle(el).strokeDashoffset);});
+ expect(offset).toBeGreaterThan(0);expect(offset).toBeLessThan(1);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await expect(path).toHaveAttribute('data-motion-state','settled');
+ expect(await path.evaluate(el=>el.getAnimations().length)).toBe(0);
+ await page.getByRole('button',{name:'05 Jupiter',exact:true}).evaluate(el=>el.click());
+ await expect(page.locator('#body-name')).toHaveText('Jupiter');
+ await expect(path).toHaveAttribute('data-motion-state','settled');
+ await expect(path).toHaveAttribute('stroke-dashoffset','0');
+});
+test('base finish and moon controls preserve the current simulation and selection',async({page})=>{
+ await ready(page);
+ await expect(page.getByRole('button',{name:'Nebula glass',exact:true})).toHaveAttribute('aria-pressed','true');
+ const before=await page.evaluate(()=>window.__orrery.getState());
+ await page.getByRole('button',{name:'Obsidian',exact:true}).click();
+ expect(await page.evaluate(()=>window.__orrery.getState().baseStyle)).toBe('obsidian');
+ await page.getByLabel('Show moons',{exact:true}).uncheck();
+ expect(await page.evaluate(()=>window.__orrery.getState().moons)).toBe(false);
+ await page.getByRole('button',{name:'Observatory',exact:true}).click();
+ await expect(page.locator('#mechanical-console')).toBeHidden();
+ expect(await page.evaluate(()=>window.__orrery.getState().date)).toBe(before.date);
+ expect(await page.evaluate(()=>window.__orrery.getState().selected)).toBe(before.selected);
+ await page.getByRole('button',{name:'Mechanical',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Obsidian',exact:true})).toHaveAttribute('aria-pressed','true');
+});
+test('automatic flip switch shares playback and manual crank disengages it',async({page})=>{
+ await ready(page);
+ const auto=page.getByRole('switch',{name:'Automatic movement',exact:true});
+ await expect(auto).toHaveAttribute('aria-checked','false');
+ await auto.click();await expect(page.locator('#play-state')).toHaveText('RUNNING');
+ await expect(auto).toHaveAttribute('aria-checked','true');
+ await page.getByRole('button',{name:'Pause simulation',exact:true}).click();
+ await expect(auto).toHaveAttribute('aria-checked','false');
+ await page.locator('#simulation-date').fill('2026-09-05');
+ await page.getByRole('button',{name:'Turn crank forward a quarter turn',exact:true}).click();
+ expect(await page.evaluate(()=>window.__orrery.getState().date)).toBe('2026-09-13T00:00:00.000Z');
+ await page.getByRole('button',{name:'Turn crank back a quarter turn',exact:true}).click();
+ expect(await page.evaluate(()=>window.__orrery.getState().date)).toBe('2026-09-05T12:00:00.000Z');
+ await auto.click();
+ const crank=page.getByRole('slider',{name:'Manual crank',exact:true});await crank.focus();await page.keyboard.press('ArrowRight');
+ await expect(auto).toHaveAttribute('aria-checked','false');
+ const date=await page.evaluate(()=>window.__orrery.getState().date);await page.waitForTimeout(200);
+ expect(await page.evaluate(()=>window.__orrery.getState().date)).toBe(date);
+ await expect(crank).toBeFocused();
+});

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Turn the crank. Explore the planets. A richly detailed, interactive clockwork solar system with an astronomical observatory and ten inspectable moons. By ProDyn.ai.">
+<meta name="theme-color" content="#050A0F">
+<meta name="color-scheme" content="dark">
+<meta name="application-name" content="Orrery">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Orrery">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="canonical" href="https://orrery.prodyn.ai/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Orrery · ProDyn.ai">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Orrery — The solar system. Within reach.">
+<meta property="og:description" content="Turn the crank. Explore the planets. An interactive clockwork solar system, an astronomical observatory, and ten moons to inspect.">
+<meta property="og:url" content="https://orrery.prodyn.ai/">
+<meta property="og:image" content="https://orrery.prodyn.ai/social/orrery-card.jpg">
+<meta property="og:image:secure_url" content="https://orrery.prodyn.ai/social/orrery-card.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Orrery's silver clockwork, slender black planet supports and edge-mounted crank over a reflective blue-black glass base.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Orrery — The solar system. Within reach.">
+<meta name="twitter:description" content="Turn the crank. Explore the planets. A clockwork solar system and astronomical observatory by ProDyn.ai.">
+<meta name="twitter:image" content="https://orrery.prodyn.ai/social/orrery-card.jpg">
+<meta name="twitter:image:alt" content="Orrery's silver clockwork and planets reflected in a blue-black glass base, with a hand crank at its edge.">
+<title>Orrery — ProDyn.ai</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="./icons/favicon-16.png" type="image/png" sizes="16x16">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" sizes="180x180">
+<link rel="license" href="./licenses/MIT.txt">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Orrery","url":"https://orrery.prodyn.ai/","description":"An interactive clockwork solar system and astronomical observatory with ten inspectable moons.","applicationCategory":"EducationalApplication","operatingSystem":"Web browser","browserRequirements":"JavaScript and hardware-accelerated WebGL 2","softwareVersion":"0.5.0-beta.1","license":"https://opensource.org/license/mit","author":{"@type":"Organization","name":"Promethean Dynamic","url":"https://prodyn.ai/"},"image":"https://orrery.prodyn.ai/social/orrery-card.jpg","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<link rel="preload" href="./assets/fonts/Oxanium-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./assets/fonts/DepartureMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/m1-footer-smoke-stream.css"><link rel="stylesheet" href="/assets/tokens.css"><link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+<a class="skip-link" href="#controls">Skip to instrument controls</a>
+<header class="masthead">
+<a class="brand" href="https://prodyn.ai" target="_blank" rel="noopener noreferrer" aria-label="ProDyn.ai home"><img src="./assets/pd-logo.png" alt="" width="34" height="44"><span>ProDyn<span class="brand-dot">.ai</span></span></a>
+<span class="masthead-center hud">INSTRUMENTS FOR THE CURIOUS</span>
+<button class="text-button hud" id="about-open">Science &amp; sources <span aria-hidden="true">↗</span></button>
+</header>
+<main>
+<div class="instrument-layout">
+<section class="stage" aria-label="Interactive solar system">
+<div class="stage-heading"><div><p class="eyebrow">A STUDY IN CELESTIAL MOTION</p><h1>Orrery</h1><p class="intro">The solar system. Within reach.</p></div>
+<div class="mode-switch" role="group" aria-label="Instrument presentation"><button data-mode="mechanical" aria-pressed="true">Mechanical</button><button data-mode="observatory" aria-pressed="false">Observatory</button></div></div>
+<div id="universe" tabindex="0" role="application" aria-label="Three dimensional orrery. Drag to rotate, right-drag or two-finger drag to pan, scroll to zoom. Click the mechanism or background, or press Escape, to deselect. Use the planet buttons below for keyboard selection.">
+<div id="fallback" class="fallback"><svg viewBox="0 0 800 440" role="img" aria-label="Schematic of concentric planetary orbits, not to scale"><g fill="none" stroke="currentColor"><ellipse cx="400" cy="250" rx="340" ry="130"/><ellipse cx="400" cy="250" rx="275" ry="104"/><ellipse cx="400" cy="250" rx="210" ry="78"/><ellipse cx="400" cy="250" rx="140" ry="53"/><ellipse cx="400" cy="250" rx="75" ry="28"/></g><circle cx="400" cy="250" r="19" fill="currentColor"/><circle cx="610" cy="250" r="9" fill="currentColor"/></svg><p id="load-message">Solar system schematic · not to scale</p></div>
+<div id="planet-labels" aria-hidden="true"></div>
+</div>
+<div class="stage-toolbar"><div class="view-buttons" role="group" aria-label="Camera views"><button id="view-home" class="hud" title="Restore perspective view">Perspective</button><button id="view-top" class="hud" title="Look down on the ecliptic">Top down</button></div><span class="gesture-hint hud">DRAG TO ORBIT <span>·</span> SCROLL TO EXPLORE</span></div>
+<p id="inspection-subject" class="inspection-subject hud" hidden></p>
+<div class="stage-caption"><span class="hud" id="presentation-label">01 / MECHANICAL INSTRUMENT</span><span id="scale-note">Gear-driven mean motion · enlarged bodies</span></div>
+</section>
+<aside class="inspector" aria-label="Selected celestial body">
+<div class="inspector-top"><span id="inspector-label" class="eyebrow">SELECTED BODY</span><span id="body-index" class="hud">03 / 08</span></div>
+<svg class="selection-trace" viewBox="0 0 240 20" aria-hidden="true"><path class="selection-trace-rest" d="M0 16H24L38 4H184L200 16H240"/><path id="selection-signal" d="M0 16H24L38 4H184L200 16H240" pathLength="1" stroke-dasharray="1" stroke-dashoffset="0" data-motion-state="settled"/></svg>
+<h2 id="body-name">Earth</h2><p id="body-kind" class="hud sublabel">TERRESTRIAL PLANET</p>
+<figure id="body-portrait" class="body-portrait"></figure>
+<dl class="surface-reference"><div><dt title="Reference obliquity, not the current viewing angle.">AXIAL TILT</dt><dd id="body-tilt">—</dd></div><div><dt title="Reference J2000 orbital eccentricity. Mechanical arms follow fixed-radius circles, not this ellipse.">ECCENTRICITY</dt><dd id="body-eccentricity">—</dd></div></dl>
+<details id="moon-family" class="moon-family" hidden><summary class="hud">Moon companions <span id="moon-family-count"></span><span id="moon-family-preview" class="moon-family-preview"></span></summary><ul id="moon-list"></ul><p class="microcopy">Illustrative phases · circular motion · enlarged spacing. Not an ephemeris.</p></details>
+<p class="body-fact" id="body-fact">Explore a planet to inspect its orbit and physical properties.</p>
+<dl class="properties"><div><dt title="Reference semi-major axis at J2000: half the longest diameter of the orbital ellipse.">SEMI-MAJOR AXIS</dt><dd><span id="body-axis">—</span><small> AU</small></dd></div><div><dt>ORBITAL PERIOD</dt><dd><span id="body-period">—</span><small id="period-unit"> DAYS</small></dd></div><div><dt>MEAN RADIUS</dt><dd><span id="body-radius">—</span><small> KM</small></dd></div><div><dt>ORBITAL INCLINATION</dt><dd><span id="body-inclination">—</span><small> °</small></dd></div></dl>
+<div class="position-readout"><span class="eyebrow">ASTRONOMICAL REFERENCE</span><div><span>Sun distance</span><strong id="body-distance">— AU</strong></div><p id="distance-model-note" class="microcopy">Approximate heliocentric position</p></div>
+<details id="drive-reference" class="drive-reference"><summary class="hud">Follow the drive</summary><p id="drive-path" class="microcopy"></p><dl><div><dt>GEARED YEAR</dt><dd><span id="drive-output-period">—</span> days</dd></div><div><dt>MEAN-PERIOD ERROR</dt><dd id="drive-period-error">—</dd></div></dl><p class="microcopy">Fixed gear ratios · circular paths. Slender shafts and nested sleeves carry the moon motion. Enclosed lunar reductions are schematic; internal gears are not modeled.</p></details>
+<button id="focus-body" class="outline-button">Inspect Earth <span aria-hidden="true">↗</span></button>
+<a id="body-source" class="source-link" href="https://science.nasa.gov/earth/" target="_blank" rel="noopener noreferrer">Body reference ↗</a>
+</aside>
+</div>
+<section id="mechanical-console" class="mechanical-console" aria-label="Mechanical drive controls">
+<div class="manual-drive">
+<div id="manual-crank" class="manual-crank" role="slider" tabindex="0" aria-label="Manual crank" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0" aria-describedby="crank-help">
+<svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="crank-metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" class="metal-light"/><stop offset=".4" class="metal-mid"/><stop offset=".65" class="metal-dark"/><stop offset="1" class="metal-light"/></linearGradient></defs><circle class="crank-rim" cx="60" cy="60" r="54"/><circle class="crank-index" cx="60" cy="60" r="47" pathLength="48"/><circle class="crank-well" cx="60" cy="60" r="39"/><g id="crank-rotor"><path class="crank-arm" d="M52 56L88 27L95 35L62 68Z"/><circle class="crank-grip" cx="91" cy="31" r="9"/><path class="crank-grip-mark" d="M88 27L94 34"/></g><circle class="crank-hub" cx="60" cy="60" r="12"/><path class="crank-grip-mark" d="M55 60h10"/></svg>
+</div>
+<div class="drive-copy"><span class="eyebrow">MANUAL DRIVE</span><p>Time, by hand.</p><span id="crank-help" class="microcopy">Drag this dial or the instrument’s side crank.<br>← / → one day · One revolution = 30 days</span><div class="crank-step"><button id="crank-back" aria-label="Turn crank back a quarter turn">− ¼ turn</button><button id="crank-forward" aria-label="Turn crank forward a quarter turn">+ ¼ turn</button></div></div>
+</div>
+<div class="auto-drive"><button id="auto-drive" class="auto-switch" role="switch" aria-label="Automatic movement" aria-checked="false" aria-describedby="auto-help"><span class="switch-plate" aria-hidden="true"><span class="switch-lever"></span></span></button><div class="drive-copy"><span class="eyebrow">AUTOMATIC MOVEMENT</span><p id="drive-state">Disengaged</p><span id="auto-help" class="microcopy">Uses the selected time flow.<br>Hand winding disengages the drive.</span></div></div>
+<div class="finish-control drive-copy"><span class="eyebrow">UNDER GLASS</span><p>A darker kind of space.</p><div class="finish-buttons" role="group" aria-label="Base finish"><button data-base-style="nebula" aria-pressed="true">Nebula glass</button><button data-base-style="obsidian" aria-pressed="false">Obsidian</button></div><span class="microcopy">Black DLC · PVD · blue-fire black opal</span><button id="focus-craft" class="text-button">Inspect opal &amp; finish</button></div>
+</section>
+<nav class="planet-nav" aria-label="Select a celestial body"><div id="body-buttons"></div></nav>
+<section class="controls" id="controls" aria-label="Simulation controls">
+<div class="transport"><button id="play" class="play-button" aria-label="Play simulation"><span id="play-symbol" aria-hidden="true">▶</span></button><div><label class="eyebrow" for="simulation-date">SIMULATION DATE · UTC</label><input type="date" id="simulation-date" min="1800-01-01" max="2049-12-31" value="2026-09-05"><span id="time-readout" class="hud">12:00:00 UTC</span></div><button id="today" class="text-button hud">Today</button></div>
+<div class="rate-control"><label class="eyebrow" for="speed">TIME FLOW</label><select id="speed"><option value="-30">−30 days / second</option><option value="-1">−1 day / second</option><option value="1">1 day / second</option><option value="10" selected>10 days / second</option><option value="30">30 days / second</option><option value="365.25">1 year / second</option></select><span id="play-state" class="hud sublabel">PAUSED</span></div>
+<div class="display-controls"><label class="check-label"><input type="checkbox" id="moons" checked> <span>Show moons</span></label><label class="check-label"><input type="checkbox" id="pluto"> <span>Include Pluto</span></label><label class="check-label"><input type="checkbox" id="labels"> <span>Planet labels</span></label></div>
+<div class="scale-control"><label class="eyebrow" for="scale">DISTANCE MAPPING</label><select id="scale" disabled><option value="display">Display scale</option><option value="distance">True distance</option></select><span id="scale-help" class="microcopy">True distance in Observatory</span></div>
+</section>
+<footer class="footer" data-atmosphere="paused"><div class="smoke" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><span class="pcl" style="top:38%;--d:14s;--dl:0s"></span><span class="pcl" style="top:52%;--d:19s;--dl:4s"></span><span class="pcl" style="top:66%;--d:16s;--dl:9s"></span></div><p>Not everything needs to happen at human speed.</p><div class="footer-credits"><span>Orrery v0.5 Beta | MIT License</span><span>Made by Promethean Dynamic Nerdiness</span><span>Powered by <a href="https://TrustEdge.gt/" target="_blank" rel="noopener noreferrer">TrustEdge.gt</a> Engineered Infrastructure</span></div><div class="footer-actions"><button class="text-button hud" id="fullscreen">Fullscreen ↗</button></div></footer>
+<p id="status" class="sr-only" role="status" aria-live="polite"></p>
+<noscript><style>.mechanical-console,.controls,.inspector,.planet-nav,.mode-switch,.view-buttons,.masthead>.text-button,#fullscreen{display:none}</style><section class="noscript"><h2>A solar system you can explore.</h2><p>Orrery needs JavaScript and WebGL 2 for interactive 3D. The planets in order from the Sun are Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus and Neptune. Pluto can be included as a dwarf planet. Display distances and body sizes are not to scale. <a href="https://ssd.jpl.nasa.gov/planets/approx_pos.html">Read the JPL approximate orbit model.</a></p></section></noscript>
+</main>
+<dialog id="science-dialog" aria-labelledby="science-title">
+<div class="dialog-heading"><span class="eyebrow">THE MODEL BEHIND THE MOTION</span><button id="about-close" class="text-button" aria-label="Close science and sources">Close ×</button></div>
+<h2 id="science-title">A little wonder.<br>A clear model.</h2>
+<div id="science-copy"><p>Orrery is an educational model, not a navigation or observation-planning tool.</p>
+<h3>One clock. Two motion models.</h3>
+<p>Mechanical connects the crank to successive compound gear reductions, coaxial output sleeves and keyed planet arms. The fixed integer tooth ratios approximate mean orbital periods; the arms follow circles. Their starting directions are indexed once at J2000. This is a kinematic exhibit, not a manufacturable clock: tooth flanks, tolerances, friction, torque and dynamics are not engineering-validated. The Follow the drive readout gives each selected output’s route and period error.</p>
+<p>Observatory retains the JPL approximate orbital shapes, inclinations and varying speeds. Switching presentations can therefore change planet positions. The Sun-distance readout always belongs to this astronomical reference, not to the geared arm geometry.</p>
+<h3>Scale, made explicit.</h3><p>Display scale compresses orbital spacing and enlarges bodies so the whole system can be explored. True distance uses one distance scale in Observatory; planet and Sun sizes remain enlarged. Surface detail, planetary spin and lighting are illustrative, not a live image or calibrated rotational ephemeris.</p>
+<h3>Surface imagery &amp; attribution</h3><p>Planet and Sun maps by <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener noreferrer">Solar System Scope</a>, licensed <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. These NASA-imagery-derived maps use adjusted colors and fill unmapped regions artistically. Inspector portraits are spherical projections with illustrative shading and orientation, derived from these same maps. Pluto is procedurally illustrated. <a href="./licenses/SolarSystemScope.txt" target="_blank">Full attribution</a>.</p>
+<h3>Ten selected moon companions</h3><p>Earth’s Moon, Io, Europa, Ganymede, Callisto, Enceladus, Titan, Miranda, Triton and Charon use sourced physical properties. In Mechanical, solid PVD support bars carry the planets; slender nested sleeves carry the small moon arms and globes. Separate shafts and enclosed lunar reductions follow the shared crank ratios. These internal reductions and right-angle transfers are schematic: their gears are not modeled, and fitting them inside the slender supports has not been engineering-validated. In Observatory, moons follow the separate simplified circular calculation. Starting phases and orbital planes are illustrative, not observed positions. Local spacing and sizes are enlarged independently, even in True distance mode; mechanical families are spaced to reserve their swept clearances. Their surfaces are original illustrations with exaggerated features, not georeferenced maps.</p>
+<p>Open a planet’s Moon companions panel and choose a named moon to inspect it. Inspection pauses the shared clock and frames once; resuming time does not track the moon. Charon’s Pluto-centered display does not model the system’s barycenter.</p>
+<p id="moon-model-limits"></p><a id="moon-model-source" href="https://ssd.jpl.nasa.gov/sats/elem/" target="_blank" rel="noopener noreferrer">JPL: Satellite mean elements ↗</a>
+<h3>Materials &amp; construction</h3><p>The lower gear bank has a black DLC material treatment; planet and moon support arms use polished black PVD. Pillar-top screws are replaced by domed blue-fire black-opal inlays. These are original physically based material studies, not measured coating or gemstone scans. Saturn’s independently colored bands interpret <a href="https://science.nasa.gov/photojournal/a-full-sweep-of-saturns-rings" target="_blank" rel="noopener noreferrer">Cassini natural-color imagery</a>, with exaggerated gaps and no calibrated photometry.</p>
+<h3>Scientific reference</h3><p id="model-description">The astronomical model and supported date range will appear here when the instrument loads.</p><a id="model-source" href="https://ssd.jpl.nasa.gov/planets/approx_pos.html" target="_blank" rel="noopener noreferrer">JPL: Approximate positions of the planets ↗</a><p id="model-limits"></p>
+<h3>Designed for exploration</h3><p>Drag to rotate; scroll or pinch to zoom. Select planets using the row below the instrument. Pause to study a moment, change the date, or reverse time. Sun distance and the orbit descriptors are approximate. The background stars are decorative, not a sky catalogue. Reduced-motion preferences start the instrument still. All numerical properties are available outside the 3D view.</p>
+
+<h3>Open source &amp; privacy</h3><p>Original Orrery code is <a href="./licenses/MIT.txt">MIT licensed</a>. Planet maps, fonts and brand marks retain their separate terms; see <a href="./licenses/NOTICE.txt">credits and licenses</a>. <a href="https://github.com/cygnostik/orrery" target="_blank" rel="noopener noreferrer">Source code &amp; documentation ↗</a>.</p><p>No accounts, application analytics, tracking scripts, ads or external runtime font/image requests. Offline files are saved in this browser. The web host may keep standard access and security logs.</p><p class="microcopy">ProDyn.ai · Orrery v0.5 Beta · Made by Promethean Dynamic Nerdiness</p></div></dialog>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

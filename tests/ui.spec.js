@@ -1,0 +1,63 @@
+import {test,expect} from '@playwright/test';
+test('reference readouts use the scientifically correct semi-major axis label and suppress rounded negative zero',async({page})=>{
+ await page.goto('/');await expect(page.getByText('SEMI-MAJOR AXIS',{exact:true})).toBeVisible();await expect(page.locator('#body-inclination')).toHaveText('0');
+});
+test('planet selection, presentation and Pluto share one instrument state',async({page})=>{
+ await page.goto('/');
+ const earth=page.getByRole('button',{name:'03 Earth',exact:true});
+ await expect(earth).toHaveAttribute('aria-pressed','true');
+ await page.getByRole('button',{name:'06 Saturn',exact:true}).click();
+ await expect(page.locator('#body-name')).toHaveText('Saturn');
+ await page.getByRole('button',{name:'Observatory',exact:true}).click();
+ await expect(page.locator('#scale')).toBeEnabled();
+ await expect(page.locator('#body-name')).toHaveText('Saturn');
+ await page.getByLabel('Include Pluto').check();
+ await page.getByRole('button',{name:'09 Pluto',exact:true}).click();
+ await expect(page.locator('#body-kind')).toHaveText('DWARF PLANET');
+ await page.getByLabel('Include Pluto').uncheck();
+ await expect(page.locator('#body-name')).toHaveText('Earth');
+ await expect(page.getByRole('button',{name:'09 Pluto',exact:true})).toHaveCount(0);
+});
+test('the live scene renders and time controls change physical positions without losing pause',async({page})=>{
+ await page.goto('/');
+ await expect.poll(()=>page.evaluate(()=>window.__orrery?.diagnostics().ready)).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>window.__orrery.diagnostics().drawCalls)).toBeGreaterThan(0);
+ await page.locator('#simulation-date').fill('2024-02-29');
+ await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().date)).toBe('2024-02-29T12:00:00.000Z');
+ await page.getByRole('button',{name:'Play simulation',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Pause simulation',exact:true})).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().date)).not.toBe('2024-02-29T12:00:00.000Z');
+ await page.getByRole('button',{name:'Pause simulation',exact:true}).click();
+ const date=await page.evaluate(()=>window.__orrery.getState().date);
+ await page.getByRole('button',{name:'Top down',exact:true}).click();
+ await page.waitForTimeout(200);
+ expect(await page.evaluate(()=>window.__orrery.getState().date)).toBe(date);
+ await page.getByRole('button',{name:'Science & sources',exact:true}).click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(page.getByRole('dialog')).not.toBeVisible();
+});
+test('inspecting a moving planet pauses time and preserves the selected body',async({page})=>{
+ await page.goto('/');
+ await expect.poll(()=>page.evaluate(()=>window.__orrery?.diagnostics().ready)).toBe(true);
+ await page.getByRole('button',{name:'Observatory',exact:true}).click();
+ await page.getByRole('button',{name:'06 Saturn',exact:true}).click();
+ await page.locator('#speed').selectOption('365.25');
+ await page.getByRole('button',{name:'Play simulation',exact:true}).click();
+ await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().playing)).toBe(true);
+ await page.locator('#focus-body').click();
+ expect(await page.evaluate(()=>window.__orrery.getState().playing)).toBe(false);
+ await expect(page.locator('#play-state')).toHaveText('PAUSED');
+ const date=await page.evaluate(()=>window.__orrery.getState().date);
+ await page.waitForTimeout(300);
+ expect(await page.evaluate(()=>window.__orrery.getState().date)).toBe(date);
+ await expect(page.locator('#body-name')).toHaveText('Saturn');
+});
+test('the instrument presents a branded semantic shell with a readable scientific fallback',async({page})=>{
+ await page.goto('/');
+ await expect(page.getByRole('heading',{name:'Orrery',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Mechanical',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Observatory',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Science & sources',exact:true})).toBeVisible();
+ await expect(page.getByLabel('Include Pluto')).not.toBeChecked();
+});

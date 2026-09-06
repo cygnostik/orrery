@@ -1,0 +1,7 @@
+Source: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=502
+
+Selected source excerpts (not the complete document).
+
+Orbital period ~ 3.55 d
+
+Orbital period   ~ 3.55 d

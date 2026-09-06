@@ -1,0 +1,22 @@
+/* ── FOOTER · M1 smoke + perimeter line ── */
+footer{position:relative;margin-top:44px;overflow:hidden;background:var(--pd-field);
+  border-top:1px solid var(--pd-line);padding:110px 0 40px}
+.smoke{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;right:-20%;border-radius:50%;filter:blur(60px);
+  animation:drift 30s ease-in-out infinite alternate}
+.b1{top:28%;width:70vw;height:40vh;background:radial-gradient(ellipse,rgba(35,65,130,.22),rgba(20,40,85,.10) 40%,transparent 70%)}
+.b2{top:55%;width:50vw;height:30vh;background:radial-gradient(ellipse,rgba(40,70,140,.18),rgba(25,45,95,.08) 45%,transparent 70%);animation-duration:24s}
+@keyframes drift{0%{transform:translate3d(3vw,0,0)}100%{transform:translate3d(-18vw,1vh,0) scale(.98)}}
+.pcl{position:absolute;right:-5%;width:4px;height:4px;border-radius:50%;
+  background:rgba(48,176,208,.5);box-shadow:0 0 12px rgba(48,176,208,.35);
+  animation:fly var(--d,16s) linear var(--dl,0s) infinite}
+@keyframes fly{0%{transform:translateX(0);opacity:0}10%,90%{opacity:1}100%{transform:translateX(-110vw);opacity:0}}
+.foot-in{position:relative;z-index:1}
+.foot-in h2{font-family:var(--f-display);font-weight:800;
+  font-size:clamp(30px,4.6vw,68px);line-height:1;letter-spacing:-.03em;margin:0 0 40px;max-width:900px}
+.foot-grid{display:flex;justify-content:space-between;gap:28px;flex-wrap:wrap;
+  border-top:1px solid var(--pd-line);padding-top:26px}
+.tiny{font-family:var(--f-hud);font-size:10.5px;line-height:2;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--pd-ivory-dim)}
+.tiny a{color:var(--pd-ivory-muted);text-decoration:none}
+.tiny a:hover{color:var(--pd-signal)}

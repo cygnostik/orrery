@@ -1,0 +1,11 @@
+Source: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=606
+
+Selected source excerpts (not the complete document).
+
+Orbital period     = 15.945421 d
+
+Mean Radius (km)       = 2575.5   +-  2.0  Density (g/cm^3) =  1.880 +- 0.004
+
+Semi-major axis, a (km)= 1221.87 (10^3)  Orbital period     = 15.945421 d
+
+Inclination, i  (deg)  = 0.28

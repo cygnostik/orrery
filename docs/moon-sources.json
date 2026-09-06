@@ -1,0 +1,314 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 1,
+      "url": "https://ssd.jpl.nasa.gov/sats/phys_par",
+      "title": "Planetary Satellite Physical Parameters",
+      "quotes": [
+        {
+          "text": "| Earth | Moon | 301 | 4902.800 | 0.001 | DE440 | 1737.4 | 0.1 | 1 | 3.344 | 0.001 | * |"
+        },
+        {
+          "text": "| Jupiter | Io | 501 | 5959.91547 | 0.00135 | JUP365 | 1821.49 | 0.50 | 1 | 3.5276 | 0.0029 | * |"
+        },
+        {
+          "text": "| Jupiter | Europa | 502 | 3202.71210 | 0.00181 | JUP365 | 1560.80 | 0.30 | 1 | 3.0130 | 0.0017 | * |"
+        },
+        {
+          "text": "| Jupiter | Ganymede | 503 | 9887.83275 | 0.00247 | JUP365 | 2631.20 | 1.70 | 1 | 1.9416 | 0.0038 | * |"
+        },
+        {
+          "text": "| Jupiter | Callisto | 504 | 7179.28340 | 0.00324 | JUP365 | 2410.30 | 1.50 | 1 | 1.8340 | 0.0034 | * |"
+        },
+        {
+          "text": "| Planet | Satellite | Code | GM (km3/s2) | | | Mean Radius (km) | | | Mean Density (g/cm3) | | |"
+        },
+        {
+          "text": "| Mean Radius | Radius of a sphere with the equivalent volume of the planetary satellite. |"
+        },
+        {
+          "text": "| Saturn | Enceladus | 602 | 7.21037 | 0.00009 | SAT441 | 252.10 | 0.20 | 1 | 1.6097 | 0.0038 | * |"
+        },
+        {
+          "text": "| Saturn | Titan | 606 | 8978.13710 | 0.00025 | SAT441 | 2574.76 | 0.02 | 1 | 1.8814 | 0.0001 | * |"
+        },
+        {
+          "text": "| Uranus | Miranda | 705 | 4.3 | 0.2 | URA111 | 235.8 | 0.7 | 1 | 1.178 | 0.053 | * |"
+        },
+        {
+          "text": "| Neptune | Triton | 801 | 1428.49546 | 0.61603 | NEP097 | 1352.60 | 2.40 | 1 | 2.0649 | 0.0110 | * |"
+        },
+        {
+          "text": "| Pluto | Charon | 901 | 106.1 | 0.3 | PLU060 | 606.0 | 0.5 | 2 | 1.853 | 0.004 | * |"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "url": "https://ssd.jpl.nasa.gov/sats/elem",
+      "title": "Planetary Satellite Mean Elements",
+      "quotes": [
+        {
+          "text": "| Earth | Moon | 301 | DE405/LE405 | ecliptic | 2000-01-01.5 | 384400. | 0.0554 | 318.15 | 135.27 | 5.16 | 125.08 | 27.322 | 5.997 | 18.600 | | | | n/a |"
+        },
+        {
+          "text": "| Jupiter | Io | 501 | JUP365 | Laplace | 2000-01-01.5 | 421800. | 0.004 | 49.1 | 330.9 | 0.0 | 0.0 | 1.762732 | 1.333 | 0.000 | 268.1 | 64.5 | 0.0 | 29 |"
+        },
+        {
+          "text": "| Jupiter | Europa | 502 | JUP365 | Laplace | 2000-01-01.5 | 671100. | 0.009 | 45.0 | 345.4 | 0.5 | 184.0 | 3.525463 | 1.394 | 30.202 | 268.1 | 64.5 | 0.0 | 29 |"
+        },
+        {
+          "text": "| Jupiter | Ganymede | 503 | JUP365 | Laplace | 2000-01-01.5 | 1070400. | 0.001 | 198.3 | 324.8 | 0.2 | 58.5 | 7.155588 | 68.301 | 137.812 | 268.2 | 64.6 | 0.1 | 29 |"
+        },
+        {
+          "text": "| Jupiter | Callisto | 504 | JUP365 | Laplace | 2000-01-01.5 | 1882700. | 0.007 | 43.8 | 87.4 | 0.3 | 309.1 | 16.690440 | 277.921 | 577.264 | 268.7 | 64.8 | 0.4 | 29 |"
+        },
+        {
+          "text": "**Warning!** These mean orbital parameters are **not intended for ephemeris computation**. Accurate ephemerides should be obtained from our [Horizons](/horizons/) system. Mean orbital parameters are primarily useful in describing the general shape and orientation of a planetary satellite's orbit."
+        },
+        {
+          "text": "| Planet | Satellite | Code | Ephemeris | Frame | Epoch (TDB) | a (km) | e | ω (deg) | M (deg) | i (deg) | node (deg) | P (days) | Papsis (yr) | Pnode (yr) | R.A. (deg) | Dec. (deg) | Tilt (deg) | Ref. |"
+        },
+        {
+          "text": "| a | semi-major Axis |"
+        },
+        {
+          "text": "| P | sidereal period |"
+        },
+        {
+          "text": "| Saturn | Enceladus | 602 | SAT441 | Laplace | 2000-01-01.5 | 238400. | 0.005 | 119.5 | 57.0 | 0.0 | 0.0 | 1.370218 | 2.916 | 0.000 | 40.6 | 83.5 | 0.0 | 36 |"
+        },
+        {
+          "text": "| Saturn | Titan | 606 | SAT441 | Laplace | 2000-01-01.5 | 1221900. | 0.029 | 78.3 | 11.7 | 0.3 | 78.6 | 15.945448 | 346.680 | 687.370 | 36.4 | 84.0 | 0.6 | 36 |"
+        },
+        {
+          "text": "| Uranus | Miranda | 705 | URA182 | equatorial | 2000-01-01.5 | 129846. | 0.001 | 154.8 | 73.0 | 4.4 | 100.9 | 1.413479 | 8.939 | 17.787 |  |  |  | 45 |"
+        },
+        {
+          "text": "| Neptune | Triton | 801 | NEP097 | Laplace | 2000-01-01.5 | 354800. | 0.000 | 0.0 | 63.0 | 157.3 | 178.1 | 5.876994 | 0.000 | 340.379 | 299.8 | 43.1 | 0.4 | 24 |"
+        },
+        {
+          "text": "| Pluto | Charon | 901 | PLU060 | equatorial | 2000-01-01.5 | 19600. | 0.000 | 0.0 | 304.1 | 0.0 | 0.0 | 6.387222 | - | - |  |  |  | 6 |"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "url": "https://science.nasa.gov/jupiter/jupiter-moons",
+      "title": "Jupiter Moons",
+      "quotes": [
+        {
+          "text": "Io is Jupiter's third largest moon, and the most volcanically active world in our solar system."
+        },
+        {
+          "text": "Europa is Jupiter's fourth largest moon. It's about 90% the size of Earth’s Moon."
+        },
+        {
+          "text": "Ganymede is Jupiter's largest moon, and the largest moon in our solar system. It's even bigger than Mercury, and Pluto."
+        },
+        {
+          "text": "Callisto is Jupiter’s second largest moon and the third largest moon in our solar system."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "url": "https://science.nasa.gov/moon/facts",
+      "title": "Moon Facts - NASA Science",
+      "quotes": [
+        {
+          "text": "The Moon is rotating at the same rate that it revolves around Earth (called [synchronous rotation](/moon/tidal-locking/)), so the same hemisphere faces Earth all the time. Some people call the far side – the hemisphere we never see from Earth – the \"dark side\", but that's misleading."
+        },
+        {
+          "text": "With a radius of about 1,080 miles (1,740 kilometers), the Moon is less than a third of the width of Earth. If Earth were the size of a nickel, the Moon would be about as big as a coffee bean."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=501",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Orbital period ~ 1.77 d"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=502",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Orbital period ~ 3.55 d"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "url": "https://science.nasa.gov/saturn/moons/enceladus",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Saturn’s moon Enceladus is a small, icy world that has geyser-like jets spewing water vapor and ice particles into space."
+        },
+        {
+          "text": "About as wide as Arizona, Enceladus also has the whitest, most reflective surface in the solar system."
+        },
+        {
+          "text": "It completes one orbit every 32.9 hours within the densest part of Saturn's E Ring."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "url": "https://science.nasa.gov/dwarf-planets/pluto/moons/charon",
+      "title": "",
+      "quotes": [
+        {
+          "text": "The same surfaces of Charon and Pluto always face each other, a phenomenon called mutual tidal locking."
+        },
+        {
+          "text": "Most striking is the reddish north (top) polar region."
+        },
+        {
+          "text": "Charon orbits Pluto every 6.4 Earth days."
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "url": "https://science.nasa.gov/saturn/moons/titan/facts",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Saturn's largest moon, Titan, is an icy world whose surface is completely obscured by a golden hazy atmosphere."
+        },
+        {
+          "text": "Titan takes 15 days and 22 hours to complete a full orbit of Saturn."
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "url": "https://science.nasa.gov/uranus/moons/miranda",
+      "title": "",
+      "quotes": [
+        {
+          "text": "They are lightly cratered collections of ridges and valleys, separated from the more heavily cratered (and presumably older) terrain by sharp boundaries like mismatched patches on a moth-eaten coat."
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "url": "https://science.nasa.gov/neptune/moons/triton",
+      "title": "",
+      "quotes": [
+        {
+          "text": "It is unusual because it is the only large moon in our solar system that orbits in the opposite direction of its planet's rotation―a retrograde orbit."
+        },
+        {
+          "text": "It is so cold that most of Triton's nitrogen is condensed as frost, giving its surface an icy sheen that reflects 70 percent of the sunlight that hits it."
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=602",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Orbital period    = 1.370218 d"
+        },
+        {
+          "text": "Mean Radius (km)        = 252.3   +- 0.6   Density (g/cm^3) =  1.606 +- 0.012"
+        },
+        {
+          "text": "Semi-major axis, a (km) = 238.04(10^3)    Orbital period    = 1.370218 d"
+        },
+        {
+          "text": "Inclination, i  (deg)   = 0.009"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=606",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Orbital period     = 15.945421 d"
+        },
+        {
+          "text": "Mean Radius (km)       = 2575.5   +-  2.0  Density (g/cm^3) =  1.880 +- 0.004"
+        },
+        {
+          "text": "Semi-major axis, a (km)= 1221.87 (10^3)  Orbital period     = 15.945421 d"
+        },
+        {
+          "text": "Inclination, i  (deg)  = 0.28"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=705",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Orbital period      =  1.413 d"
+        },
+        {
+          "text": "Radius (km)           = 240x234.2x232.9   Density (g cm^-3)   =  1.18 +- 0.05"
+        },
+        {
+          "text": "Semi-major axis, a (km) = 129.8 (10^3)    Orbital period      =  1.413 d"
+        },
+        {
+          "text": "Inclination, i  (deg)   = 175.78"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=801",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Orbital period      = 5.876994 d"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=901",
+      "title": "",
+      "quotes": [
+        {
+          "text": "Orbital period, days  = 6.387222"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "url": "https://science.nasa.gov/photojournal/tiger-stripes-on-enceladus-fracture-zones-and-plumes-sources",
+      "title": "",
+      "quotes": [
+        {
+          "text": "These plumes originate from long linear fractures near the south pole of Enceladus."
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "url": "https://science.nasa.gov/photojournal/pluto-and-charon-in-color-barycentric-view-animation",
+      "title": "",
+      "quotes": [
+        {
+          "text": "The movie is barycentric, meaning that both Pluto and Charon are shown in motion around the binary's barycenter -- the shared center of gravity between the two bodies as they do a planetary jig."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+/* Surface specimens use existing licensed maps; all interface roles are DSM. */
+@media(min-width:768px){
+ .instrument-layout{--instrument-height:max(660px,calc(100svh - 306px))}
+ .instrument-layout>.stage,.instrument-layout>.inspector{height:var(--instrument-height)}
+ .instrument-layout>.inspector{overflow-y:auto;min-height:0;scrollbar-width:thin}
+ .inspector>*{flex-shrink:0}
+ .inspector h2{font-size:var(--fs-h2)}
+ .inspector .body-portrait svg{height:140px}
+}
+@media(min-width:768px) and (max-width:1023px){.instrument-layout{--instrument-height:max(690px,calc(100svh - 306px))}}
+@media(min-width:1200px){.instrument-layout{--instrument-height:max(720px,calc(100svh - 306px))}}
+.inspection-subject{position:absolute;left:var(--sp-8);bottom:112px;max-width:calc(100% - 80px);color:var(--pd-signal);background:var(--pd-field);padding:var(--sp-2) var(--sp-3);pointer-events:none}
+.moon-family button{background:transparent;border:0;padding:var(--sp-2) 0;text-align:left;color:var(--pd-signal);font:var(--fs-body-sm) var(--pd-font-display)}
+.moon-family button[aria-pressed=true]{color:var(--pd-ivory);text-decoration:underline;text-underline-offset:var(--sp-1)}
+.moon-family li>a{grid-column:1/-1}
+.moon-family-preview{display:block;margin-top:var(--sp-2);font-family:var(--pd-font-display);font-size:var(--fs-body-sm);letter-spacing:0;color:var(--pd-ivory-muted)}
+@media(max-width:767px){.inspection-subject{left:var(--sp-5);max-width:calc(100% - 40px)}}
+.inspector[data-selection=none]>:is(.selection-trace,.body-portrait,.surface-reference,.properties,.position-readout,.source-link){display:none}
+.body-portrait{margin:var(--sp-4) 0 var(--sp-3)}
+.body-portrait svg{display:block;width:100%;height:166px}
+.body-portrait figcaption{display:flex;flex-direction:column;gap:var(--sp-1)}
+.body-portrait figcaption .hud{color:var(--pd-ivory-muted);letter-spacing:var(--ls-label)}
+.body-portrait figcaption .microcopy{font-size:var(--fs-micro);color:var(--pd-ivory-dim)}
+.portrait-registration{stroke:var(--pd-line);stroke-width:var(--bw-hairline);fill:none}
+.portrait-rings{fill:none;stroke:var(--pd-ivory-muted);stroke-width:3}
+.portrait-rings :nth-child(2){stroke:var(--pd-ivory);stroke-width:4}
+.portrait-rings :nth-child(3){stroke:var(--pd-ivory-dim);stroke-width:6}
+.portrait-axis{stroke:var(--pd-signal);stroke-width:var(--bw-hairline);fill:none;stroke-dasharray:4 3}
+.portrait-pluto{fill:var(--pd-ivory-dim)}.portrait-pluto-patch{fill:var(--pd-ivory-muted)}
+.portrait-crater{fill:var(--pd-field);stroke:var(--pd-ivory-dim);stroke-width:var(--bw-hairline)}
+.portrait-light{stop-color:var(--pd-void);stop-opacity:0}.portrait-dark{stop-color:var(--pd-void)}
+.surface-reference{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);margin:var(--sp-4) 0;border-top:var(--bw-hairline) solid var(--pd-line);padding-top:var(--sp-3)}
+.surface-reference dt{font-size:var(--fs-micro);color:var(--pd-ivory-muted)}
+.surface-reference dd{margin:var(--sp-1) 0 0;font:var(--fs-meta) var(--pd-font-hud);color:var(--pd-ivory)}
+.drive-reference{margin:var(--sp-4) 0;border-top:var(--bw-hairline) solid var(--pd-line);padding-top:var(--sp-3)}
+.drive-reference summary{color:var(--pd-signal);cursor:pointer;padding:var(--sp-2) 0}
+.drive-reference summary:focus-visible{outline:var(--bw-signal) solid var(--pd-signal)}
+.drive-reference dl{display:grid;gap:var(--sp-3)}.drive-reference dt{font-size:var(--fs-micro);color:var(--pd-ivory-muted)}
+.drive-reference dd{font-size:var(--fs-meta);margin:0}
+@media(max-width:767px){
+ .inspector>.body-portrait{grid-column:1;grid-row:5;margin:var(--sp-4) 0 var(--sp-2);min-width:0}
+ .body-portrait svg{height:148px}.body-portrait figcaption .microcopy{line-height:var(--lh-body)}
+ .inspector>.surface-reference{grid-column:1;grid-row:6;align-self:start;margin:var(--sp-2) 0;grid-template-columns:1fr;gap:var(--sp-3)}
+ .inspector>.properties{grid-column:2;grid-row:5/7;align-self:center;row-gap:var(--sp-5)}
+ .inspector>.body-fact{grid-column:1/-1;grid-row:7;margin:var(--sp-4) 0}
+ .inspector>.position-readout{grid-column:1;grid-row:8;align-self:end}
+ .inspector>.outline-button{grid-column:2;grid-row:8}
+ .inspector>.source-link{grid-column:2;grid-row:9}
+ .inspector>.drive-reference{grid-column:1/-1;grid-row:10}
+ .inspector>.moon-family{grid-row:11}
+}
+@media(min-width:640px) and (max-width:767px){
+ .inspector>.surface-reference{grid-template-columns:1fr 1fr}
+ .body-portrait svg{height:166px}
+}

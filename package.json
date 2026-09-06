@@ -1,0 +1,26 @@
+{
+  "name": "orrery",
+  "version": "0.5.0-beta.1",
+  "private": true,
+  "description": "An interactive clockwork solar system and astronomical observatory.",
+  "license": "MIT",
+  "author": "Chris M. / Promethean Dynamic",
+  "homepage": "https://orrery.prodyn.ai/",
+  "repository": {"type":"git","url":"https://github.com/cygnostik/orrery.git"},
+  "bugs": {"url":"https://github.com/cygnostik/orrery/issues"},
+  "engines": {"node":"^20.19.0 || >=22.12.0"},
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build && node scripts/build-pwa.mjs",
+    "preview": "vite preview --host 127.0.0.1",
+    "test:unit": "node --test tests/*.test.js",
+    "test": "playwright test",
+    "test:compat": "playwright test --config playwright.compat.config.js",
+    "test:pwa": "node --test tests/pwa.browser.js",
+    "audit:public": "node scripts/public-audit.mjs",
+    "media": "node scripts/release-media.mjs"
+  },
+  "dependencies": {"three": "0.185.1"},
+  "devDependencies": {"vite": "8.2.2", "@playwright/test": "1.63.0"}
+}

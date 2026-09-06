@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 1,
+      "url": "https://science.nasa.gov/photojournal/a-full-sweep-of-saturns-rings",
+      "title": "A Full Sweep of Saturn's Rings - NASA Science",
+      "quotes": [
+        {
+          "text": "This natural color mosaic, taken from 10 degrees below the illuminated side of the rings, shows, from left to right, radially outward from Saturn, the C ring (with its Colombo and Maxwell gaps); the B ring and the Cassini division beyond, with the intervening Huygens gap; the A ring (with its Encke and Keeler gaps); and, on the far right, the narrow F ring."
+        },
+        {
+          "text": "When illuminated directly by the sun, the B ring appears brighter than the adjacent A and C rings; however, when viewing the unlit side of the B ring, the A and C rings appear brighter."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "url": "https://science.nasa.gov/photojournal/ringscape-in-color",
+      "title": "Ringscape In Color - NASA Science",
+      "quotes": [
+        {
+          "text": "Nine days before it entered orbit, Cassini spacecraft captured this exquisite natural color view of Saturn's rings."
+        },
+        {
+          "text": "Many bands throughout the B ring have a pronounced sandy color."
+        }
+      ]
+    }
+  ]
+}

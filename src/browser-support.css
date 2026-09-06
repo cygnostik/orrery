@@ -1,0 +1,31 @@
+/* Compatibility only; retain the instrument's existing typography and colors. */
+:root{
+ --orrery-safe-top:env(safe-area-inset-top,0px);
+ --orrery-safe-right:env(safe-area-inset-right,0px);
+ --orrery-safe-bottom:env(safe-area-inset-bottom,0px);
+ --orrery-safe-left:env(safe-area-inset-left,0px);
+}
+body{padding:var(--orrery-safe-top) var(--orrery-safe-right) var(--orrery-safe-bottom) var(--orrery-safe-left)}
+.skip-link{top:calc(var(--sp-2) + var(--orrery-safe-top));left:calc(var(--sp-2) + var(--orrery-safe-left))}
+#science-dialog:not([open]){display:none}
+#science-dialog{
+ inset:var(--orrery-safe-top) var(--orrery-safe-right) var(--orrery-safe-bottom) var(--orrery-safe-left);
+ width:min(680px,calc(100% - var(--sp-8) - var(--orrery-safe-left) - var(--orrery-safe-right)));
+ max-height:min(85vh,calc(100vh - var(--orrery-safe-top) - var(--orrery-safe-bottom) - 2 * var(--sp-5)));
+ overflow:auto;
+}
+#science-dialog.dialog-fallback[open]{display:block;position:fixed;margin:auto;z-index:var(--z-overlay)}
+@supports(height:100svh){
+ #science-dialog{max-height:min(85svh,calc(100svh - var(--orrery-safe-top) - var(--orrery-safe-bottom) - 2 * var(--sp-5)))}
+}
+@media(pointer:coarse){
+ .gesture-hint{display:block}
+ .stage-toolbar{flex-wrap:wrap;gap:var(--sp-2)}
+}
+/* Permit long Pluto values to wrap their units instead of widening a 320px page. */
+@media(max-width:639px){
+ .inspector{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ .inspector>*{min-width:0}
+ .properties{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .properties dd{white-space:normal}
+}

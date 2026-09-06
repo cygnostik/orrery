@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 1,
+      "url": "https://www.solarsystemscope.com/textures",
+      "title": "Solar System Scope texture maps and license",
+      "quotes": [
+        {
+          "text": "You may use, adapt, and share these textures for any purpose, even commercially."
+        },
+        {
+          "text": "Some parts of the planets remain to be mapped. These “gaps” are filled with fictional terrain that corresponds with the rest of the landscape."
+        }
+      ]
+    }
+  ]
+}
