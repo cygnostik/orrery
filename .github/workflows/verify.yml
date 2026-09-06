@@ -9,21 +9,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
         with:
           node-version: '22'
           cache: npm
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
       - run: npm run audit:public
-      - run: npm run test:unit
+      # Node's file-level concurrency otherwise runs the heavy WebGL fixtures
+      # alongside geometry tests on the same software-rendering CPU.
+      - name: Unit and real WebGL contracts
+        timeout-minutes: 8
+        run: timeout --signal=TERM --kill-after=15s 7m node --test --test-concurrency=1 tests/*.test.js
       - run: npm run build
       - run: npm test
       - run: npm run test:pwa
       - name: Save failure diagnostics
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: test-diagnostics
           path: |
