@@ -3,23 +3,24 @@ import assert from 'node:assert/strict';
 import {existsSync, mkdirSync, writeFileSync} from 'node:fs';
 import {BODIES, positionAt} from '../src/science.js';
 import {MOONS} from '../src/moons.js';
+import {createBrowserHarness, recordRendererConsole} from './browser-harness.js';
 import {DISPLAY_RADII, BODY_RADII, BODY_HEIGHT, mapPosition} from '../src/scene-assets.js';
 import {SATELLITE_DISPLAY} from '../src/satellite-scene.js';
 import {MECHANICAL_RADII} from '../src/lunar-layout.js';
 const near = (a, b, message) => assert.ok(Math.abs(a - b) < 1e-8, message || `${a} != ${b}`);
 
-test('real WebGL outputs are inherited from the crank; Observatory alone follows JPL', {timeout: 120000}, async () => {
+test('real WebGL outputs are inherited from the crank; Observatory alone follows JPL', {timeout: 120000}, async t => {
+  const harness = createBrowserHarness(t);
   const {chromium} = await import('@playwright/test');
   const {createServer} = await import('vite');
-  const server = await createServer({server: {host: '127.0.0.1', port: 0}, logLevel: 'error'});
+  const server = await harness.vite(createServer, {server: {host: '127.0.0.1', port: 0}, logLevel: 'error'});
   const path = 'evidence/connected-drive'; mkdirSync(path, {recursive: true});
   let browser;
   try {
-    await server.listen();
-    browser = await chromium.launch({executablePath: [process.env.ORRERY_BROWSER, '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean).find(existsSync), args: ['--enable-unsafe-swiftshader']});
-    const page = await browser.newPage({viewport: {width: 1440, height: 1000}}), errors = [];
+    browser = await harness.launch(chromium, {executablePath: [process.env.ORRERY_BROWSER, '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean).find(existsSync), args: ['--enable-unsafe-swiftshader']});
+    const page = harness.page(await harness.run('browser.newPage', () => browser.newPage({viewport: {width: 1440, height: 1000}}))), errors = [], driverNotices = [];
     page.on('pageerror', e => errors.push(e.message));
-    page.on('console', e => {if (['warning', 'error'].includes(e.type())) errors.push(e.text());});
+    page.on('console', e => recordRendererConsole(e, errors, driverNotices));
     await page.route('**/drive-proof', route => route.fulfill({contentType: 'text/html', body: '<html><head><link rel="stylesheet" href="/assets/tokens.css"><link rel="stylesheet" href="/src/style.css"></head><body><div id="drive-fixture" style="width:100vw;height:100vh;position:fixed;inset:0;background:var(--pd-field)"></div></body></html>'}));
     await page.goto(`${server.resolvedUrls.local[0]}drive-proof`);
     await page.evaluate(async () => {
@@ -133,7 +134,7 @@ test('real WebGL outputs are inherited from the crank; Observatory alone follows
     await set({moons: true, pluto: false});
     assert.equal(await page.evaluate(() => proof.scene.focusMoon('charon')), false);
     assert.deepEqual(errors, []);
-    writeFileSync(`${path}/browser-proof.json`, JSON.stringify({initial, dragged, reversed, future, observatory, familyFits, errors, passed: true}, null, 2));
+    writeFileSync(`${path}/browser-proof.json`, JSON.stringify({initial, dragged, reversed, future, observatory, familyFits, errors, driverNotices, passed: true}, null, 2));
     await page.evaluate(() => proof.scene.dispose());
-  } finally {await browser?.close(); await server.close();}
+  } finally {await harness.close();}
 });

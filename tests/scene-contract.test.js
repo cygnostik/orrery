@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {MOONS} from '../src/moons.js';
+import {createBrowserHarness, recordRendererConsole} from './browser-harness.js';
 import {MECHANICAL_RADII} from '../src/lunar-layout.js';
 
 const assets = await import('../src/scene-assets.js').catch(() => ({}));
@@ -191,7 +192,8 @@ test('distance mode applies one common AU factor to every body', () => {
 
 // Real browser contract. Starts its own loopback Vite server unless a caller
 // supplies ORRERY_RENDERER_URL; no skipped placeholders or mocked WebGL.
-test('physical crank captures the pointer; date, switch and finish have one owner', {timeout: 120000}, async () => {
+test('physical crank captures the pointer; date, switch and finish have one owner', {timeout: 120000}, async t => {
+  const harness = createBrowserHarness(t);
   const {chromium} = await import('@playwright/test');
   const {existsSync, mkdirSync, writeFileSync} = await import('node:fs');
   const executablePath = [process.env.ORRERY_BROWSER, '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean).find(existsSync);
@@ -201,13 +203,13 @@ test('physical crank captures the pointer; date, switch and finish have one owne
     if (!url) {
       const {createServer} = await import('vite');
       const {fileURLToPath} = await import('node:url');
-      server = await createServer({root: fileURLToPath(new URL('../', import.meta.url)), server: {host: '127.0.0.1', port: 0}, logLevel: 'error'});
-      await server.listen(); url = server.resolvedUrls.local[0];
+      server = await harness.vite(createServer, {root: fileURLToPath(new URL('../', import.meta.url)), server: {host: '127.0.0.1', port: 0}, logLevel: 'error'});
+      url = server.resolvedUrls.local[0];
     }
-    browser = await chromium.launch({executablePath, args: ['--enable-unsafe-swiftshader']});
-    const page = await browser.newPage({viewport: {width: 1440, height: 1000}});
-    const errors = []; page.on('pageerror', e => errors.push(e.message));
-    page.on('console', message => {if (['warning', 'error'].includes(message.type())) errors.push(message.text());});
+    browser = await harness.launch(chromium, {executablePath, args: ['--enable-unsafe-swiftshader']});
+    const page = harness.page(await harness.run('browser.newPage', () => browser.newPage({viewport: {width: 1440, height: 1000}})));
+    const errors = [], driverNotices = []; page.on('pageerror', e => errors.push(e.message));
+    page.on('console', message => recordRendererConsole(message, errors, driverNotices));
     await page.goto(url);
     await page.waitForFunction(() => window.__orrery?.diagnostics().ready);
     await page.evaluate(async () => {
@@ -282,7 +284,7 @@ test('physical crank captures the pointer; date, switch and finish have one owne
     await page.evaluate(() => rendererFixture.renderer.dispose());
     const disposed = await diag(); assert.equal(disposed.disposed, true);
     assert.equal(await page.locator('#renderer-fixture canvas').count(), 0);
-    writeFileSync('evidence/connected-drive/contract-contract-proof.json', JSON.stringify({crankTurnsAfterClockwiseDrag: moved.mechanism.crankTurns, cameraUnchanged: true, pointerCancelReleased: true, physicalAutoSwitched: true, initial, warm, after, disposed, errors}, null, 2));
+    writeFileSync('evidence/connected-drive/contract-contract-proof.json', JSON.stringify({crankTurnsAfterClockwiseDrag: moved.mechanism.crankTurns, cameraUnchanged: true, pointerCancelReleased: true, physicalAutoSwitched: true, initial, warm, after, disposed, errors, driverNotices}, null, 2));
     assert.deepEqual(errors, []);
-  } finally {await browser?.close(); await server?.close();}
+  } finally {await harness.close();}
 });

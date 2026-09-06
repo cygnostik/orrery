@@ -3,19 +3,20 @@ import assert from 'node:assert/strict';
 import {existsSync, mkdirSync, appendFileSync, readFileSync, writeFileSync} from 'node:fs';
 import {MOONS} from '../src/moons.js';
 import {SCIENCE} from '../src/science.js';
+import {createBrowserHarness, recordRendererConsole} from './browser-harness.js';
 
 const folder = 'evidence/lunar-mechanism';
-test('real WebGL lunar mounts survive crank, reversal, date bounds, modes and narrow family inspection', {timeout: 180000}, async () => {
+test('real WebGL lunar mounts survive crank, reversal, date bounds, modes and narrow family inspection', {timeout: 180000}, async t => {
+  const harness = createBrowserHarness(t);
   const {chromium} = await import('@playwright/test');
   const {createServer} = await import('vite');
-  const server = await createServer({server: {host: '127.0.0.1', port: 0}, logLevel: 'error'});
+  const server = await harness.vite(createServer, {server: {host: '127.0.0.1', port: 0}, logLevel: 'error'});
   mkdirSync(folder, {recursive: true}); writeFileSync(`${folder}/batches.jsonl`, '');
   let browser;
   try {
-    await server.listen();
-    browser = await chromium.launch({executablePath: [process.env.ORRERY_BROWSER, '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean).find(existsSync), args: ['--enable-unsafe-swiftshader']});
-    const page = await browser.newPage({viewport: {width: 1440, height: 1000}}), errors = [];
-    page.on('pageerror', e => errors.push(e.message)); page.on('console', m => {if (['error', 'warning'].includes(m.type())) errors.push(m.text());});
+    browser = await harness.launch(chromium, {executablePath: [process.env.ORRERY_BROWSER, '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean).find(existsSync), args: ['--enable-unsafe-swiftshader']});
+    const page = harness.page(await harness.run('browser.newPage', () => browser.newPage({viewport: {width: 1440, height: 1000}}))), errors = [], driverNotices = [];
+    page.on('pageerror', e => errors.push(e.message)); page.on('console', m => recordRendererConsole(m, errors, driverNotices));
     await page.route('**/lunar-proof', route => route.fulfill({contentType: 'text/html', body: '<html><head><link rel="stylesheet" href="/assets/tokens.css"><link rel="stylesheet" href="/src/style.css"></head><body><div id="fixture" style="position:fixed;inset:0;width:100vw;height:100vh;background:var(--pd-field)"></div></body></html>'}));
     await page.goto(`${server.resolvedUrls.local[0]}lunar-proof`);
     await page.evaluate(async () => {
@@ -91,11 +92,12 @@ test('real WebGL lunar mounts survive crank, reversal, date bounds, modes and na
     for (let i = 0; i < 12; i++) await set({mode: i % 2 ? 'mechanical' : 'observatory', moons: i % 3 !== 0, pluto: true, selected: 'saturn'});
     await set({mode: 'mechanical', moons: true}); const stable = await diag();
     assert.equal(stable.geometries, warm.geometries); assert.equal(stable.textures, warm.textures); save('gpu-stability', {warm: {geometries: warm.geometries, textures: warm.textures}, stable: {geometries: stable.geometries, textures: stable.textures}});
+    save('browser-diagnostics', {errors, driverNotices});
     assert.deepEqual(errors, []); await page.evaluate(() => lunarProof.scene.dispose());
     assert.equal(await page.locator('#fixture canvas').count(), 0);
     const rows = readFileSync(`${folder}/batches.jsonl`, 'utf8').trim().split('\n').map(JSON.parse);
     const moons = new Set(rows.find(r => r.kind === 'initial').moonOutputs.map(m => m.id)); assert.equal(moons.size, 10);
     const sources = ['src/lunar-layout.js', 'src/lunar-drive.js', 'src/lunar-mechanism.js', 'src/satellite-scene.js', 'src/scene.js', 'src/scene-assets.js', 'src/mechanism.js'];
-    writeFileSync(`${folder}/summary.json`, JSON.stringify({passed: true, batchCount: rows.length, moonCount: moons.size, inspectionCount: inspections.length, backend: 'real Chromium WebGL2 / SwiftShader', errors, sources}, null, 2));
-  } finally {await browser?.close(); await server.close();}
+    writeFileSync(`${folder}/summary.json`, JSON.stringify({passed: true, batchCount: rows.length, moonCount: moons.size, inspectionCount: inspections.length, backend: 'real Chromium WebGL2', errors, driverNotices, sources}, null, 2));
+  } finally {await harness.close();}
 });
