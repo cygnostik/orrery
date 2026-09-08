@@ -1,4 +1,10 @@
 import {test,expect} from '@playwright/test';
+test('time flow starts at one day per second in the control and instrument state',async({page})=>{
+ await page.goto('/');
+ await expect(page.locator('#speed')).toHaveValue('1');
+ await expect.poll(()=>page.evaluate(()=>window.__orrery?.getState().speed)).toBe(1);
+ await expect(page.locator('#play-state')).toHaveText('PAUSED');
+});
 test('reference readouts use the scientifically correct semi-major axis label and suppress rounded negative zero',async({page})=>{
  await page.goto('/');await expect(page.getByText('SEMI-MAJOR AXIS',{exact:true})).toBeVisible();await expect(page.locator('#body-inclination')).toHaveText('0');
 });

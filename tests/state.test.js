@@ -20,6 +20,13 @@ test('museum defaults enable the first moon set and nebula-glass finish without 
  const s=api.createState(new Date('2026-09-05T12:00:00Z'));
  assert.equal(s.moons,true);assert.equal(s.baseStyle,'nebula');assert.equal(s.playing,false);
 });
+test('default playback advances one simulated day per real second',()=>{
+ const s=api.createState(new Date('2026-09-05T12:00:00Z'));
+ assert.equal(s.speed,1);
+ s.playing=true;
+ for(let frame=0;frame<10;frame++)api.advance(s,0.1);
+ assert.equal(s.date.toISOString(),'2026-09-06T12:00:00.000Z');
+});
 test('planet labels start off without hiding the planets or moon companions',()=>{
  const s=api.createState(new Date('2026-09-05T12:00:00Z'));
  assert.equal(s.labels,false);assert.equal(s.moons,true);assert.equal(s.selected,'earth');
