@@ -13,7 +13,8 @@ async function collect(directory, prefix = '') {
   return results.flat().filter(name => !['sw.js', 'pwa-release.json'].includes(name) && /\.(html|js|mjs|css|woff2?|ttf|otf|png|jpe?g|webp|avif|svg|ico|webmanifest|json|txt|xml|wasm)$/i.test(name)).sort();
 }
 
-export async function buildPwa({outDir = 'dist', version = '0.5.0-beta.1', releaseId = `${Date.now()}-${randomUUID()}`} = {}) {
+export async function buildPwa({outDir = 'dist', version, releaseId = `${Date.now()}-${randomUUID()}`} = {}) {
+  if (version === undefined) version = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')).version;
   for (const [name, value] of Object.entries({version, releaseId})) {
     if (typeof value !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._+-]{0,159}$/.test(value)) throw new Error(`Invalid ${name}`);
   }

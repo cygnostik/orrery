@@ -16,6 +16,9 @@ import * as THREE from 'three';
 import {createInstrument, BODY_RADII, BODY_HEIGHT} from '../src/scene-assets.js';
 import {SATELLITE_DISPLAY} from '../src/satellite-scene.js';
 
+const {version} = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+const edition = `v${version.replace('-beta.', ' Beta ')}`;
+
 const SOCIAL_LAYOUTS = {
   landscape:{width:1200,height:630,x:16,y:-120,imageWidth:1248,imageHeight:780},
   square:{width:1080,height:1080,x:-180,y:65,imageWidth:1411.2,imageHeight:882},
@@ -262,7 +265,7 @@ async function main() {
     `;
     const social = async square => {
       await compose.setViewportSize({width:square?1080:1200,height:square?1080:630});
-      await compose.setContent(`<style>${styles}</style><main class="card ${square?'square':''}"><img class="machine" src="${machine}" alt="Actual Orrery mechanical renderer"><div class="copy"><p class="eyebrow">A STUDY IN CELESTIAL MOTION</p><h1>Orrery</h1><p class="deck">The solar system.<br ${square?'hidden':''}> Within reach.</p><p class="edition">v0.5 Beta</p></div>${square?'<p class="caption">Time, by hand.<br>Wonder, by design.</p>':''}<footer class="footer"><b>ProDyn.ai</b><span>orrery.prodyn.ai</span></footer></main>`);
+      await compose.setContent(`<style>${styles}</style><main class="card ${square?'square':''}"><img class="machine" src="${machine}" alt="Actual Orrery mechanical renderer"><div class="copy"><p class="eyebrow">A STUDY IN CELESTIAL MOTION</p><h1>Orrery</h1><p class="deck">The solar system.<br ${square?'hidden':''}> Within reach.</p><p class="edition">${edition}</p></div>${square?'<p class="caption">Time, by hand.<br>Wonder, by design.</p>':''}<footer class="footer"><b>ProDyn.ai</b><span>orrery.prodyn.ai</span></footer></main>`);
       await compose.evaluate(async()=>{await document.fonts.ready;await Promise.all([...document.images].map(image=>image.decode()));});
       const cdp=await compose.context().newCDPSession(compose);
       await cdp.send('DOM.enable');

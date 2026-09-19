@@ -9,7 +9,9 @@ Turn a hand crank and watch time travel through a silver-and-black clockwork sol
 ![Orrery's clockwork solar system, reflective glass base and planetary inspector](docs/media/hero.png)
 
 ## Status
-**v0.5 Beta** — a static web application with installable PWA support, offline application assets, and optional updates. The entire instrument runs on the visitor's device. No backend, database, account or server-side GPU is required. Native executables and screensavers are not included.
+**v0.5.0-beta.2** — a static web application with installable PWA support, offline application assets, and optional updates. The entire instrument runs on the visitor's device. No backend, database, account or server-side GPU is required. Native executables and screensavers are not included.
+
+This release adds blue-opal inlays inside the existing pivot openings and a matching crank end-cap. The original housings, arms, shafts, gear spacing and motion are unchanged.
 
 ## Run locally
 Prerequisite: a Node version supported by the pinned Vite release (Node ^20.19 or >=22.12).

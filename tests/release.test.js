@@ -3,6 +3,20 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const html=()=>readFileSync(new URL('../index.html',import.meta.url),'utf8');
 
+test('release metadata and visible edition agree with the package version',()=>{
+ const {version}=JSON.parse(readFileSync(new URL('../package.json',import.meta.url),'utf8'));
+ const lock=JSON.parse(readFileSync(new URL('../package-lock.json',import.meta.url),'utf8'));
+ const document=html();
+ const metadata=JSON.parse(document.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]);
+ assert.equal(lock.version,version);
+ assert.equal(lock.packages[''].version,version);
+ assert.equal(metadata.softwareVersion,version);
+ const edition=`Orrery v${version.replace('-beta.', ' Beta ')}`;
+ assert.ok(document.includes(`${edition} | MIT License`));
+ assert.ok(document.includes(`${edition} · Made by`));
+ for(const file of ['README.md','docs/media/README.md'])assert.ok(readFileSync(new URL('../'+file,import.meta.url),'utf8').includes(`v${version}`),file);
+});
+
 test('public metadata identifies the live instrument and a full-size machine social card',()=>{
  const document=html();
  assert.match(document,/<link rel="canonical" href="https:\/\/orrery\.prodyn\.ai\/">/);

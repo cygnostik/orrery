@@ -50,7 +50,7 @@ Programmatic interface:
 import {buildPwa} from './scripts/build-pwa.mjs';
 const release = await buildPwa({
   outDir: 'dist',
-  version: '0.5.0-beta.1',
+  version: '0.5.0-beta.2', // Optional; defaults to package.json.
   // Omit releaseId in production: a unique ID is generated automatically.
 });
 // release: {version, releaseId, cacheName, assets, sizes}

@@ -102,7 +102,8 @@ export function createInstrument() {
     dummy.position.set(...boltPositions[i]); dummy.rotation.set(0, i * 0.9, 0); dummy.scale.set(1, 1, 1); dummy.updateMatrix(); screws.setMatrixAt(i, dummy.matrix);
     dummy.position.y += 0.025; dummy.updateMatrix(); slots.setMatrixAt(i, dummy.matrix);
   }
-  screws.name = 'inlaid-fasteners'; group.add(screws, slots, createOpalInlays(opalPositions));
+  const pillarInlays = createOpalInlays(opalPositions);
+  screws.name = 'inlaid-fasteners'; group.add(screws, slots, pillarInlays);
   // Graduated radial piercing on the outer structural bridge, batched in one draw.
   const fret = new THREE.InstancedMesh(new THREE.BoxGeometry(0.11, 0.012, 0.025), platinum, 120);
   for (let i = 0; i < 120; i++) {
@@ -120,7 +121,10 @@ export function createInstrument() {
   }
   group.remove(ornament);
 
-  const mechanism = createMechanism(); group.add(mechanism.group);
+  const mechanism = createMechanism({
+    stoneMaterial: pillarInlays.getObjectByName('black-opal-cabochons').material,
+    bezelMaterial: pillarInlays.getObjectByName('black-opal-bezels').material,
+  }); group.add(mechanism.group);
   const solarSeat = BODY_HEIGHT - BODY_RADII.sun * 0.65;
   disk(0.115, solarSeat + 1.95, (solarSeat - 1.95) / 2, platinum, 'solar-axle');
   const arms = new Map();

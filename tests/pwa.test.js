@@ -14,7 +14,7 @@ test('each build gets a unique explicit release ID even at the same version', as
   await writeFile(path.join(outDir, 'index.html'), '<!doctype html><title>Orrery</title>');
   const first = await buildPwa({outDir});
   const second = await buildPwa({outDir});
-  assert.equal(first.version, '0.5.0-beta.1');
+  assert.equal(first.version, JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')).version);
   assert.notEqual(first.releaseId, second.releaseId);
   assert.notEqual(first.cacheName, second.cacheName);
   assert.deepEqual(second.assets, ['/index.html']);

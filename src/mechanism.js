@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {createDriveTrain, CRANK_LAYOUT, DRIVE_EPOCH, INPUT_DAYS_PER_TURN} from './drive-train.js';
 import {createBlackDlcMaterial} from './exhibit-materials.js';
+import {createPivotInlays} from './pivot-inlays.js';
 
 const TAU = Math.PI * 2;
 export function crankDeltaTurns(previousAngle, nextAngle) {
@@ -70,7 +71,7 @@ function tubeGeometry(inner, outer, height) {
   return new THREE.LatheGeometry(points, 40);
 }
 
-export function createMechanism() {
+export function createMechanism({stoneMaterial, bezelMaterial} = {}) {
   const drive = createDriveTrain(), {nodes, edges} = drive.topology;
   const group = new THREE.Group(); group.name = 'exhibition-clockwork';
   const platinum = new THREE.MeshStandardMaterial({name: 'polished-platinum', color: 0xc3ced7, metalness: 0.96, roughness: 0.23});
@@ -198,11 +199,18 @@ export function createMechanism() {
   const stem = cylinder(0.075, 0.9, lever); stem.position.y = 0.42; stem.userData.control = 'auto';
   const tip = add(new THREE.CapsuleGeometry(0.19, 0.24, 4, 12), gripMaterial, lever, 'auto-lever-grip'); tip.position.y = 0.94; tip.userData.control = 'auto';
   const switchHit = add(new THREE.BoxGeometry(1.25, 1.6, 1.5), new THREE.MeshBasicMaterial({visible: false}), switchMount, 'switch-hit-volume'); switchHit.position.y = 0.55; switchHit.userData.control = 'auto';
+  // Bare mechanisms need no decorative resources; the full instrument shares
+  // its existing pillar finishes. Geometry and motion remain unchanged.
+  const inlays = stoneMaterial && bezelMaterial ? createPivotInlays({
+    parent: group, pivots: nodes.filter(node => node.id.endsWith('-wheel')),
+    crank, stoneMaterial, bezelMaterial,
+  }) : null;
   let state, playing = false;
   function update(date, isPlaying = false) {
     state = drive.atDate(date); playing = Boolean(isPlaying);
     for (const [id, rotor] of moving) rotor.rotation.y = state.nodeAngles[id];
     lever.rotation.x = playing ? -0.48 : 0.48;
+    inlays?.update();
     return state.outputs;
   }
   function select(id, color) {

@@ -57,7 +57,8 @@ after(async () => {
 async function release(releaseId) {
   assert.ok(existsSync(builderPath), 'Production PWA builder must exist');
   ({buildPwa} = await import(builderPath));
-  return buildPwa({outDir:output, version:'0.5.0-beta.1', releaseId});
+  const {version} = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+  return buildPwa({outDir:output, version, releaseId});
 }
 
 async function contextFor(t) {
