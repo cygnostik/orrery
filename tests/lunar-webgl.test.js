@@ -7,24 +7,32 @@ import {createBrowserHarness, recordRendererConsole} from './browser-harness.js'
 
 const folder = 'evidence/lunar-mechanism';
 test('real WebGL lunar mounts survive crank, reversal, date bounds, modes and narrow family inspection', {timeout: 180000}, async t => {
-  const harness = createBrowserHarness(t);
+  const harness = createBrowserHarness(t, {diagnostics:true});
+  harness.phase('dependencies');
   const {chromium} = await import('@playwright/test');
   const {createServer} = await import('vite');
+  harness.phase('Vite startup');
   const server = await harness.vite(createServer, {server: {host: '127.0.0.1', port: 0}, logLevel: 'error'});
   mkdirSync(folder, {recursive: true}); writeFileSync(`${folder}/batches.jsonl`, '');
   let browser;
   try {
+    harness.phase('Chromium launch/connect/new page');
     browser = await harness.launch(chromium, {executablePath: [process.env.ORRERY_BROWSER, '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean).find(existsSync), args: ['--enable-unsafe-swiftshader']});
     const page = harness.page(await harness.run('browser.newPage', () => browser.newPage({viewport: {width: 1440, height: 1000}}))), errors = [], driverNotices = [];
     page.on('pageerror', e => errors.push(e.message)); page.on('console', m => recordRendererConsole(m, errors, driverNotices));
+    harness.phase('fixture route/navigation');
     await page.route('**/lunar-proof', route => route.fulfill({contentType: 'text/html', body: '<html><head><link rel="stylesheet" href="/assets/tokens.css"><link rel="stylesheet" href="/src/style.css"></head><body><div id="fixture" style="position:fixed;inset:0;width:100vw;height:100vh;background:var(--pd-field)"></div></body></html>'}));
     await page.goto(`${server.resolvedUrls.local[0]}lunar-proof`);
+    harness.phase('scene import/construction/first render');
     await page.evaluate(async () => {
       const {createOrrery} = await import('/src/scene.js');
       const state = {date: new Date('2000-01-01T12:00:00Z'), mode: 'mechanical', pluto: true, moons: true, playing: false, labels: false};
       const scene = await createOrrery({container: document.querySelector('#fixture'), onManualTurn: delta => {state.date = new Date(+state.date + delta * 30 * 86400000); scene.update(state); scene.render();}});
       scene.update(state); scene.render(); window.lunarProof = {scene, state};
     });
+    harness.phase('GL renderer readback');
+    await harness.captureRenderer(page, '#fixture canvas');
+    harness.phase('initial diagnostics/date bounds');
     const diag = () => page.evaluate(() => lunarProof.scene.diagnostics());
     const set = next => page.evaluate(next => {Object.assign(lunarProof.state, next); lunarProof.state.date = new Date(lunarProof.state.date); lunarProof.scene.update(lunarProof.state); lunarProof.scene.render();}, next);
     const save = (kind, d) => appendFileSync(`${folder}/batches.jsonl`, `${JSON.stringify({kind, ...d})}\n`);
@@ -54,9 +62,14 @@ test('real WebGL lunar mounts survive crank, reversal, date bounds, modes and na
       for (const moon of after.moonOutputs) assert.notDeepEqual(moon.position, before.moonOutputs.find(m => m.id === moon.id).position);
       save(direction > 0 ? 'crank-forward' : 'crank-reverse', after);
     }
-    await crank(1); await crank(-1);
+    harness.phase('crank forward');
+    await crank(1);
+    harness.phase('crank reverse');
+    await crank(-1);
+    harness.phase('home reset/screenshot');
     await set({date: '2000-01-01T12:00:00Z'});
     await page.screenshot({path: `${folder}/mechanical-home.png`});
+    harness.phase('conjunction calculation/focus/screenshots');
     const conjunction = await page.evaluate(async () => {
       const {createDriveTrain} = await import('/src/drive-train.js'), drive = createDriveTrain();
       const e = new Date('2000-01-01T12:00:00Z'), outputs = drive.atDate(e).outputs;
@@ -69,6 +82,7 @@ test('real WebGL lunar mounts survive crank, reversal, date bounds, modes and na
     save('conjunction', {date: conjunction, outputs: (await diag()).moonOutputs});
     const inspections = [];
     for (const viewport of [{width: 390, height: 844}, {width: 700, height: 850}]) {
+      harness.phase(`narrow moon inspection ${viewport.width}`);
       await page.setViewportSize(viewport); await page.evaluate(() => lunarProof.scene.resize());
       for (const moon of MOONS) {
         await set({selected: moon.parentId});
@@ -79,19 +93,23 @@ test('real WebGL lunar mounts survive crank, reversal, date bounds, modes and na
       await page.screenshot({path: `${folder}/saturn-${viewport.width}.png`});
     }
     assert.equal(inspections.length, 20); save('inspections', {inspections});
+    harness.phase('visibility/observatory modes');
     await set({moons: false}); const hidden = await diag(); assert.equal(hidden.moonCount, 0); assert.ok(hidden.moonOutputs.every(m => !m.supportVisible));
     assert.equal(await page.evaluate(() => lunarProof.scene.focusMoon('moon')), false);
     await set({moons: true, pluto: false}); assert.equal((await diag()).moonCount, 9);
     await set({pluto: true, mode: 'observatory', scale: 'display'}); const obs = await diag(); assert.ok(obs.moonOutputs.every(m => m.mountParent === 'illustrated-moon-companions' && !m.supportVisible)); save('observatory', obs);
+    harness.phase('family labels/science scales warmup');
     // Warm every family label and both science scales before stability checking.
     await page.setViewportSize({width: 1440, height: 1000});
     for (const id of new Set(MOONS.map(m => m.parentId))) await set({mode: 'mechanical', selected: id, labels: true});
     for (const scale of ['display', 'distance']) await set({mode: 'observatory', scale});
     await set({mode: 'mechanical', scale: 'display', labels: false}); await page.evaluate(() => {lunarProof.scene.resetView(); lunarProof.scene.render();});
+    harness.phase('mode cycling/GPU stability');
     const warm = await diag();
     for (let i = 0; i < 12; i++) await set({mode: i % 2 ? 'mechanical' : 'observatory', moons: i % 3 !== 0, pluto: true, selected: 'saturn'});
     await set({mode: 'mechanical', moons: true}); const stable = await diag();
     assert.equal(stable.geometries, warm.geometries); assert.equal(stable.textures, warm.textures); save('gpu-stability', {warm: {geometries: warm.geometries, textures: warm.textures}, stable: {geometries: stable.geometries, textures: stable.textures}});
+    harness.phase('diagnostic assertions/dispose/evidence');
     save('browser-diagnostics', {errors, driverNotices});
     assert.deepEqual(errors, []); await page.evaluate(() => lunarProof.scene.dispose());
     assert.equal(await page.locator('#fixture canvas').count(), 0);

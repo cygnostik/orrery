@@ -48,7 +48,7 @@ Each export run also verifies actual WebGL2 rendering, nonzero draw calls and tr
 
 ## Credits and image rights
 
-**Orrery v0.5.0-beta.2 by ProDyn.ai**
+**Orrery v0.6.0-beta.1 by ProDyn.ai**
 
 Made by **Promethean Dynamic Nerdiness**. Powered by **[TrustEdge.gt](https://TrustEdge.gt/)** Engineered Infrastructure.
 

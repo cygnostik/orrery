@@ -5,6 +5,7 @@
 - `public/assets/portraits/{mercury,venus,earth,mars,jupiter,saturn,uranus,neptune}.png` are derived from the existing Solar System Scope maps, under the same CC BY 4.0 attribution. `scripts/generate-portraits.mjs` applies a static spherical projection and authored lighting. These are reference specimens, not date-specific views. Pluto's portrait is original illustrated SVG; no new external asset or private reference image is redistributed.
 - Footer CSS and the selected-body signal are ProDyn design adaptations included in the MIT-licensed project source. Footer playback, visibility and reduced-motion behavior is managed by `src/footer-motion.js`; scoped layout rules are in `src/museum.css`.
 - Original procedural geometry, materials and moon-surface code are covered by the project MIT License.
+- The displayed Sun uses original, deterministic spherical granulation baked once into its existing 512×256 texture. It is an authored illustration, not a photograph or live solar observation. `src/sun-surface.js` adds no downloaded imagery or per-frame surface calculation. The bundled Solar System Scope Sun map retains its separate attribution even though it is not used on this globe.
 
 ## Third-party and brand assets
 - ProDyn CSS included here is MIT licensed as part of Orrery. This is not a license to other design-system material. The ProDyn logo is retained for the project's attribution; names and marks do not confer endorsement or trademark rights.

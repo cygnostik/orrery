@@ -123,12 +123,14 @@ test('Node test timeout closes owned listeners and exits nonzero without an oute
     import {createServer} from 'node:http';
     import {createBrowserHarness} from ${JSON.stringify(new URL('./browser-harness.js', import.meta.url).href)};
     test('intentional timeout', {timeout:100}, async t => {
-      const harness = createBrowserHarness(t);
+      const harness = createBrowserHarness(t, {diagnostics:true});
+      harness.phase('listener startup');
       await harness.own('server', async () => {
         const server = createServer();
         await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
         return server;
       }, server => new Promise(resolve => server.close(() => {console.log('SERVER_CLOSED'); resolve();})));
+      harness.phase('blocked operation');
       try {await harness.run('never resolves', () => new Promise(() => {}));}
       finally {await harness.close();}
     });
@@ -138,4 +140,19 @@ test('Node test timeout closes owned listeners and exits nonzero without an oute
   assert.equal(result.status, 1, result.stdout);
   assert.match(result.stdout, /SERVER_CLOSED/);
   assert.match(result.stdout, /intentional timeout/);
+  const events = result.stdout.split('\n').filter(line => line.includes('[browser-timing] '))
+    .map(line => JSON.parse(line.split('[browser-timing] ')[1]));
+  const aborted = events.find(event => event.event === 'abort');
+  assert.equal(aborted.phase, 'blocked operation');
+  assert.equal(aborted.active.length, 1);
+  assert.equal(aborted.active[0].label, 'never resolves');
+  assert.ok(Number.isFinite(Date.parse(aborted.active[0].start)));
+  assert.ok(Number.isFinite(Date.parse(aborted.active[0].end)));
+  assert.ok(aborted.active[0].elapsedMs >= 0);
+  const startup = events.find(event => event.event === 'phase-end' && event.label === 'listener startup');
+  assert.ok(startup.elapsedMs >= 0);
+  assert.ok(Date.parse(startup.end) >= Date.parse(startup.start));
+  assert.equal(events.filter(event => event.event === 'phase-start' && event.label === 'cleanup').length, 1);
+  assert.equal(events.filter(event => event.event === 'phase-end' && event.label === 'cleanup').length, 1);
+  assert.equal(result.stdout.split('SERVER_CLOSED').length - 1, 1, 'diagnostics must not duplicate teardown');
 });

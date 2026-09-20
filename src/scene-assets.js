@@ -4,6 +4,7 @@ import {createMechanism} from './mechanism.js';
 import {Reflector} from 'three/addons/objects/Reflector.js';
 import {createBlackPvdMaterial, createOpalInlays} from './exhibit-materials.js';
 import {createSaturnRingTexture, SATURN_RING_EXTENT} from './saturn-rings.js';
+import {createSunSurfaceData} from './sun-surface.js';
 
 // Exhibition dimensions, never astronomical measurements. AU geometry is
 // transformed as a whole in observatory mode, not normalized point-by-point.
@@ -177,13 +178,14 @@ export function createInstrument() {
 }
 
 export function createSurfaceData(id, width = 512, height = 256) {
+  if (id === 'sun') return createSunSurfaceData(width, height);
   const data = new Uint8Array(width * height * 4);
   const palettes = {
     mercury: [[71, 68, 64], [156, 148, 135]], venus: [[148, 127, 87], [228, 213, 173]],
     earth: [[15, 40, 62], [45, 87, 113]], mars: [[90, 51, 35], [185, 124, 86]],
     jupiter: [[116, 89, 71], [218, 205, 176]], saturn: [[150, 136, 108], [223, 213, 184]],
     uranus: [[99, 150, 155], [174, 205, 204]], neptune: [[36, 64, 111], [82, 121, 167]],
-    pluto: [[94, 82, 70], [190, 178, 153]], sun: [[221, 163, 83], [255, 237, 189]],
+    pluto: [[94, 82, 70], [190, 178, 153]],
   };
   const palette = palettes[id];
   if (!palette) throw new RangeError(`Unknown surface: ${id}`);
@@ -209,7 +211,6 @@ export function createSurfaceData(id, width = 512, height = 256) {
         amount = 0.53 + 0.22 * Math.sin(latitudeWarp * 45) + 0.1 * Math.sin(latitudeWarp * 89) + n * 0.32;
         if (id === 'uranus') amount = 0.62 + 0.1 * Math.sin(latitudeWarp * 23) + n * 0.2;
       }
-      if (id === 'sun') amount = 0.68 + grain * 0.4 + n * 0.2;
       let color = mix(palette[0], palette[1], THREE.MathUtils.clamp(amount, 0, 1));
       if (id === 'jupiter') {
         const storm = ((longitude - 4.3) / 0.22) ** 2 + ((latitude + 0.35) / 0.105) ** 2;

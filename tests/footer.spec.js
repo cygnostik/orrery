@@ -6,7 +6,7 @@ for(const width of [1440,700,390])test(`footer credits are left-aligned, linked 
  await footer.scrollIntoViewIfNeeded();
  await expect(footer).not.toContainText(/design preview/i);
  await expect(credits.locator(':scope > span')).toHaveText([
-  'Orrery v0.5.0 Beta 2 | MIT License',
+  'Orrery v0.6.0 Beta 1 | MIT License',
   'Made by Promethean Dynamic Nerdiness',
   'Powered by TrustEdge.gt Engineered Infrastructure',
  ]);

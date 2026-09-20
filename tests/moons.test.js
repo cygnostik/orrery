@@ -37,7 +37,7 @@ test('the shared supported interval includes its endpoints but no neighboring mi
       assert.ok(Object.values(point).every(Number.isFinite));
     }
     for (const date of [new Date(Date.parse(SCIENCE.range.start) - 1),
-      new Date(Date.parse(SCIENCE.range.end) + 1), '2050-12-31', '1799-01-01']) {
+      new Date(Date.parse(SCIENCE.range.end) + 1), '2250-12-31', '1799-01-01']) {
       assert.throws(() => moonPositionAt(id, date), RangeError);
     }
   }

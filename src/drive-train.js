@@ -1,4 +1,4 @@
-import {BODIES, positionAt, SCIENCE} from './science.js';
+import {BODIES, SCIENCE} from './science.js';
 
 export const DRIVE_EPOCH = Date.parse('2000-01-01T12:00:00Z');
 export const INPUT_DAYS_PER_TURN = 30;
@@ -10,6 +10,21 @@ export const CRANK_LAYOUT = Object.freeze({
   miterRadius: 0.30, miterFace: 0.09, shaftRadius: 0.095,
 });
 const TAU = Math.PI * 2;
+// Permanent arm keying: pre-refit Table 1 / 8.10.2 positionAt at J2000,
+// atan2(y,x) in radians. Captured in fixtures/science/mechanical-j2000.json.
+// An Observatory ephemeris update must not re-index this existing instrument.
+const MOUNTING_ANGLES = Object.freeze({
+  mercury: -1.8538245298241223,
+  venus: -3.096091688751235,
+  earth: 1.7519646486652485,
+  mars: -0.009628935682899594,
+  jupiter: 0.6349586014471034,
+  saturn: 0.7954964631436026,
+  uranus: -0.7609802844141714,
+  neptune: -0.9788442274730486,
+  pluto: -1.9105189948001848,
+});
+
 // Fixed integer teeth, searched once against cumulative period, never refitted
 // at runtime. Each row is a reverted compound reduction A:B — C:D.
 const TEETH = [[89,100,41,107], [59,100,71,107], [39,47,43,58],
@@ -55,11 +70,9 @@ export function createDriveTrain() {
     const outputGear = link(pinion, gear(`${body.id}-output`, d, pinion.module, 0, y + 0.20, 0, innerRadius), 'mesh');
     const sleeve = link(outputGear, node({id: `${body.id}-sleeve`, kind: 'sleeve', x: 0, y: 4.5 - i * 0.20, z: 0,
       bottom: outputGear.y, innerRadius, outerRadius, bodyId: body.id}), 'rigid');
-    // An adjustable keyed arm is indexed ONCE at J2000. No ephemeris values
-    // enter the transmission or any later mechanical scene update.
-    const p = positionAt(body.id, new Date(DRIVE_EPOCH));
+    // Fixed historical J2000 keying; no live ephemeris enters the train.
     outputs.push({id: body.id, node: sleeve.id, referencePeriodDays: body.periodDays,
-      mountingAngle: Math.atan2(p.y, p.x), armHeight: sleeve.y, innerRadius, outerRadius});
+      mountingAngle: MOUNTING_ANGLES[body.id], armHeight: sleeve.y, innerRadius, outerRadius});
     previous = sleeve;
   });
   const topology = {root: root.id, nodes, edges};

@@ -11,7 +11,8 @@
       "degrees"
     ],
     "rates": "per Julian century",
-    "crosscheckUrl": "https://ssd.jpl.nasa.gov/planets/approx_pos.html"
+    "crosscheckUrl": "https://ssd.jpl.nasa.gov/planets/approx_pos.html",
+    "role": "Historical short-range rows retained for fixed descriptors and original mechanical keying; NOT the active ephemeris."
   },
   "physical": {
     "sourceUrl": "https://ssd.jpl.nasa.gov/planets/phys_par.html",
@@ -62,5 +63,84 @@
         }
       }
     }
+  },
+  "longRangeElements": {
+    "sourceUrl": "https://ssd.jpl.nasa.gov/ftp/eph/planets/ioms/ExplSupplChap8.pdf",
+    "table": "8.10.3 and 8.10.4, printed page 28",
+    "crosscheckUrl": "https://ssd.jpl.nasa.gov/planets/approx_pos.html",
+    "crosscheckTables": "2a/2b (eight planets; HTML omits Pluto)",
+    "baseColumns": "a/e/I/L/longitude of perihelion/longitude of ascending node",
+    "baseUnits": [
+      "AU",
+      "dimensionless",
+      "degrees",
+      "degrees",
+      "degrees",
+      "degrees"
+    ],
+    "rates": "per Julian century",
+    "correctionColumns": "b/c/s/f",
+    "correctionUnits": [
+      "degrees/century^2",
+      "degrees",
+      "degrees",
+      "degrees/century"
+    ],
+    "plutoBlankTerms": "c, s, f are blank in 8.10.4 and contribute zero; b = -0.01262724",
+    "publishedInterval": "3000 BC–3000 AD",
+    "applicationInterval": "1800-01-01T00:00:00Z through 2250-01-01T00:00:00Z inclusive",
+    "sourceId": 18,
+    "crosscheckSourceId": 19
+  },
+  "extendedHorizons": {
+    "coordinates": "Sun-centered geometric J2000 ecliptic positions in AU",
+    "time": "JD TDB; date strings supply equal numerical UTC epochs for the simplified model, not a UTC-to-TDB conversion",
+    "queries": {
+      "earth": {
+        "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%273%27&CENTER=%27500%4010%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&TLIST=%272488069.5%2C2524593.5%2C2542854.5%2C2542855.5%27&TIME_TYPE=%27TDB%27&OUT_UNITS=%27AU-D%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_CORR=%27NONE%27&VEC_TABLE=%272%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27YES%27",
+        "params": {
+          "format": "json",
+          "COMMAND": "'3'",
+          "CENTER": "'500@10'",
+          "MAKE_EPHEM": "'YES'",
+          "EPHEM_TYPE": "'VECTORS'",
+          "TLIST": "'2488069.5,2524593.5,2542854.5,2542855.5'",
+          "TIME_TYPE": "'TDB'",
+          "OUT_UNITS": "'AU-D'",
+          "REF_PLANE": "'ECLIPTIC'",
+          "REF_SYSTEM": "'ICRF'",
+          "VEC_CORR": "'NONE'",
+          "VEC_TABLE": "'2'",
+          "CSV_FORMAT": "'YES'",
+          "OBJ_DATA": "'YES'"
+        }
+      },
+      "pluto": {
+        "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%279%27&CENTER=%27500%4010%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&TLIST=%272488069.5%2C2524593.5%2C2542854.5%2C2542855.5%27&TIME_TYPE=%27TDB%27&OUT_UNITS=%27AU-D%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_CORR=%27NONE%27&VEC_TABLE=%272%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27YES%27",
+        "params": {
+          "format": "json",
+          "COMMAND": "'9'",
+          "CENTER": "'500@10'",
+          "MAKE_EPHEM": "'YES'",
+          "EPHEM_TYPE": "'VECTORS'",
+          "TLIST": "'2488069.5,2524593.5,2542854.5,2542855.5'",
+          "TIME_TYPE": "'TDB'",
+          "OUT_UNITS": "'AU-D'",
+          "REF_PLANE": "'ECLIPTIC'",
+          "REF_SYSTEM": "'ICRF'",
+          "VEC_CORR": "'NONE'",
+          "VEC_TABLE": "'2'",
+          "CSV_FORMAT": "'YES'",
+          "OBJ_DATA": "'YES'"
+        }
+      }
+    }
+  },
+  "mechanicalJ2000": {
+    "origin": "Captured from pre-extension positionAt at 2000-01-01T12:00:00Z, Table 1 / original 8.10.2; not an independent ephemeris fixture.",
+    "longitudeDeg": "wrapped atan2(y,x), degrees",
+    "mountingAngle": "original atan2(y,x), signed radians; not recomputed from rounded longitude",
+    "descriptors": "historical Table 1 / 8.10.2 a/e/I retained to preserve renderer geometry and inspector values",
+    "rates": "Existing crank-layout.test.js BEFORE fixtures retain the original nine planet and ten moon rates and sampled outputs unchanged."
   }
 }

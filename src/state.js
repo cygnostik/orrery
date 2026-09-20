@@ -23,5 +23,5 @@ export function turnCrank(state,turns){
  return true;
 }
 export function createState(date = new Date()) {
-  return {date:new Date(date), mode:'mechanical', pluto:false, moons:true, baseStyle:'nebula', selected:'earth', scale:'display', labels:false, playing:false, speed:1};
+  return {date:new Date(date), mode:'mechanical', pluto:false, moons:true, lightsOut:false, baseStyle:'nebula', selected:'earth', scale:'display', labels:false, playing:false, speed:1};
 }

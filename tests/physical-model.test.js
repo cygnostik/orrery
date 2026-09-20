@@ -10,19 +10,24 @@ import {MECHANICAL_RADII} from '../src/lunar-layout.js';
 const near = (a, b, message) => assert.ok(Math.abs(a - b) < 1e-8, message || `${a} != ${b}`);
 
 test('real WebGL outputs are inherited from the crank; Observatory alone follows JPL', {timeout: 120000}, async t => {
-  const harness = createBrowserHarness(t);
+  const harness = createBrowserHarness(t, {diagnostics:true});
+  harness.phase('dependencies');
   const {chromium} = await import('@playwright/test');
   const {createServer} = await import('vite');
+  harness.phase('Vite startup');
   const server = await harness.vite(createServer, {server: {host: '127.0.0.1', port: 0}, logLevel: 'error'});
   const path = 'evidence/connected-drive'; mkdirSync(path, {recursive: true});
   let browser;
   try {
+    harness.phase('Chromium launch/connect/new page');
     browser = await harness.launch(chromium, {executablePath: [process.env.ORRERY_BROWSER, '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean).find(existsSync), args: ['--enable-unsafe-swiftshader']});
     const page = harness.page(await harness.run('browser.newPage', () => browser.newPage({viewport: {width: 1440, height: 1000}}))), errors = [], driverNotices = [];
     page.on('pageerror', e => errors.push(e.message));
     page.on('console', e => recordRendererConsole(e, errors, driverNotices));
+    harness.phase('fixture route/navigation');
     await page.route('**/drive-proof', route => route.fulfill({contentType: 'text/html', body: '<html><head><link rel="stylesheet" href="/assets/tokens.css"><link rel="stylesheet" href="/src/style.css"></head><body><div id="drive-fixture" style="width:100vw;height:100vh;position:fixed;inset:0;background:var(--pd-field)"></div></body></html>'}));
     await page.goto(`${server.resolvedUrls.local[0]}drive-proof`);
+    harness.phase('scene import/construction/first render');
     await page.evaluate(async () => {
       const {createOrrery} = await import('/src/scene.js');
       const state = {date: new Date('2000-01-01T12:00:00Z'), playing: false, mode: 'mechanical', selected: 'earth', moons: true, pluto: true, labels: true};
@@ -30,6 +35,9 @@ test('real WebGL outputs are inherited from the crank; Observatory alone follows
       const scene = await createOrrery({container: document.querySelector('#drive-fixture'), onManualTurn: delta => {turns.push(delta); state.playing = false; state.date = new Date(+state.date + delta * 30 * 86400000); scene.update(state); scene.render();}, onAutoToggle: () => {state.playing = !state.playing; scene.update(state); scene.render();}});
       scene.update(state); scene.render(); window.proof = {scene, state, turns};
     });
+    harness.phase('GL renderer readback');
+    await harness.captureRenderer(page, '#drive-fixture canvas');
+    harness.phase('initial diagnostics/date bounds');
     const diag = () => page.evaluate(() => proof.scene.diagnostics());
     const set = async next => page.evaluate(next => {Object.assign(proof.state, next); proof.state.date = new Date(proof.state.date); proof.scene.update(proof.state); proof.scene.render();}, next);
     const initial = await diag();
@@ -45,6 +53,7 @@ test('real WebGL outputs are inherited from the crank; Observatory alone follows
     const future = await diag();
     assert.ok(future.driveOutputs.some(o => {const jpl = positionAt(o.id, new Date('1800-01-01T00:00:00Z')); return Math.abs(Math.atan2(jpl.y, jpl.x) - Math.atan2(-o.planetPosition[2], o.planetPosition[0])) > 0.01;}), 'mechanical mean angles must NOT be overwritten by scientific ephemeris');
     await set({date: '2000-01-01T12:00:00Z'}); assert.deepEqual((await diag()).driveOutputs, initial.driveOutputs);
+    harness.phase('crank forward');
     const {crankGrip: grip, crankAxle: center} = initial.controlPoints;
     await page.mouse.move(grip.x, grip.y); await page.mouse.down();
     assert.equal((await diag()).draggingCrank, true);
@@ -57,8 +66,10 @@ test('real WebGL outputs are inherited from the crank; Observatory alone follows
       const first = initial.driveOutputs.find(x => x.id === o.id), ratio = dragged.mechanism.outputs.find(x => x.id === o.id).ratio;
       near(o.outputAngle - first.outputAngle, dragged.mechanism.crankTurns * Math.PI * 2 * ratio);
     }
+    harness.phase('idle render batch');
     await page.evaluate(() => {for(let i=0;i<10;i++) proof.scene.render(0.1);});
     assert.deepEqual((await diag()).driveOutputs, dragged.driveOutputs);
+    harness.phase('crank reverse');
     const reverseGrip = dragged.controlPoints.crankGrip, reverseCenter = dragged.controlPoints.crankAxle;
     await page.mouse.move(reverseGrip.x, reverseGrip.y); await page.mouse.down();
     const reverseRadius = Math.hypot(reverseGrip.x - reverseCenter.x, reverseGrip.y - reverseCenter.y), reverseAngle = Math.atan2(reverseGrip.y - reverseCenter.y, reverseGrip.x - reverseCenter.x);
@@ -68,9 +79,11 @@ test('real WebGL outputs are inherited from the crank; Observatory alone follows
     assert.deepEqual(reversed.camera, initial.camera); verify(reversed);
     for (const o of reversed.driveOutputs) assert.ok(o.outputAngle < dragged.driveOutputs.find(x => x.id === o.id).outputAngle, 'reverse crank reverses every transmitted output');
     await set({date: '2000-01-01T12:00:00Z'});
+    harness.phase('mechanical screenshots');
     await page.screenshot({path: `${path}/mechanical.png`});
     await page.evaluate(() => {proof.scene.resetView('top'); proof.scene.render();});
     await page.screenshot({path: `${path}/mechanical-top.png`});
+    harness.phase('observatory ephemeris/visibility');
     await set({mode: 'observatory', date: '2025-03-08T00:00:00Z'});
     const observatory = await diag();
     for (const o of observatory.driveOutputs) {
@@ -82,10 +95,12 @@ test('real WebGL outputs are inherited from the crank; Observatory alone follows
     assert.equal((await diag()).moonCount, MOONS.filter(m => m.parentId !== 'pluto').length);
     await set({pluto: true, date: '2000-01-01T12:00:00Z'});
     for (const id of [...new Set(MOONS.map(m => m.parentId))]) {
+      harness.phase(`family focus/screenshot ${id}`);
       await set({selected: id});
       assert.equal(await page.evaluate(id => {const success = proof.scene.focusBody(id); proof.scene.render(); return success;}, id), true);
       await page.screenshot({path: `${path}/family-${id}.png`});
     }
+    harness.phase('individual moon inspection/screenshots');
     for (const moon of MOONS) {
       assert.equal(await page.evaluate(id => {const success = proof.scene.focusMoon(id); proof.scene.render(); return success;}, moon.id), true);
       assert.ok((await diag()).moonLabels.every(label => !label.visible), 'individual Inspect uses the host badge, not oversized 3D moon labels');
@@ -97,6 +112,7 @@ test('real WebGL outputs are inherited from the crank; Observatory alone follows
       }
     }
     await set({date: '2000-01-01T12:00:00Z'});
+    harness.phase('inspection persistence/labels/mode transitions');
     assert.ok((await diag()).moonLabels.every(label => !label.visible), 'ordinary same-selection updates retain individual inspection');
     await page.evaluate(() => {proof.scene.focusBody('pluto'); proof.scene.render();});
     assert.equal((await diag()).moonLabels.filter(l => l.visible).length, MOONS.filter(m => m.parentId === 'pluto').length);
@@ -115,6 +131,7 @@ test('real WebGL outputs are inherited from the crank; Observatory alone follows
     await set({mode: 'mechanical'});
     const familyFits = [];
     for (const viewport of [{width: 390, height: 844}, {width: 700, height: 850}]) {
+      harness.phase(`narrow family fits/screenshot ${viewport.width}`);
       await page.setViewportSize(viewport);
       await page.evaluate(() => proof.scene.resize());
       for (const id of [...new Set(MOONS.map(m => m.parentId))]) {
@@ -129,6 +146,7 @@ test('real WebGL outputs are inherited from the crank; Observatory alone follows
         if (id === 'saturn') await page.screenshot({path: `${path}/family-saturn-${viewport.width}.png`});
       }
     }
+    harness.phase('visibility assertions/evidence/dispose');
     await set({moons: false});
     assert.equal(await page.evaluate(() => proof.scene.focusMoon('moon')), false);
     await set({moons: true, pluto: false});

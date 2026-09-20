@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import {crankDeltaTurns} from './mechanism.js';
 import {createSatellites} from './satellite-scene.js';
+import {earthQuaternion} from './earth-orientation.js';
 import {MECHANICAL_RADII, FAMILY_ENVELOPES} from './lunar-layout.js';
 import { BODY_HEIGHT, BODY_RADII, DISPLAY_RADII, DISTANCE_FACTOR, createInstrument, createPlanet, mapPosition, replaceSurfaceTexture } from './scene-assets.js';
 
@@ -162,7 +163,7 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
     engravings.rotation.x = -Math.PI / 2; engravings.position.y = -1.909; engravings.name = 'dial-numerals'; instrument.add(engravings);
   }
 
-  let state = {date: new Date('2000-01-01T12:00:00Z'), mode: 'mechanical', selected: 'earth', pluto: false, scale: 'display', labels: false, playing: false, baseStyle: 'nebula', moons: true};
+  let state = {date: new Date('2000-01-01T12:00:00Z'), mode: 'mechanical', selected: 'earth', pluto: false, scale: 'display', labels: false, playing: false, baseStyle: 'nebula', moons: true, lightsOut: false};
   let disposed = false, ready = false, contextLost = false, width = 1, height = 1, frame = 0, orbitKey = '', home = true, lastView = 'home';
   let inspectedMoon = null;
   const scratch = new THREE.Vector3();
@@ -224,7 +225,15 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
     if (!mechanical && activeControl) releasePointer();
     mechanism.select(state.selected, signal); setBaseStyle(state.baseStyle);
     instrument.visible = mechanical; orbitGroup.visible = !mechanical; stars.visible = !mechanical;
-    key.visible = fill.visible = mechanical;
+    key.visible = fill.visible = mechanical && !state.lightsOut;
+    scene.environmentIntensity = state.lightsOut ? 0 : 0.95;
+    nightFill.intensity = state.lightsOut ? 0 : 0.035;
+    sunLight.shadow.bias = state.lightsOut ? 0 : -0.0004;
+    sunLight.shadow.normalBias = state.lightsOut ? 0.001 : 0.009;
+    // r185 PCF already uses five hardware-filtered cube samples. A modest
+    // footprint change softens the 512-map edge without more samples/passes.
+    sunLight.shadow.radius = state.lightsOut ? 1.5 : 1;
+    for (const moon of satellites.bodies.values()) moon.castShadow = moon.receiveShadow = Boolean(state.lightsOut);
     sun.position.set(0, mechanical ? BODY_HEIGHT : 0, 0);
     sun.scale.setScalar(!mechanical && state.scale === 'distance' ? 0.06 / BODY_RADII.sun : 1);
     sunLight.position.copy(sun.position);
@@ -242,6 +251,8 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
       orbit.material.opacity = body.id === state.selected ? 0.72 : dim;
     }
     updateSatellites();
+    const earth = planets.get('earth');
+    earth.getObjectByName('earth-surface').parent.quaternion.copy(earthQuaternion(date, scratch.copy(sun.position).sub(earth.position)));
     // The osculating path changes negligibly within a day; sample once per UTC day.
     const nextOrbitKey = `${date.toISOString().slice(0, 10)}:${state.scale}`;
     if (!mechanical && orbitKey !== nextOrbitKey) {
@@ -467,7 +478,7 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
       const arm = arms.get(output.id);
       return {id: output.id, outputAngle: output.angle, armAngle: arm.rotation.y + arm.parent.rotation.y, planetPosition: planets.get(output.id).position.toArray(), visible: planets.get(output.id).visible};
     });
-    return {driveOutputs, lunarMechanism, moonOutputs, moonLabels: [...satellites.labels].map(([id, label]) => ({id, visible: label.visible, layer: label.layers.mask})), moonCount: [...satellites.bodies.values()].filter(body => body.visible).length, moonModel: satellites.model.model, controlPoints: controlPoints(), baseStyle: state.baseStyle, mechanism: mechanism.diagnostics(), draggingCrank: activeControl?.kind === 'crank', camera: {position: camera.position.toArray(), target: controls.target.toArray()}, controls: {crank: controlProjection(mechanism.crankHandle), crankCenter: controlProjection(mechanism.crankCenter), autoSwitch: controlProjection(mechanism.switchTip)},ready: ready && !disposed && !contextLost, revision: THREE.REVISION, backend: 'WebGL2', mode: state.mode, bodyCount: [...planets.values()].filter(body => body.visible).length, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, frame, width, height, pixelRatio: renderer.getPixelRatio(), selected: state.selected, scale: state.scale, disposed, textureFallbacks: [...textureFallbacks], stars: 'decorative seeded positions; not an astronomical catalogue'};
+    return {lightsOut: state.lightsOut, earthOrientation: {model: 'approximate UTC / solar-relative', georeferenced: !textureFallbacks.includes('earth'), quaternion: planets.get('earth').getObjectByName('earth-surface').parent.quaternion.toArray()}, sunlightShadow: {mapSize: sunLight.shadow.mapSize.toArray(), radius: sunLight.shadow.radius, bias: sunLight.shadow.bias, normalBias: sunLight.shadow.normalBias}, driveOutputs, lunarMechanism, moonOutputs, moonLabels: [...satellites.labels].map(([id, label]) => ({id, visible: label.visible, layer: label.layers.mask})), moonCount: [...satellites.bodies.values()].filter(body => body.visible).length, moonModel: satellites.model.model, controlPoints: controlPoints(), baseStyle: state.baseStyle, mechanism: mechanism.diagnostics(), draggingCrank: activeControl?.kind === 'crank', camera: {position: camera.position.toArray(), target: controls.target.toArray()}, controls: {crank: controlProjection(mechanism.crankHandle), crankCenter: controlProjection(mechanism.crankCenter), autoSwitch: controlProjection(mechanism.switchTip)},ready: ready && !disposed && !contextLost, revision: THREE.REVISION, backend: 'WebGL2', mode: state.mode, bodyCount: [...planets.values()].filter(body => body.visible).length, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, frame, width, height, pixelRatio: renderer.getPixelRatio(), selected: state.selected, scale: state.scale, disposed, textureFallbacks: [...textureFallbacks], stars: 'decorative seeded positions; not an astronomical catalogue'};
   }
   function dispose() {
     if (disposed) return;

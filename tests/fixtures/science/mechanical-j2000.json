@@ -1,0 +1,74 @@
+[
+  {
+    "id": "mercury",
+    "aAU": 0.38709927,
+    "eccentricity": 0.20563593,
+    "inclinationDeg": 7.00497902,
+    "longitudeDeg": 253.7836784832536,
+    "mountingAngle": -1.8538245298241223
+  },
+  {
+    "id": "venus",
+    "aAU": 0.72333566,
+    "eccentricity": 0.00677672,
+    "inclinationDeg": 3.39467605,
+    "longitudeDeg": 182.60701324902254,
+    "mountingAngle": -3.096091688751235
+  },
+  {
+    "id": "earth",
+    "aAU": 1.00000261,
+    "eccentricity": 0.01671123,
+    "inclinationDeg": -1.531e-05,
+    "longitudeDeg": 100.38018022463882,
+    "mountingAngle": 1.7519646486652485
+  },
+  {
+    "id": "mars",
+    "aAU": 1.52371034,
+    "eccentricity": 0.0933941,
+    "inclinationDeg": 1.84969142,
+    "longitudeDeg": 359.44830262416696,
+    "mountingAngle": -0.009628935682899594
+  },
+  {
+    "id": "jupiter",
+    "aAU": 5.202887,
+    "eccentricity": 0.04838624,
+    "inclinationDeg": 1.30439695,
+    "longitudeDeg": 36.38044802844837,
+    "mountingAngle": 0.6349586014471034
+  },
+  {
+    "id": "saturn",
+    "aAU": 9.53667594,
+    "eccentricity": 0.05386179,
+    "inclinationDeg": 2.48599187,
+    "longitudeDeg": 45.57858995571269,
+    "mountingAngle": 0.7954964631436026
+  },
+  {
+    "id": "uranus",
+    "aAU": 19.18916464,
+    "eccentricity": 0.04725744,
+    "inclinationDeg": 0.77263783,
+    "longitudeDeg": 316.39904141040296,
+    "mountingAngle": -0.7609802844141714
+  },
+  {
+    "id": "neptune",
+    "aAU": 30.06992276,
+    "eccentricity": 0.00859048,
+    "inclinationDeg": 1.77004347,
+    "longitudeDeg": 303.9163569650508,
+    "mountingAngle": -0.9788442274730486
+  },
+  {
+    "id": "pluto",
+    "aAU": 39.48211675,
+    "eccentricity": 0.2488273,
+    "inclinationDeg": 17.14001206,
+    "longitudeDeg": 250.53532491837294,
+    "mountingAngle": -1.9105189948001848
+  }
+]

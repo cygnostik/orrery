@@ -56,16 +56,50 @@ for (const [index, id] of Object.keys(elements).entries()) {
   assert.equal(physical[id].periodYears, numbers(cells[6])[0]);
 }
 
+
+// Active long-range tables, independently quoted from the chapter and current HTML.
+const longElements = json('tests/fixtures/science/long-range-elements.json');
+assert.deepEqual(Object.keys(longElements), Object.keys(elements));
+for (const [index, id] of Object.keys(longElements).entries()) {
+  const rows = byId.get(18).quotes[index].text.split('\n');
+  assert.deepEqual(longElements[id].base, numbers(rows[0]));
+  assert.deepEqual(longElements[id].rate, numbers(rows[1]));
+  if (index < 8) assert.deepEqual(numbers(byId.get(19).quotes[index].text), numbers(rows.join(' ')));
+  const correction = index < 4 ? [] : numbers(byId.get(18).quotes[index + 5].text);
+  while (correction.length < 4) correction.push(0); // blank Pluto c/s/f terms
+  assert.deepEqual(longElements[id].correction, correction);
+  if (index >= 4 && index < 8) assert.deepEqual(numbers(byId.get(19).quotes[index + 4].text), correction);
+}
+const mechanical = json('tests/fixtures/science/mechanical-j2000.json');
+assert.deepEqual(mechanical.map(row => row.id), Object.keys(elements));
+for (const [index, body] of BODIES.entries()) {
+  for (const [key, column] of [['aAU', 0], ['eccentricity', 1], ['inclinationDeg', 2]]) {
+    assert.equal(body[key], elements[body.id].base[column]);
+    assert.equal(mechanical[index][key], body[key]);
+  }
+}
+
 const provenance = json('tests/fixtures/science/provenance.json');
 assert.equal(provenance.elements.sourceUrl, byId.get(12).url);
 assert.equal(provenance.elements.crosscheckUrl, byId.get(1).url);
 assert.equal(provenance.physical.sourceUrl, byId.get(2).url);
-const vectors = json('tests/fixtures/science/horizons-vectors.json');
-assert.equal(vectors.length, 12);
+assert.equal(provenance.longRangeElements.sourceUrl, byId.get(18).url);
+assert.equal(provenance.longRangeElements.crosscheckUrl, byId.get(19).url);
+const historicalVectors = json('tests/fixtures/science/horizons-vectors.json');
+const extendedVectors = json('tests/fixtures/science/horizons-extended-vectors.json');
+assert.equal(historicalVectors.length, 12);
+assert.equal(extendedVectors.length, 8);
+const vectors = [...historicalVectors, ...extendedVectors];
+assert.equal(new Set(vectors.map(row => `${row.body}:${row.date}`)).size, 20);
 const discrepancies = [];
-for (const [body, sourceId, target] of [['earth', 16, '3'], ['pluto', 17, '9']]) {
+for (const [body, sourceId, target, fixtureRows, queryGroup, count] of [
+  ['earth', 16, '3', historicalVectors, provenance.horizons, 6],
+  ['pluto', 17, '9', historicalVectors, provenance.horizons, 6],
+  ['earth', 20, '3', extendedVectors, provenance.extendedHorizons, 4],
+  ['pluto', 21, '9', extendedVectors, provenance.extendedHorizons, 4],
+]) {
   const source = byId.get(sourceId);
-  const query = provenance.horizons.queries[body];
+  const query = queryGroup.queries[body];
   assert.equal(query.url, source.url);
   for (const [key, value] of Object.entries(query.params)) {
     assert.equal(new URL(query.url).searchParams.get(key), value);
@@ -78,8 +112,8 @@ for (const [body, sourceId, target] of [['earth', 16, '3'], ['pluto', 17, '9']])
   assert.equal(query.params.VEC_CORR, "'NONE'");
   assert.equal(query.params.OUT_UNITS, "'AU-D'");
   const rows = source.quotes.filter(quote => /^\d+\.\d+,/.test(quote.text));
-  const samples = vectors.filter(sample => sample.body === body);
-  assert.equal(samples.length, 6);
+  const samples = fixtureRows.filter(sample => sample.body === body);
+  assert.equal(samples.length, count);
   assert.equal(rows.length, samples.length);
   assert.deepEqual(query.params.TLIST.slice(1, -1).split(',').map(Number), samples.map(sample => sample.jdTDB));
   for (const [index, sample] of samples.entries()) {
@@ -90,7 +124,7 @@ for (const [body, sourceId, target] of [['earth', 16, '3'], ['pluto', 17, '9']])
     const actual = positionAt(body, sample.date);
     const radius = Math.hypot(sample.x, sample.y, sample.z);
     const dot = actual.x * sample.x + actual.y * sample.y + actual.z * sample.z;
-    discrepancies.push({body,
+    discrepancies.push({body, date: sample.date,
       errorAU: Math.hypot(actual.x - sample.x, actual.y - sample.y, actual.z - sample.z),
       radialErrorAU: Math.abs(actual.radiusAU - radius),
       angularErrorArcsec: Math.acos(Math.min(1, Math.max(-1, dot / (radius * actual.radiusAU)))) * 180 / Math.PI * 3600,
@@ -134,4 +168,4 @@ const maxima = ['earth', 'pluto'].map(body => {
 });
 console.log(JSON.stringify({fixtureCount, quoteCount, maxExcerptBytes, planetRecords: Object.keys(elements).length,
   moonRecords: json('tests/fixtures/moons/parameters.json').records.length + json('tests/fixtures/moons/expansion-parameters.json').records.length,
-  horizonsSamples: vectors.length, maxima}, null, 2));
+  horizonsSamples: vectors.length, maxima, endpoint: discrepancies.filter(row => row.date === '2250-01-01T00:00:00Z')}, null, 2));

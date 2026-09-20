@@ -6,27 +6,37 @@
 
 `src/science.js` is dependency-free browser ESM. It exports `BODIES`, `positionAt(id, date)`, `orbitPoints(id, date, count = 180)`, and `SCIENCE`. There is no runtime network request, renderer scale, simulation clock, texture, or UI dependency.
 
-`SCIENCE.range` is `{start: '1800-01-01', end: '2050-01-01'}`. Endpoints mean **UTC midnight, inclusive**. JPL publishes an interval named “1800 AD - 2050 AD,” but does not define an inclusive December 31 boundary; it explicitly says the fitted elements are invalid outside their interval.[1] Ending at the start of 2050 is a conservative application policy, not a claim that JPL specified this exact civil timestamp.
+`SCIENCE.range` is `{start: '1800-01-01', end: '2250-01-01'}`. Endpoints mean **UTC midnight, inclusive**. This is an application interval inside JPL's published **3000 BC–3000 AD** long-range fit, not an extrapolation of the 1800–2050 short-range fit.[18][19] The calendar input selects noon, so its last full selectable date is 2249-12-31; playback and the crank can reach 2250-01-01T00:00:00Z. There is no date-dependent model switch.
 
 - `BODIES`: nine frozen records, Mercury through optional Pluto; eight `planet` records and one `dwarf-planet`. Descriptors are reference values, not evolving orbital elements. `sourceUrl` supports the **fact**; numerical field provenance is below.
 - `positionAt`: `{x,y,z,radiusAU,longitudeDeg}`. Distances are AU; longitude is normalized to `[0,360)`. The frame is heliocentric, mean ecliptic/equinox J2000: x toward the equinox, y in the ecliptic, z north.[1]
-- **Earth means the Earth–Moon barycenter**, not the geocenter, even though the inspector's physical radius and fact describe Earth.[1] Optional Pluto uses the original short-interval fit.[12]
+- **Earth means the Earth–Moon barycenter**, not the geocenter, even though the inspector's physical radius and fact describe Earth.[1] Optional Pluto uses the original chapter’s long-range fit and quadratic mean-anomaly term.[18]
 - Inputs are a finite `Date`, `YYYY-MM-DD`, or a four-digit-year UTC ISO timestamp ending in `Z` or `+00:00`; seconds are optional, fractional seconds support one to three digits. Non-UTC offsets, local-time strings, impossible dates, unknown/case-mismatched IDs, and out-of-range dates throw. Input `Date` objects are not mutated. A `Date` already normalized by its caller cannot reveal its original invalid text.
 - `orbitPoints` returns exactly `count + 1` `{x,y,z}` objects, with a copied closing endpoint. Integer counts must be 3–10,000. Sampling is uniform in **eccentric anomaly**, not elapsed time. It is an ellipse at the requested date's fitted elements, not a future integrated trajectory.
 
 ## Model and numerical implementation
 
-The eight planets use JPL's current Table 1. The original JPL-hosted chapter, Table 8.10.2 on printed pages 27–28, supplies the identical eight rows **plus Pluto**.[1][12] The current HTML explicitly says, “The former planet Pluto has also been removed.”[1] `tests/fixtures/science/elements.json` retains all nine coefficient/rate pairs parsed from the chapter, with the eight planetary rows cross-checked against Table 1. Bounded quoted rows and source URLs accompany the numeric fixtures. Tests independently reconstruct positions using bisection and a polar-coordinate transform, rather than the production Newton/cartesian implementation.
+The eight planets use JPL's current **Tables 2a and 2b** throughout the supported interval.[19] The original JPL-hosted chapter, **Tables 8.10.3 and 8.10.4, printed page 28**, supplies the identical eight rows plus Pluto.[18] The current HTML explicitly says, “The former planet Pluto has also been removed.”[1] `tests/fixtures/science/long-range-elements.json` retains all nine base/rate pairs and the additional mean-anomaly terms. The eight planetary pairs and four HTML correction rows were cross-checked against the chapter. Bounded literal rows from both sources accompany the numeric fixtures.
 
-The model linearly advances six elements with `T = (JD - 2451545.0) / 36525`, wraps mean anomaly, solves `M = E - e sin(E)`, constructs the orbital-plane ellipse, and rotates into J2000 ecliptic coordinates.[1]
-The source's eccentricity column has a misleading “rad” label; eccentricity is used as the dimensionless ratio in its equations, **not converted to radians**.[1][12]
-Angular elements are converted from degrees; the short-interval model does **not** use the long-interval Table 2b correction terms.[1][12]
+The model advances six elements linearly with `T = (JD - 2451545.0) / 36525`, then computes mean anomaly in degrees:
+
+```text
+M = L - longitudeOfPerihelion + b*T*T + c*cos(f*T) + s*sin(f*T)
+```
+
+Here `f*T` is in **degrees**, converted to radians before calling JavaScript trigonometric functions. The inner four bodies have no additional terms. Jupiter through Neptune use all four Table 2b values. Pluto has `b = -0.01262724` degrees/century²; the chapter's blank `c`, `s`, and `f` entries contribute zero.[18] These terms modify the position along the ellipse, not the sampled ellipse's orientation or shape.
+
+The solver wraps mean anomaly, solves `M = E - e sin(E)`, constructs the orbital-plane ellipse, and rotates into J2000 ecliptic coordinates.[1] The source's eccentricity column has a misleading “rad” label; eccentricity is dimensionless in the equations and is **not converted to radians**.[18][19] Tests reconstruct positions from the source fixture using bisection and a polar-coordinate transform, independently of the production Newton/cartesian implementation.
 
 Production Newton iteration uses a `1e-13` radian correction threshold and a 20-iteration guard. Numerical convergence is much tighter than the astronomical approximation; it is not an accuracy claim about the sky.
 
 **Time-scale simplification:** JPL requires a dynamical Julian date (JDTDB), not UTC.[1] This module uses JavaScript UTC milliseconds as an approximate dynamical epoch. It omits leap seconds, UTC→TT/TDB conversion, light travel time, apparent-position corrections, and Earth–Moon geocenter displacement. The independent fixtures intentionally query **the same numerical Julian date in TDB**; they validate the orbit implementation, not the omitted UTC→TDB conversion. Historical UTC dates are proleptic calendar labels, not a reconstruction of historical timekeeping.
 
 ## Physical descriptors
+
+`aAU`, `eccentricity`, and `inclinationDeg` remain the original Table 1 / chapter 8.10.2 J2000 reference descriptors.[1][12] They are deliberately separate from the long-range solver: renderer scale, framing, and inspector values must not change with a coefficient refit. `elements.json` and source excerpts 01/12 remain as **historical descriptor/keying provenance**, not active orbital coefficients. Only three fixed descriptor values per body remain at runtime; there is no second propagated model.
+
+The mechanical train retains its original signed `atan2(y,x)` mounting constants captured from the former `positionAt` at J2000 noon. `drive-train.js` now stores those constants explicitly rather than re-keying arms from the active astronomy model. `mechanical-j2000.json` records the pre-change longitudes, angles and descriptors; the unchanged `crank-layout.test.js` numeric fixtures protect all planetary/lunar rates and sampled motion. Tooth counts, periods, crank calibration and lunar keying are unchanged.
 
 `radiusKm` is JPL's **volume-equivalent mean radius**, not equatorial radius; the source defines it as “Radius of a sphere with the equivalent volume of the planet.”[2] `periodDays` is the source's sidereal orbital period in years multiplied by **365.25 days per Julian year** as an explicit application unit convention.[2] These fixed periods describe the body; the solver advances the fitted longitude rates instead of using `periodDays`.
 
@@ -69,41 +79,45 @@ Each runtime record links to its NASA fact page; these paraphrases avoid changin
 
 ## Accuracy: source claims versus observed verification
 
-JPL lists the following **nominal historical model errors**, not guarantees for every date or a confidence interval.[1][12]
+JPL lists the following **nominal long-range model errors** (the 3000 BC–3000 AD columns), not guarantees for every date or a confidence interval.[1][12]
 
 | Body | Longitude, arcsec | Latitude, arcsec | Distance, 1000 km |
 |---|---:|---:|---:|
-| Mercury | 15 | 1 | 1 |
-| Venus | 20 | 1 | 4 |
-| Earth–Moon barycenter | 20 | 8 | 6 |
-| Mars | 40 | 2 | 25 |
-| Jupiter | 400 | 10 | 600 |
-| Saturn | 600 | 25 | 1500 |
-| Uranus | 50 | 2 | 1000 |
-| Neptune | 10 | 1 | 200 |
-| Pluto (original chapter only) | 5 | 2 | 300 |
+| Mercury | 20 | 15 | 1 |
+| Venus | 40 | 30 | 8 |
+| Earth–Moon barycenter | 40 | 15 | 15 |
+| Mars | 100 | 40 | 30 |
+| Jupiter | 600 | 100 | 1000 |
+| Saturn | 1000 | 100 | 4000 |
+| Uranus | 2000 | 30 | 8000 |
+| Neptune | 400 | 15 | 4000 |
+| Pluto (original chapter only) | 400 | 100 | 2500 |
 
-**Independent checks:** six real Horizons epochs per body were fetched for target `3` (Earth–Moon barycenter) and target `9` (Pluto-system barycenter), centered on `500@10` (Sun), `REF_PLANE=ECLIPTIC`, `REF_SYSTEM=ICRF`, `VEC_CORR=NONE`, `TIME_TYPE=TDB`, and AU/day units.[16][17] Dates are 1800-01-01, 1900-01-01, J2000 noon, 2026-09-05, 2049-12-31, and 2050-01-01. Selected target/center/frame lines, literal vector rows, exact query URLs and parsed numeric fixtures are retained under `tests/fixtures/science/`. These are independently integrated Horizons outputs, not generated expected values from the implemented formula.
+**Independent checks:** ten real Horizons epochs per body were fetched for target `3` (Earth–Moon barycenter) and target `9` (Pluto-system barycenter), centered on `500@10` (Sun), `REF_PLANE=ECLIPTIC`, `REF_SYSTEM=ICRF`, `VEC_CORR=NONE`, `TIME_TYPE=TDB`, and AU/day units; the responses identify DE441.[16][17][20][21] Dates are 1800-01-01, 1900-01-01, J2000 noon, 2026-09-05, 2049-12-31, 2050-01-01, 2100-01-01, 2200-01-01, 2249-12-31, and 2250-01-01. The six historical rows per body were re-fetched and matched the retained fixtures exactly; four extended-range epochs per body are in `horizons-extended-vectors.json`. Selected target/center/frame lines, literal vector rows and exact query URLs are retained under `tests/fixtures/science/`. These are independently integrated Horizons outputs, not generated expected values from the implemented formula.
 
 Discrepancies against those fixtures (recompute with `node scripts/public-fixtures.mjs`):
 
 | Body | Samples | Largest 3D discrepancy, AU | Largest radial discrepancy, AU | Largest angular separation, arcsec |
 |---|---:|---:|---:|---:|
-| Earth–Moon barycenter | 6 | 0.00005423562105 | 0.00002470411752 | 9.87635 |
-| Pluto-system barycenter | 6 | 0.00908188037216 | 0.00708555061972 | 38.76768 |
+| Earth–Moon barycenter | 10 | 0.00011360585570 | 0.00005389359573 | 20.98069 |
+| Pluto-system barycenter | 10 | 0.03095776706672 | 0.01834470022215 | 200.38656 |
 
-**Important contradictory evidence:** Pluto's discrepancy against modern Horizons is appreciably larger than the old chapter's nominal 5-arcsecond/300,000-km figures.[12][17] The old fit is retained faithfully rather than adjusted ad hoc to sparse fixtures. Treat Pluto as a lower-accuracy educational orbit; the measured maximum is **not** a full-interval bound. Test tolerances are 0.0002 AU for Earth and 0.012 AU for Pluto, regression checks rather than advertised accuracy. Other planets' coefficients, rate propagation, solver, and geometry are tested against an independent mathematical reconstruction, **not** independent modern ephemerides. This is not a precision ephemeris or navigation tool.
+At **2250-01-01T00:00:00Z**, Earth differs by **0.00011360585570 AU** (20.98069 arcsec angular separation); Pluto differs by **0.03095391451703 AU** (200.35729 arcsec). Pluto's largest sampled 3D error is on 2249-12-31, one day before the endpoint.
+
+**Accuracy trade-off:** the single long-range model is less accurate on these old-range samples than the former short-range fit. Across the original six epochs, the maximum 3D discrepancies increase from 0.00005423562105 to 0.00008870887420 AU for Earth and from 0.00908188037216 to 0.02629760840553 AU for Pluto. This is the published broader fit, not an ad hoc adjustment to the samples. Earth retains its 0.0002-AU regression ceiling; Pluto's former 0.012-AU short-fit ceiling cannot hold for the requested model, so its measured long-fit ceiling is 0.032 AU. Coefficient/solver reconstruction tolerances remain unchanged (2e-12 AU), and no source vectors were altered to fit the model.
+
+Treat Pluto as a lower-accuracy educational orbit. Sampled maxima and regression ceilings are **not full-interval bounds**. Other planets' coefficients, correction terms, solver, and geometry are tested against an independent mathematical reconstruction, **not** independent modern ephemerides. This is not a precision ephemeris or navigation tool.
 
 ## Verification and reproducibility
 
 Run from the repository root; these commands need only Node.js:
 
 ```sh
-node --test tests/science.test.js
+node --test tests/science.test.js tests/state.test.js tests/mechanism.test.js tests/crank-layout.test.js
 node scripts/public-fixtures.mjs
 ```
 
-The science tests cover all exports, all nine coefficient/rate sets at five epochs, sourced mean radii/periods, both independent Horizons fixture sets, orbital closure/perihelion/aphelion/orientation, date input rejection, validity boundaries, immutable records and bounded sampling.
+The science tests cover all exports, all nine coefficient/rate/correction sets at eight epochs, sourced mean radii/periods, both old- and extended-range Horizons fixture sets, orbital closure/perihelion/aphelion/orientation, date input rejection, validity boundaries, immutable records, bounded sampling, preserved mechanical keying/descriptors and extended state boundaries.
 
 The fixture checker compares numeric records with the preserved coefficient and vector rows, verifies quoted-source links and prints Earth/Pluto discrepancy summaries. `tests/fixtures/science/provenance.json` records units, reference frame, target/center identifiers and exact Horizons query parameters. The fixed samples do not require network access. Refreshing them requires comparing new official source data and reviewing any changed values or model assumptions.
 
@@ -128,3 +142,8 @@ The repository includes selected NASA/JPL numerical data and short attributed ex
 [15] https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=NO&COMMAND=999
 [16] https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%273%27&CENTER=%27500%4010%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&TLIST=%272378496.5%2C2415020.5%2C2451545.0%2C2461288.5%2C2469806.5%2C2469807.5%27&TIME_TYPE=%27TDB%27&OUT_UNITS=%27AU-D%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_CORR=%27NONE%27&VEC_TABLE=%272%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27YES%27 — Horizons earth barycenter geometric vectors, J2000 ecliptic
 [17] https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%279%27&CENTER=%27500%4010%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&TLIST=%272378496.5%2C2415020.5%2C2451545.0%2C2461288.5%2C2469806.5%2C2469807.5%27&TIME_TYPE=%27TDB%27&OUT_UNITS=%27AU-D%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_CORR=%27NONE%27&VEC_TABLE=%272%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27YES%27 — Horizons pluto barycenter geometric vectors, J2000 ecliptic
+
+[18] https://ssd.jpl.nasa.gov/ftp/eph/planets/ioms/ExplSupplChap8.pdf — Active long-range original chapter Tables 8.10.3 and 8.10.4
+[19] https://ssd.jpl.nasa.gov/planets/approx_pos.html — Active Tables 2a and 2b, cross-check against original chapter (Pluto omitted from HTML)
+[20] https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%273%27&CENTER=%27500%4010%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&TLIST=%272488069.5%2C2524593.5%2C2542854.5%2C2542855.5%27&TIME_TYPE=%27TDB%27&OUT_UNITS=%27AU-D%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_CORR=%27NONE%27&VEC_TABLE=%272%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27YES%27 — Horizons earth barycenter extended-range geometric vectors, J2000 ecliptic
+[21] https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%279%27&CENTER=%27500%4010%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&TLIST=%272488069.5%2C2524593.5%2C2542854.5%2C2542855.5%27&TIME_TYPE=%27TDB%27&OUT_UNITS=%27AU-D%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_CORR=%27NONE%27&VEC_TABLE=%272%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27YES%27 — Horizons pluto barycenter extended-range geometric vectors, J2000 ecliptic

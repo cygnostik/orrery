@@ -1,15 +1,40 @@
 // Numerical provenance and precision: ../docs/science.md.
-// JPL Table 1 / original chapter Table 8.10.2; columns a,e,I,L,perihelion,node.
+// One long-range fit at every date: Table 2a / original chapter 8.10.3.
+// Columns a,e,I,L,perihelion,node; angular values in degrees.
 const ELEMENTS = {
-  mercury: [[0.38709927,0.20563593,7.00497902,252.25032350,77.45779628,48.33076593],[0.00000037,0.00001906,-0.00594749,149472.67411175,0.16047689,-0.12534081]],
-  venus: [[0.72333566,0.00677672,3.39467605,181.97909950,131.60246718,76.67984255],[0.00000390,-0.00004107,-0.00078890,58517.81538729,0.00268329,-0.27769418]],
-  earth: [[1.00000261,0.01671123,-0.00001531,100.46457166,102.93768193,0],[0.00000562,-0.00004392,-0.01294668,35999.37244981,0.32327364,0]],
-  mars: [[1.52371034,0.09339410,1.84969142,-4.55343205,-23.94362959,49.55953891],[0.00001847,0.00007882,-0.00813131,19140.30268499,0.44441088,-0.29257343]],
-  jupiter: [[5.20288700,0.04838624,1.30439695,34.39644051,14.72847983,100.47390909],[-0.00011607,-0.00013253,-0.00183714,3034.74612775,0.21252668,0.20469106]],
-  saturn: [[9.53667594,0.05386179,2.48599187,49.95424423,92.59887831,113.66242448],[-0.00125060,-0.00050991,0.00193609,1222.49362201,-0.41897216,-0.28867794]],
-  uranus: [[19.18916464,0.04725744,0.77263783,313.23810451,170.95427630,74.01692503],[-0.00196176,-0.00004397,-0.00242939,428.48202785,0.40805281,0.04240589]],
-  neptune: [[30.06992276,0.00859048,1.77004347,-55.12002969,44.96476227,131.78422574],[0.00026291,0.00005105,0.00035372,218.45945325,-0.32241464,-0.00508664]],
-  pluto: [[39.48211675,0.24882730,17.14001206,238.92903833,224.06891629,110.30393684],[-0.00031596,0.00005170,0.00004818,145.20780515,-0.04062942,-0.01183482]],
+  mercury: [[0.38709843,0.20563661,7.00559432,252.25166724,77.45771895,48.33961819],[0.0,2.123e-05,-0.00590158,149472.67486623,0.15940013,-0.12214182]],
+  venus: [[0.72332102,0.00676399,3.39777545,181.9797085,131.76755713,76.67261496],[-2.6e-07,-5.107e-05,0.00043494,58517.8156026,0.05679648,-0.27274174]],
+  earth: [[1.00000018,0.01673163,-0.00054346,100.46691572,102.93005885,-5.11260389],[-3e-08,-3.661e-05,-0.01337178,35999.37306329,0.3179526,-0.24123856]],
+  mars: [[1.52371243,0.09336511,1.85181869,-4.56813164,-23.91744784,49.71320984],[9.7e-07,9.149e-05,-0.00724757,19140.29934243,0.45223625,-0.26852431]],
+  jupiter: [[5.20248019,0.0485359,1.29861416,34.33479152,14.27495244,100.29282654],[-2.864e-05,0.00018026,-0.00322699,3034.90371757,0.18199196,0.13024619]],
+  saturn: [[9.54149883,0.05550825,2.49424102,50.07571329,92.86136063,113.63998702],[-3.065e-05,-0.00032044,0.00451969,1222.11494724,0.54179478,-0.25015002]],
+  uranus: [[19.18797948,0.0468574,0.77298127,314.20276625,172.43404441,73.96250215],[-0.00020455,-1.55e-05,-0.00180155,428.49512595,0.09266985,0.05739699]],
+  neptune: [[30.06952752,0.00895439,1.7700552,304.22289287,46.68158724,131.78635853],[6.447e-05,8.18e-06,0.000224,218.46515314,0.01009938,-0.00606302]],
+  pluto: [[39.48686035,0.24885238,17.1410426,238.96535011,224.09702598,110.30167986],[0.00449751,6.016e-05,5.01e-06,145.18042903,-0.00968827,-0.00809981]],
+};
+
+// Table 2b / original 8.10.4: b,c,s,f. Pluto has only b (blank terms = 0).
+const ANOMALY_TERMS = {
+  jupiter: [-0.00012452,0.0606406,-0.35635438,38.35125],
+  saturn: [0.00025899,-0.13434469,0.87320147,38.35125],
+  uranus: [0.00058331,-0.97731848,0.17689245,7.67025],
+  neptune: [-0.00041348,0.68346318,-0.10162547,7.67025],
+  pluto: [-0.01262724,0,0,0],
+};
+
+// Fixed reference/display descriptors from Table 1 / original 8.10.2.
+// Keep scaling, framing and inspector values independent of the active orbit fit.
+// These three constants per body are NOT a second propagated ephemeris.
+const DESCRIPTORS = {
+  mercury: [0.38709927,0.20563593,7.00497902],
+  venus: [0.72333566,0.00677672,3.39467605],
+  earth: [1.00000261,0.01671123,-1.531e-05],
+  mars: [1.52371034,0.0933941,1.84969142],
+  jupiter: [5.202887,0.04838624,1.30439695],
+  saturn: [9.53667594,0.05386179,2.48599187],
+  uranus: [19.18916464,0.04725744,0.77263783],
+  neptune: [30.06992276,0.00859048,1.77004347],
+  pluto: [39.48211675,0.2488273,17.14001206],
 };
 
 // Volume-equivalent mean radius (km), sidereal period (Julian years), obliquity (deg).
@@ -29,9 +54,9 @@ export const BODIES = Object.freeze(PROPERTIES.map(([id,radiusKm,periodYears,til
   id,
   name: id[0].toUpperCase() + id.slice(1),
   kind: id === 'pluto' ? 'dwarf-planet' : 'planet',
-  aAU: ELEMENTS[id][0][0],
-  eccentricity: ELEMENTS[id][0][1],
-  inclinationDeg: ELEMENTS[id][0][2],
+  aAU: DESCRIPTORS[id][0],
+  eccentricity: DESCRIPTORS[id][1],
+  inclinationDeg: DESCRIPTORS[id][2],
   radiusKm,
   periodDays: periodYears * 365.25,
   tiltDeg,
@@ -40,15 +65,15 @@ export const BODIES = Object.freeze(PROPERTIES.map(([id,radiusKm,periodYears,til
 })));
 
 export const SCIENCE = Object.freeze({
-  model: 'JPL approximate Keplerian elements and secular rates (Table 1; original Table 8.10.2)',
-  range: Object.freeze({ start: '1800-01-01', end: '2050-01-01' }),
+  model: 'JPL long-range approximate Keplerian elements (Tables 2a/2b; original Tables 8.10.3/8.10.4)',
+  range: Object.freeze({ start: '1800-01-01', end: '2250-01-01' }),
   sourceUrl: 'https://ssd.jpl.nasa.gov/planets/approx_pos.html',
   limitations: Object.freeze([
     'Educational approximation, not a precision ephemeris or navigation tool.',
     'Earth position is the Earth–Moon barycenter; Pluto follows the original JPL fit.',
     'J2000 mean ecliptic/equinox heliocentric geometry; no light-time or apparent-position corrections.',
     'UTC calendar instants are used as approximate TDB; leap seconds and UTC–TDB conversion are omitted.',
-    'The published 1800–2050 interval is conservatively limited to 2050-01-01T00:00:00Z, not the end of 2050.',
+    'Application range is 1800-01-01 through 2250-01-01T00:00:00Z inclusive, within the published 3000 BC–3000 AD fit.',
     'Orbital paths are instantaneous fitted ellipses, not integrated future trajectories; physical sizes and display scaling are separate.',
     'Radii are volume-equivalent means; periods and tilts are reference descriptors, not time-evolving spin models.',
   ]),
@@ -86,7 +111,7 @@ function elementsAt(id, date) {
   }
   const t = (milliseconds - J2000_MS) / CENTURY_MS;
   const [base, rate] = ELEMENTS[id];
-  return base.map((value, index) => value + rate[index] * t);
+  return { elements: base.map((value, index) => value + rate[index] * t), t };
 }
 
 function eccentricAnomaly(mean, eccentricity) {
@@ -121,7 +146,7 @@ export function orbitPoints(id, date, count = 180) {
   if (!Number.isInteger(count) || count < 3 || count > 10000) {
     throw new RangeError('Orbit segment count must be an integer from 3 through 10000');
   }
-  const elements = elementsAt(id, date);
+  const { elements } = elementsAt(id, date);
   const points = Array.from({ length: count }, (_, index) =>
     pointOnEllipse(elements, 2 * Math.PI * index / count));
   points.push({ ...points[0] });
@@ -130,8 +155,12 @@ export function orbitPoints(id, date, count = 180) {
 
 /** Approximate heliocentric J2000-ecliptic position, AU; Earth denotes the EMB. */
 export function positionAt(id, date) {
-  const elements = elementsAt(id, date);
-  const mean = (wrapDegrees(elements[3] - elements[4] + 180) - 180) * DEG;
+  const { elements, t } = elementsAt(id, date);
+  const terms = ANOMALY_TERMS[id];
+  // Corrections change mean anomaly only, not the instantaneous ellipse.
+  const correction = terms ? terms[0] * t * t +
+    terms[1] * Math.cos(terms[3] * t * DEG) + terms[2] * Math.sin(terms[3] * t * DEG) : 0;
+  const mean = (wrapDegrees(elements[3] - elements[4] + correction + 180) - 180) * DEG;
   const point = pointOnEllipse(elements, eccentricAnomaly(mean, elements[1]));
   return {
     ...point,

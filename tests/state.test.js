@@ -4,7 +4,7 @@ const api = await import('../src/state.js').catch(()=>({}));
 test('date input rejects invalid or out-of-model dates without losing the previous state',()=>{
  assert.equal(typeof api.setDate,'function','validated date input is implemented');
  const s=api.createState(new Date('2026-09-05T12:00:00Z'));
- for(const value of ['bad','2026-02-30','1799-12-31','2051-01-01','']) {assert.equal(api.setDate(s,value),false);assert.equal(s.date.toISOString(),'2026-09-05T12:00:00.000Z');}
+ for(const value of ['bad','2026-02-30','1799-12-31','2250-01-01','2251-01-01','']) {assert.equal(api.setDate(s,value),false);assert.equal(s.date.toISOString(),'2026-09-05T12:00:00.000Z');}
  assert.equal(api.setDate(s,'2024-02-29'),true);assert.equal(s.date.toISOString(),'2024-02-29T12:00:00.000Z');
 });
 test('a new instrument starts at the supplied UTC date with eight planets and mechanical display',()=>{
@@ -47,6 +47,19 @@ test('time advances in simulated days per real second only while playing and cla
   api.advance(s,1); assert.equal(s.date.toISOString(),'2026-09-05T12:00:00.000Z');
   s.playing=true; s.speed=10;
   api.advance(s,0.05); assert.equal(s.date.toISOString(),'2026-09-06T00:00:00.000Z');
-  s.date=new Date('2049-12-31T23:59:58Z');api.advance(s,0.1);
-  assert.equal(s.date.toISOString(),'2050-01-01T00:00:00.000Z');assert.equal(s.playing,false);
+  s.date=new Date('2249-12-31T23:59:58Z');api.advance(s,0.1);
+  assert.equal(s.date.toISOString(),'2250-01-01T00:00:00.000Z');assert.equal(s.playing,false);
+});
+
+test('date input and crank cross the former endpoint without changing noon semantics',()=>{
+ const s=api.createState(new Date('2049-12-31T12:00:00Z'));
+ assert.equal(api.MIN_DATE,Date.parse('1800-01-01T00:00:00Z'));
+ assert.equal(api.MAX_DATE,Date.parse('2250-01-01T00:00:00Z'));
+ for(const date of ['2050-01-01','2100-01-01','2249-12-31']) {
+  assert.equal(api.setDate(s,date),true);assert.equal(s.date.toISOString(),date+'T12:00:00.000Z');
+ }
+ assert.equal(api.setDate(s,'2250-01-01'),false);
+ api.turnCrank(s,1);assert.equal(s.date.getTime(),api.MAX_DATE);
+ s.date=new Date('2049-12-31T12:00:00Z');api.turnCrank(s,1);
+ assert.equal(s.date.toISOString(),'2050-01-30T12:00:00.000Z');
 });

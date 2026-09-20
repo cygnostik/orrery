@@ -35,9 +35,36 @@ async function closeVite(server) {
 }
 
 // node:test timeouts abort t.signal; they do not unwind an in-flight callback.
-export function createBrowserHarness(t, {operationTimeout = 30000, cleanupTimeout = 5000} = {}) {
-  const resources = [];
-  let closing;
+export function createBrowserHarness(t, {operationTimeout = 30000, cleanupTimeout = 5000, diagnostics = false} = {}) {
+  const resources = [], active = new Set();
+  let closing, phase, renderer;
+  const stamp = label => ({label, start:new Date().toISOString(), clock:performance.now()});
+  const elapsed = ({clock, ...entry}) => ({...entry, end:new Date().toISOString(), elapsedMs:Math.round(performance.now() - clock)});
+  const report = event => {
+    // Diagnostics must never prevent resource teardown or replace an error.
+    if (diagnostics) {try {t.diagnostic(`[browser-timing] ${JSON.stringify(event)}`);} catch {}}
+  };
+  const endPhase = () => {
+    if (phase) report({event:'phase-end', ...elapsed(phase)});
+    phase = undefined;
+  };
+  const startPhase = label => {
+    if (!diagnostics) return;
+    endPhase();
+    phase = stamp(label);
+    report({event:'phase-start', label, start:phase.start});
+  };
+  const timed = (label, operation) => {
+    if (!diagnostics) return operation();
+    const entry = {...stamp(label), phase:phase?.label};
+    active.add(entry);
+    // Track every bounded operation, but log only failures and phase boundaries,
+    // not every mouse move/render. Phase timings include all awaited work.
+    return operation().catch(error => {
+      report({event:'operation-error', ...elapsed(entry), message:error.message});
+      throw error;
+    }).finally(() => active.delete(entry));
+  };
   async function dispose({label, resource, release, force}) {
     try {await deadline(`${label} cleanup`, () => release(resource), cleanupTimeout);}
     catch (error) {
@@ -46,15 +73,41 @@ export function createBrowserHarness(t, {operationTimeout = 30000, cleanupTimeou
     }
   }
   const close = () => closing ??= (async () => {
-    const results = await Promise.allSettled(resources.reverse().map(dispose));
-    const failed = results.find(result => result.status === 'rejected');
-    if (failed) throw failed.reason;
+    startPhase('cleanup');
+    try {
+      const results = await Promise.allSettled(resources.reverse().map(dispose));
+      const failed = results.find(result => result.status === 'rejected');
+      if (failed) throw failed.reason;
+    } finally {endPhase();}
   })();
-  const onAbort = () => {void close().catch(error => t.diagnostic(error.message));};
+  const onAbort = () => {
+    report({event:'abort', phase:phase?.label, ...(phase ? elapsed(phase) : {}), active:[...active].map(elapsed)});
+    void close().catch(error => t.diagnostic(error.message));
+  };
   t.signal.addEventListener('abort', onAbort, {once:true});
   t.after(async () => {try {await close();} finally {t.signal.removeEventListener('abort', onAbort);}});
   const harness = {
-    run: (label, operation) => deadline(label, operation, operationTimeout, t.signal),
+    phase: startPhase,
+    run(label, operation) {
+      t.signal.throwIfAborted();
+      return timed(label, () => deadline(label, operation, operationTimeout, t.signal));
+    },
+    captureRenderer(page, selector) {
+      if (!diagnostics) return;
+      // Query the fixture's existing context, not a separate probe canvas.
+      return renderer ??= page.evaluate(selector => {
+        const canvas = document.querySelector(selector);
+        const gl = canvas?.getContext('webgl2') || canvas?.getContext('webgl');
+        if (!gl) return {available:false};
+        const debug = gl.getExtension('WEBGL_debug_renderer_info');
+        return {
+          available:true, version:gl.getParameter(gl.VERSION),
+          vendor:gl.getParameter(gl.VENDOR), renderer:gl.getParameter(gl.RENDERER),
+          unmaskedVendor:debug ? gl.getParameter(debug.UNMASKED_VENDOR_WEBGL) : null,
+          unmaskedRenderer:debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : null
+        };
+      }, selector).then(info => {report({event:'renderer', ...info}); return info;});
+    },
     async own(label, acquire, release, force) {
       return harness.run(label, async () => {
         const resource = await acquire();

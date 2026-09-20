@@ -4,9 +4,9 @@
 
 Mechanical is a **rational, gear-driven mean-motion demonstration**, not a positional ephemeris. A single clockwise crank turn advances the shared host date by 30 days. Planet arms receive motion through visible tooth meshes, compound shafts and hollow output sleeves. They are not independently positioned from JPL.
 
-Observatory uses `positionAt` and `orbitPoints`, including eccentricity, inclination and secular element rates. At construction only, each mechanical arm is keyed to its J2000 projected JPL longitude. Thereafter only transmitted motion changes its angle. All ten Mechanical moons inherit actual local sleeve mounts driven by the same crank graph. See [lunar-mechanism.md](lunar-mechanism.md) for the distinct structural arms, shaft transfers and model limits.
+Observatory uses `positionAt` and `orbitPoints`, including eccentricity, inclination and secular element rates. Each mechanical arm retains its original J2000 projected longitude from the former short-interval JPL fit as a fixed keying constant. Only transmitted motion changes its angle; the newer Observatory fit does not re-index the machinery. All ten Mechanical moons inherit actual local sleeve mounts driven by the same crank graph. See [lunar-mechanism.md](lunar-mechanism.md) for the distinct structural arms, shaft transfers and model limits.
 
-Supported dates remain 1800-01-01 through 2050-01-01 UTC midnight. The numerical comparison below is **against the published sidereal-period descriptors in `BODIES.periodDays`**, not JPL position errors or ephemeris accuracy.
+Supported dates run from 1800-01-01 through 2250-01-01 UTC midnight. The original J2000 arm indexing is preserved when the astronomical fit changes; the gear ratios and mechanical positions are unchanged. The numerical comparison below is **against the published sidereal-period descriptors in `BODIES.periodDays`**, not JPL position errors or ephemeris accuracy.
 
 ## The actual path
 

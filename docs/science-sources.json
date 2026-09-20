@@ -328,6 +328,167 @@
         }
       ],
       "evidencePath": "tests/fixtures/science/source-17.txt"
+    },
+    {
+      "id": 18,
+      "url": "https://ssd.jpl.nasa.gov/ftp/eph/planets/ioms/ExplSupplChap8.pdf",
+      "title": "Active long-range original chapter Tables 8.10.3 and 8.10.4",
+      "quotes": [
+        {
+          "text": "Mercury  0.38709843             0.20563661    7.00559432    252.25166724 77.45771895 48.33961819\n         0.00000000             0.00002123   -0.00590158 149472.67486623   0.15940013 -0.12214182"
+        },
+        {
+          "text": "Venus    0.72332102             0.00676399    3.39777545    181.97970850 131.76755713 76.67261496\n        -0.00000026            -0.00005107    0.00043494 58517.81560260    0.05679648 -0.27274174"
+        },
+        {
+          "text": "EM Bary 1.00000018              0.01673163   -0.00054346    100.46691572 102.93005885 -5.11260389\n        -0.00000003            -0.00003661   -0.01337178 35999.37306329    0.31795260 -0.24123856"
+        },
+        {
+          "text": "Mars     1.52371243             0.09336511    1.85181869     -4.56813164 -23.91744784 49.71320984\n         0.00000097             0.00009149   -0.00724757 19140.29934243    0.45223625 -0.26852431"
+        },
+        {
+          "text": "Jupiter  5.20248019             0.04853590    1.29861416     34.33479152 14.27495244 100.29282654\n        -0.00002864             0.00018026   -0.00322699   3034.90371757   0.18199196   0.13024619"
+        },
+        {
+          "text": "Saturn   9.54149883             0.05550825    2.49424102     50.07571329 92.86136063 113.63998702\n        -0.00003065            -0.00032044    0.00451969   1222.11494724   0.54179478 -0.25015002"
+        },
+        {
+          "text": "Uranus  19.18797948             0.04685740    0.77298127    314.20276625 172.43404441 73.96250215\n        -0.00020455            -0.00001550   -0.00180155    428.49512595   0.09266985   0.05739699"
+        },
+        {
+          "text": "Neptune 30.06952752             0.00895439    1.77005520    304.22289287 46.68158724 131.78635853\n         0.00006447             0.00000818    0.00022400    218.46515314   0.01009938 -0.00606302"
+        },
+        {
+          "text": "Pluto   39.48686035             0.24885238   17.14104260    238.96535011 224.09702598 110.30167986\n         0.00449751             0.00006016    0.00000501    145.18042903 -0.00968827 -0.00809981"
+        },
+        {
+          "text": "Jupiter -0.00012452 0.06064060 -0.35635438 38.35125000"
+        },
+        {
+          "text": "Saturn   0.00025899 -0.13434469 0.87320147 38.35125000"
+        },
+        {
+          "text": "Uranus   0.00058331 -0.97731848 0.17689245 7.67025000"
+        },
+        {
+          "text": "Neptune -0.00041348 0.68346318 -0.10162547 7.67025000"
+        },
+        {
+          "text": "Pluto   -0.01262724"
+        },
+        {
+          "text": "Keplerian elements and their rates, with respect to the mean ecliptic and equinox of J2000, valid for the time-\ninterval 3000 BC – 3000 AD. Further, the computation of M for Jupiter through Pluto must be augmented\nby the additional terms described above and given in Table 8.10.4."
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-18.txt"
+    },
+    {
+      "id": 19,
+      "url": "https://ssd.jpl.nasa.gov/planets/approx_pos.html",
+      "title": "Active Tables 2a and 2b, cross-check against original chapter (Pluto omitted from HTML)",
+      "quotes": [
+        {
+          "text": "Mercury   0.38709843      0.20563661      7.00559432      252.25166724     77.45771895     48.33961819\n          0.00000000      0.00002123     -0.00590158   149472.67486623      0.15940013     -0.12214182"
+        },
+        {
+          "text": "Venus     0.72332102      0.00676399      3.39777545      181.97970850    131.76755713     76.67261496\n         -0.00000026     -0.00005107      0.00043494    58517.81560260      0.05679648     -0.27274174"
+        },
+        {
+          "text": "EM Bary   1.00000018      0.01673163     -0.00054346      100.46691572    102.93005885     -5.11260389\n         -0.00000003     -0.00003661     -0.01337178    35999.37306329      0.31795260     -0.24123856"
+        },
+        {
+          "text": "Mars      1.52371243      0.09336511      1.85181869       -4.56813164    -23.91744784     49.71320984\n          0.00000097      0.00009149     -0.00724757    19140.29934243      0.45223625     -0.26852431"
+        },
+        {
+          "text": "Jupiter   5.20248019      0.04853590      1.29861416       34.33479152     14.27495244    100.29282654\n         -0.00002864      0.00018026     -0.00322699     3034.90371757      0.18199196      0.13024619"
+        },
+        {
+          "text": "Saturn    9.54149883      0.05550825      2.49424102       50.07571329     92.86136063    113.63998702\n         -0.00003065     -0.00032044      0.00451969     1222.11494724      0.54179478     -0.25015002"
+        },
+        {
+          "text": "Uranus   19.18797948      0.04685740      0.77298127      314.20276625    172.43404441     73.96250215\n         -0.00020455     -0.00001550     -0.00180155      428.49512595      0.09266985      0.05739699"
+        },
+        {
+          "text": "Neptune  30.06952752      0.00895439      1.77005520      304.22289287     46.68158724    131.78635853\n          0.00006447      0.00000818      0.00022400      218.46515314      0.01009938     -0.00606302"
+        },
+        {
+          "text": "Jupiter   -0.00012452    0.06064060   -0.35635438   38.35125000"
+        },
+        {
+          "text": "Saturn     0.00025899   -0.13434469    0.87320147   38.35125000"
+        },
+        {
+          "text": "Uranus     0.00058331   -0.97731848    0.17689245    7.67025000"
+        },
+        {
+          "text": "Neptune   -0.00041348    0.68346318   -0.10162547    7.67025000"
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-19.txt"
+    },
+    {
+      "id": 20,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%273%27&CENTER=%27500%4010%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&TLIST=%272488069.5%2C2524593.5%2C2542854.5%2C2542855.5%27&TIME_TYPE=%27TDB%27&OUT_UNITS=%27AU-D%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_CORR=%27NONE%27&VEC_TABLE=%272%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27YES%27",
+      "title": "Horizons earth barycenter extended-range geometric vectors, J2000 ecliptic",
+      "quotes": [
+        {
+          "text": "Target body name: Earth-Moon Barycenter (3)       {source: DE441}"
+        },
+        {
+          "text": "Center body name: Sun (10)                        {source: DE441}"
+        },
+        {
+          "text": "Output units    : AU-D"
+        },
+        {
+          "text": "Reference frame : Ecliptic of J2000.0"
+        },
+        {
+          "text": "2488069.500000000, A.D. 2100-Jan-01 00:00:00.0000, -1.574347093273749E-01,  9.706900209623327E-01, -2.176447797994902E-04, -1.726170063921141E-02, -2.819905159128838E-03,  1.028122540158362E-06,"
+        },
+        {
+          "text": "2524593.500000000, A.D. 2200-Jan-01 00:00:00.0000, -1.289288430334002E-01,  9.749737886059443E-01, -4.346062309896769E-04, -1.733400798887196E-02, -2.322878990225642E-03,  1.814941647120125E-06,"
+        },
+        {
+          "text": "2542854.500000000, A.D. 2249-Dec-31 00:00:00.0000, -9.723651480941890E-02,  9.787539653256891E-01, -5.487823670749143E-04, -1.739739131197521E-02, -1.768698465734146E-03,  1.977323877279380E-06,"
+        },
+        {
+          "text": "2542855.500000000, A.D. 2250-Jan-01 00:00:00.0000, -1.146178828757425E-01,  9.768331677308504E-01, -5.467198272633915E-04, -1.736444323688952E-02, -2.072802994601866E-03,  2.147652975908134E-06,"
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-20.txt"
+    },
+    {
+      "id": 21,
+      "url": "https://ssd.jpl.nasa.gov/api/horizons.api?format=json&COMMAND=%279%27&CENTER=%27500%4010%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27VECTORS%27&TLIST=%272488069.5%2C2524593.5%2C2542854.5%2C2542855.5%27&TIME_TYPE=%27TDB%27&OUT_UNITS=%27AU-D%27&REF_PLANE=%27ECLIPTIC%27&REF_SYSTEM=%27ICRF%27&VEC_CORR=%27NONE%27&VEC_TABLE=%272%27&CSV_FORMAT=%27YES%27&OBJ_DATA=%27YES%27",
+      "title": "Horizons pluto barycenter extended-range geometric vectors, J2000 ecliptic",
+      "quotes": [
+        {
+          "text": "Target body name: Pluto Barycenter (9)            {source: DE441}"
+        },
+        {
+          "text": "Center body name: Sun (10)                        {source: DE441}"
+        },
+        {
+          "text": "Output units    : AU-D"
+        },
+        {
+          "text": "Reference frame : Ecliptic of J2000.0"
+        },
+        {
+          "text": "2488069.500000000, A.D. 2100-Jan-01 00:00:00.0000,  3.967530591458252E+01,  2.490476786647837E+01, -1.414319843178389E+01, -9.795488611978001E-04,  1.898778871741209E-03,  7.973051403131388E-05,"
+        },
+        {
+          "text": "2524593.500000000, A.D. 2200-Jan-01 00:00:00.0000, -2.742049190290206E+01,  2.233848484600256E+01,  5.544325826369851E+00, -1.160731881339358E-03, -2.693559632186919E-03,  6.254780082248352E-04,"
+        },
+        {
+          "text": "2542854.500000000, A.D. 2249-Dec-31 00:00:00.0000, -7.614134817802084E+00, -2.901669242228223E+01,  5.304689389673120E+00,  3.097527780431726E-03, -1.320213772503653E-03, -7.561665736891672E-04,"
+        },
+        {
+          "text": "2542855.500000000, A.D. 2250-Jan-01 00:00:00.0000, -7.611037252586199E+00, -2.901801248857316E+01,  5.303933195398480E+00,  3.097602644409486E-03, -1.319918813267573E-03, -7.562219735994316E-04,"
+        }
+      ],
+      "evidencePath": "tests/fixtures/science/source-21.txt"
     }
   ],
   "claims": [
@@ -700,6 +861,161 @@
       "claim": "pluto independent geometric vector at JD TDB 2469807.500000000.",
       "sourceId": 17,
       "quoteIndex": 8
+    },
+    {
+      "claim": "mercury: active long-range base elements and secular rates (8.10.3; eight rows cross-checked against Table 2a).",
+      "sourceId": 18,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "venus: active long-range base elements and secular rates (8.10.3; eight rows cross-checked against Table 2a).",
+      "sourceId": 18,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "earth: active long-range base elements and secular rates (8.10.3; eight rows cross-checked against Table 2a).",
+      "sourceId": 18,
+      "quoteIndex": 2
+    },
+    {
+      "claim": "mars: active long-range base elements and secular rates (8.10.3; eight rows cross-checked against Table 2a).",
+      "sourceId": 18,
+      "quoteIndex": 3
+    },
+    {
+      "claim": "jupiter: active long-range base elements and secular rates (8.10.3; eight rows cross-checked against Table 2a).",
+      "sourceId": 18,
+      "quoteIndex": 4
+    },
+    {
+      "claim": "saturn: active long-range base elements and secular rates (8.10.3; eight rows cross-checked against Table 2a).",
+      "sourceId": 18,
+      "quoteIndex": 5
+    },
+    {
+      "claim": "uranus: active long-range base elements and secular rates (8.10.3; eight rows cross-checked against Table 2a).",
+      "sourceId": 18,
+      "quoteIndex": 6
+    },
+    {
+      "claim": "neptune: active long-range base elements and secular rates (8.10.3; eight rows cross-checked against Table 2a).",
+      "sourceId": 18,
+      "quoteIndex": 7
+    },
+    {
+      "claim": "pluto: active long-range base elements and secular rates (8.10.3; eight rows cross-checked against Table 2a).",
+      "sourceId": 18,
+      "quoteIndex": 8
+    },
+    {
+      "claim": "jupiter: active mean-anomaly correction b/c/s/f (8.10.4); Pluto has b only, blank terms interpreted as zero.",
+      "sourceId": 18,
+      "quoteIndex": 9
+    },
+    {
+      "claim": "saturn: active mean-anomaly correction b/c/s/f (8.10.4); Pluto has b only, blank terms interpreted as zero.",
+      "sourceId": 18,
+      "quoteIndex": 10
+    },
+    {
+      "claim": "uranus: active mean-anomaly correction b/c/s/f (8.10.4); Pluto has b only, blank terms interpreted as zero.",
+      "sourceId": 18,
+      "quoteIndex": 11
+    },
+    {
+      "claim": "neptune: active mean-anomaly correction b/c/s/f (8.10.4); Pluto has b only, blank terms interpreted as zero.",
+      "sourceId": 18,
+      "quoteIndex": 12
+    },
+    {
+      "claim": "pluto: active mean-anomaly correction b/c/s/f (8.10.4); Pluto has b only, blank terms interpreted as zero.",
+      "sourceId": 18,
+      "quoteIndex": 13
+    },
+    {
+      "claim": "The active long-range fit covers 3000 BC–3000 AD and requires the outer-body mean-anomaly terms.",
+      "sourceId": 18,
+      "quoteIndex": 14
+    },
+    {
+      "claim": "Horizons earth barycenter extended-range geometric vectors, J2000 ecliptic: reference metadata.",
+      "sourceId": 20,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Horizons earth barycenter extended-range geometric vectors, J2000 ecliptic: reference metadata.",
+      "sourceId": 20,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "Horizons earth barycenter extended-range geometric vectors, J2000 ecliptic: reference metadata.",
+      "sourceId": 20,
+      "quoteIndex": 2
+    },
+    {
+      "claim": "Horizons earth barycenter extended-range geometric vectors, J2000 ecliptic: reference metadata.",
+      "sourceId": 20,
+      "quoteIndex": 3
+    },
+    {
+      "claim": "Horizons earth barycenter extended-range geometric vectors, J2000 ecliptic: literal geometric vector row.",
+      "sourceId": 20,
+      "quoteIndex": 4
+    },
+    {
+      "claim": "Horizons earth barycenter extended-range geometric vectors, J2000 ecliptic: literal geometric vector row.",
+      "sourceId": 20,
+      "quoteIndex": 5
+    },
+    {
+      "claim": "Horizons earth barycenter extended-range geometric vectors, J2000 ecliptic: literal geometric vector row.",
+      "sourceId": 20,
+      "quoteIndex": 6
+    },
+    {
+      "claim": "Horizons earth barycenter extended-range geometric vectors, J2000 ecliptic: literal geometric vector row.",
+      "sourceId": 20,
+      "quoteIndex": 7
+    },
+    {
+      "claim": "Horizons pluto barycenter extended-range geometric vectors, J2000 ecliptic: reference metadata.",
+      "sourceId": 21,
+      "quoteIndex": 0
+    },
+    {
+      "claim": "Horizons pluto barycenter extended-range geometric vectors, J2000 ecliptic: reference metadata.",
+      "sourceId": 21,
+      "quoteIndex": 1
+    },
+    {
+      "claim": "Horizons pluto barycenter extended-range geometric vectors, J2000 ecliptic: reference metadata.",
+      "sourceId": 21,
+      "quoteIndex": 2
+    },
+    {
+      "claim": "Horizons pluto barycenter extended-range geometric vectors, J2000 ecliptic: reference metadata.",
+      "sourceId": 21,
+      "quoteIndex": 3
+    },
+    {
+      "claim": "Horizons pluto barycenter extended-range geometric vectors, J2000 ecliptic: literal geometric vector row.",
+      "sourceId": 21,
+      "quoteIndex": 4
+    },
+    {
+      "claim": "Horizons pluto barycenter extended-range geometric vectors, J2000 ecliptic: literal geometric vector row.",
+      "sourceId": 21,
+      "quoteIndex": 5
+    },
+    {
+      "claim": "Horizons pluto barycenter extended-range geometric vectors, J2000 ecliptic: literal geometric vector row.",
+      "sourceId": 21,
+      "quoteIndex": 6
+    },
+    {
+      "claim": "Horizons pluto barycenter extended-range geometric vectors, J2000 ecliptic: literal geometric vector row.",
+      "sourceId": 21,
+      "quoteIndex": 7
     }
   ]
 }

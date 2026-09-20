@@ -5,33 +5,35 @@ import { existsSync, readFileSync } from 'node:fs';
 const moduleUrl = new URL('../src/science.js', import.meta.url);
 const evidence = name => JSON.parse(readFileSync(new URL(`./fixtures/science/${name}.json`, import.meta.url), 'utf8'));
 
-test('Pluto remains within the measured modern-Horizons regression tolerance', async () => {
+test('long-range Pluto remains within its measured modern-Horizons regression tolerance', async () => {
   const { positionAt } = await import(moduleUrl);
-  const samples = evidence('horizons-vectors').filter(row => row.body === 'pluto');
-  assert.equal(samples.length, 6);
+  const samples = [...evidence('horizons-vectors'), ...evidence('horizons-extended-vectors')].filter(row => row.body === 'pluto');
+  assert.equal(samples.length, 10);
   for (const expected of samples) {
     const actual = positionAt('pluto', expected.date);
-    assert.ok(Math.hypot(actual.x - expected.x, actual.y - expected.y, actual.z - expected.z) < 0.012);
+    assert.ok(Math.hypot(actual.x - expected.x, actual.y - expected.y, actual.z - expected.z) < 0.032, expected.date); // Long-fit measured maximum: 0.030958 AU; see docs/science.md.
   }
 });
 
 test('all nine coefficient sets and secular rates agree with the parsed official tables', async () => {
   const { BODIES, positionAt } = await import(moduleUrl);
-  const table = evidence('elements'), physical = evidence('physical');
+  const table = evidence('long-range-elements'), descriptors = evidence('elements'), physical = evidence('physical');
   assert.equal(Object.keys(table).length, 9);
   assert.equal(Object.keys(physical).length, 9);
   for (const body of BODIES) {
-    assert.equal(body.aAU, table[body.id].base[0]);
-    assert.equal(body.eccentricity, table[body.id].base[1]);
-    assert.equal(body.inclinationDeg, table[body.id].base[2]);
+    assert.equal(body.aAU, descriptors[body.id].base[0]);
+    assert.equal(body.eccentricity, descriptors[body.id].base[1]);
+    assert.equal(body.inclinationDeg, descriptors[body.id].base[2]);
     assert.equal(body.radiusKm, physical[body.id].radiusKm);
     assert.equal(body.periodDays, physical[body.id].periodYears * 365.25);
     assert.ok(Object.isFrozen(body));
-    for (const date of ['1800-01-01', '1900-07-15', '2000-01-01T12:00:00Z', '2026-09-05', '2050-01-01']) {
+    for (const date of ['1800-01-01', '1900-07-15', '2000-01-01T12:00:00Z', '2026-09-05', '2050-01-01', '2100-01-01', '2200-01-01', '2250-01-01']) {
       const t = (Date.parse(date) - Date.UTC(2000, 0, 1, 12)) / (36525 * 86400000);
       const [a, e, i, L, p, o] = table[body.id].base.map((v, n) => v + t * table[body.id].rate[n]);
       const rad = Math.PI / 180;
-      const M = (((L - p) % 360 + 360) % 360) * rad;
+      const [b, c, s, f] = table[body.id].correction;
+      const corrected = L - p + b * t * t + c * Math.cos(f * t * rad) + s * Math.sin(f * t * rad);
+      const M = ((corrected % 360 + 360) % 360) * rad;
       // Independent bisection solver and polar-coordinate transform.
       let low = 0, high = 2 * Math.PI;
       for (let n = 0; n < 60; n++) {
@@ -83,16 +85,16 @@ test('invalid IDs and malformed, ambiguous, or impossible dates throw rather tha
   }
 });
 
-test('model metadata exposes and enforces the conservative published validity interval', async () => {
+test('one long-range model enforces the inclusive 1800–2250 application interval', async () => {
   const { SCIENCE, positionAt, orbitPoints } = await import(moduleUrl);
   assert.ok(SCIENCE, 'SCIENCE metadata must exist');
-  assert.deepEqual(SCIENCE.range, { start: '1800-01-01', end: '2050-01-01' });
+  assert.deepEqual(SCIENCE.range, { start: '1800-01-01', end: '2250-01-01' });
   assert.match(SCIENCE.model, /JPL/);
   assert.match(SCIENCE.sourceUrl, /ssd\.jpl\.nasa\.gov/);
   assert.match(SCIENCE.limitations.join(' '), /barycenter/i);
   for (const fn of [positionAt, orbitPoints]) {
-    for (const date of ['1800-01-01', '2050-01-01']) assert.doesNotThrow(() => fn('earth', date));
-    for (const date of ['1799-12-31T23:59:59.999Z', '2050-01-01T00:00:00.001Z', '2050-12-31']) {
+    for (const date of ['1800-01-01', '2050-01-01', '2100-01-01', '2250-01-01']) assert.doesNotThrow(() => fn('earth', date));
+    for (const date of ['1799-12-31T23:59:59.999Z', '2250-01-01T00:00:00.001Z', '2250-12-31']) {
       assert.throws(() => fn('earth', date), RangeError);
     }
   }
@@ -101,9 +103,9 @@ test('model metadata exposes and enforces the conservative published validity in
 test('orbitPoints returns a closed, correctly oriented ellipse at the selected date', async () => {
   const { BODIES, orbitPoints, positionAt } = await import(moduleUrl);
   assert.equal(typeof orbitPoints, 'function');
-  const fixtures = evidence('elements');
+  const fixtures = evidence('long-range-elements');
   for (const body of BODIES) {
-    for (const date of ['1900-01-01T00:00:00Z', '2000-01-01T12:00:00Z', '2049-12-31T00:00:00Z']) {
+    for (const date of ['1900-01-01T00:00:00Z', '2000-01-01T12:00:00Z', '2049-12-31T00:00:00Z', '2250-01-01T00:00:00Z']) {
       const points = orbitPoints(body.id, date, 180);
       assert.equal(points.length, 181);
       assert.deepEqual(points[0], points.at(-1));
@@ -126,8 +128,8 @@ test('orbitPoints returns a closed, correctly oriented ellipse at the selected d
 test('Earth positions match independent Horizons EMB vectors across the supported interval', async () => {
   const { positionAt } = await import(moduleUrl);
   assert.equal(typeof positionAt, 'function');
-  const samples = evidence('horizons-vectors').filter(row => row.body === 'earth');
-  assert.equal(samples.length, 6);
+  const samples = [...evidence('horizons-vectors'), ...evidence('horizons-extended-vectors')].filter(row => row.body === 'earth');
+  assert.equal(samples.length, 10);
   for (const expected of samples) {
     const actual = positionAt('earth', expected.date);
     const errorAU = Math.hypot(actual.x - expected.x, actual.y - expected.y, actual.z - expected.z);
@@ -151,5 +153,27 @@ test('science module exposes the nine ordered, sourced body records', async () =
     }
     assert.ok(body.radiusKm > 0 && body.periodDays > 0 && body.aAU > 0);
     assert.ok(body.eccentricity >= 0 && body.eccentricity < 1);
+  }
+});
+
+test('fixed descriptors and original J2000 arm indexing survive an ephemeris refit', async () => {
+  const { BODIES, positionAt } = await import(moduleUrl);
+  const { createDriveTrain, DRIVE_EPOCH } = await import('../src/drive-train.js');
+  const drive = createDriveTrain(), before = evidence('mechanical-j2000');
+  const keyed = drive.atDate(new Date(DRIVE_EPOCH));
+  assert.equal(before.length, BODIES.length);
+  for (const [index, expected] of before.entries()) {
+    const body = BODIES[index], output = keyed.outputs[index];
+    assert.equal(body.id, expected.id);
+    for (const key of ['aAU', 'eccentricity', 'inclinationDeg']) assert.equal(body[key], expected[key]);
+    assert.equal(output.mountingAngle, expected.mountingAngle);
+    assert.equal(output.angle, expected.mountingAngle);
+    const longitude = ((output.angle * 180 / Math.PI) % 360 + 360) % 360;
+    assert.ok(Math.abs(longitude - expected.longitudeDeg) < 1e-12);
+    // Active astronomy must not be used to re-key the existing instrument.
+    assert.notEqual(positionAt(body.id, new Date(DRIVE_EPOCH)).longitudeDeg, expected.longitudeDeg);
+    const future = drive.atDate(new Date('2250-01-01')).outputs[index];
+    assert.equal(future.ratio, output.ratio);
+    assert.equal(future.mountingAngle, output.mountingAngle);
   }
 });
