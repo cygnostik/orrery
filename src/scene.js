@@ -8,7 +8,7 @@ import {MECHANICAL_RADII, FAMILY_ENVELOPES} from './lunar-layout.js';
 import { BODY_HEIGHT, BODY_RADII, DISPLAY_RADII, DISTANCE_FACTOR, createInstrument, createPlanet, mapPosition, replaceSurfaceTexture } from './scene-assets.js';
 
 /** Museum specimen renderer. The host exclusively owns time and requestAnimationFrame. */
-export async function createOrrery({container, onSelect = () => {}, onError = () => {}, onManualTurn = () => {}, onAutoToggle = () => {}} = {}) {
+export async function createOrrery({container, onSelect = () => {}, onError = () => {}, onManualTurn = () => {}, onAutoToggle = () => {}, onInspect = () => {}, onFollowChange = () => {}} = {}) {
   if (!container?.appendChild) throw new TypeError('createOrrery requires a DOM container');
   const {BODIES, positionAt, orbitPoints} = await import('./science.js');
   let renderer;
@@ -165,11 +165,56 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
 
   let state = {date: new Date('2000-01-01T12:00:00Z'), mode: 'mechanical', selected: 'earth', pluto: false, scale: 'display', labels: false, playing: false, baseStyle: 'nebula', moons: true, lightsOut: false};
   let disposed = false, ready = false, contextLost = false, width = 1, height = 1, frame = 0, orbitKey = '', home = true, lastView = 'home';
-  let inspectedMoon = null;
+  let inspectedMoon = null, followSubject = null;
+  const followPosition = new THREE.Vector3(), followDelta = new THREE.Vector3();
+  function subjectPosition(id) {
+    const planet = planets.get(id);
+    if (planet?.visible) return planet.position;
+    return state.moons ? satellites.inspectionTarget(id)?.position : null;
+  }
+  function setFollow(id) {
+    const position = id && subjectPosition(id);
+    followSubject = position && !disposed && !contextLost ? id : null;
+    if (followSubject) followPosition.copy(position);
+    onFollowChange(followSubject); return Boolean(followSubject);
+  }
+  function trackSubject() {
+    if (!followSubject) return;
+    const position = subjectPosition(followSubject);
+    if (!position) {setFollow(null); return;}
+    followDelta.copy(position).sub(followPosition);
+    camera.position.add(followDelta); controls.target.add(followDelta);
+    followPosition.copy(position);
+  }
+  // Orbit/zoom retain the target; only panning translates OrbitControls.target.
+  const lastTarget = new THREE.Vector3();
+  function onControlChange() {
+    lastPick = null;
+    if (followSubject && controls.target.distanceToSquared(lastTarget) > 1e-12) setFollow(null);
+    lastTarget.copy(controls.target);
+  }
+  controls.addEventListener('change', onControlChange);
   const scratch = new THREE.Vector3();
   const raycaster = new THREE.Raycaster(); raycaster.layers.enable(1); raycaster.layers.enable(2);
   const pointer = new THREE.Vector2();
-  let down = null, activeControl = null;
+  let down = null, activeControl = null, lastPick = null;
+  const activePointers = new Set();
+  function pick(id, event) {
+    const now = performance.now(), previous = lastPick;
+    const body = previous && (planets.get(previous.id) || satellites.bodies.get(previous.id));
+    const p = body?.getWorldPosition(new THREE.Vector3()).project(camera);
+    const twice = previous && now - previous.time < 450 &&
+      Math.hypot(event.clientX - previous.x, event.clientY - previous.y) <= 6 &&
+      body && effectivelyVisible(body) && p.z > -1 && p.z < 1 && Math.abs(p.x) < 1 && Math.abs(p.y) < 1;
+    // Playback can move the first subject off this ray between two clicks.
+    // The caller has already vetoed foreground machinery at the second click.
+    lastPick = twice || !id ? null : {id, time: now, x: event.clientX, y: event.clientY};
+    if (twice) onInspect(previous.id); else onSelect(id);
+  }
+  function effectivelyVisible(object) {
+    for (let node = object; node; node = node.parent) if (!node.visible) return false;
+    return Boolean(object);
+  }
   const crankPlane = new THREE.Plane(), planeHit = new THREE.Vector3(), crankOrigin = new THREE.Vector3();
 
   function worldRadius() {
@@ -178,7 +223,8 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
   }
   function resetView(view = 'home') {
     if (disposed) return;
-    inspectedMoon = null; updateSatellites();
+    lastPick = null;
+    setFollow(null);inspectedMoon = null; updateSatellites();
     controls.maxPolarAngle = Math.PI * 0.485;
     controls.minDistance = 1.2;
     lastView = view; home = true;
@@ -199,10 +245,11 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
   }
   function resize() {
     if (disposed) return;
+    lastPick = null;
     const bounds = container.getBoundingClientRect();
     if (!bounds.width || !bounds.height) return;
     width = bounds.width; height = bounds.height;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, state.renderQuality || 1.75));
     renderer.setSize(width, height, false);
     camera.aspect = width / height; camera.updateProjectionMatrix();
     if (home) resetView(lastView);
@@ -219,11 +266,19 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
     const positions = candidate.mode === 'observatory' ? BODIES.map(body => positionAt(body.id, date)) : null;
     mechanism.update(date, candidate.playing);
     const refit = candidate.mode !== state.mode || candidate.scale !== state.scale || candidate.pluto !== state.pluto;
+    if (refit || candidate.moons !== state.moons ||
+      candidate.selected !== state.selected && candidate.selected !== lastPick?.id) lastPick = null;
     if (candidate.selected !== state.selected || candidate.mode !== state.mode || !candidate.moons) inspectedMoon = null;
+    const qualityChanged = candidate.renderQuality !== state.renderQuality;
+    if (followSubject && (candidate.selected !== state.selected || candidate.mode !== state.mode || candidate.scale !== state.scale)) setFollow(null);
     state = {...candidate, date};
+    const reflectionSize = [512,1024,2048].includes(state.reflectionQuality) ? state.reflectionQuality : 1024;
+    const reflectionTarget = instrument.getObjectByName('glass-reflection').getRenderTarget();
+    if (reflectionTarget.width !== reflectionSize) reflectionTarget.setSize(reflectionSize, reflectionSize);
+    if (qualityChanged) resize();
     const mechanical = state.mode === 'mechanical';
     if (!mechanical && activeControl) releasePointer();
-    mechanism.select(state.selected, signal); setBaseStyle(state.baseStyle);
+    mechanism.select(state.driveHighlight && !inspectedMoon && mechanical ? state.selected : null, signal, state.lightsOut); setBaseStyle(state.baseStyle);
     instrument.visible = mechanical; orbitGroup.visible = !mechanical; stars.visible = !mechanical;
     key.visible = fill.visible = mechanical && !state.lightsOut;
     scene.environmentIntensity = state.lightsOut ? 0 : 0.95;
@@ -264,11 +319,13 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
       orbitKey = nextOrbitKey;
     }
     if (refit) resetView(lastView);
+    trackSubject();lastTarget.copy(controls.target);
   }
   function updateSatellites() {
     satellites.update(state.date, planets, {...state, labels: state.labels && !inspectedMoon});
   }
   function focusExtent(position, radius, viewDirection = null) {
+    lastPick = null;
     home = false;
     const direction = viewDirection?.clone().normalize() || camera.position.clone().sub(controls.target).normalize();
     controls.maxPolarAngle = viewDirection?.y < 0 ? Math.PI - 0.015 : Math.PI * 0.485;
@@ -286,7 +343,7 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
     if (!planet?.visible || disposed) return false;
     inspectedMoon = null; updateSatellites();
     const radius = Math.max(BODY_RADII[id] * (id === 'saturn' ? 2.3 : 1), state.moons ? satellites.inspectionRadius(id) : 0) * planet.scale.x;
-    return focusExtent(planet.position, radius);
+    setFollow(null);focusExtent(planet.position, radius);lastTarget.copy(controls.target);setFollow(id);return true;
   }
   function focusMoon(id) {
     if (disposed) return false;
@@ -300,11 +357,12 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
       direction = sun.position.clone().sub(target.position); direction.y = 0;
       direction.normalize(); direction.y = id === 'enceladus' ? -1.5 : 1.5;
     }
-    return focusExtent(target.position, target.radius, direction);
+    setFollow(null);focusExtent(target.position, target.radius, direction);lastTarget.copy(controls.target);setFollow(id);return true;
   }
   function clearInspection() {
     if (disposed) return false;
-    inspectedMoon = null; updateSatellites(); home = false;
+    lastPick = null;
+    setFollow(null);inspectedMoon = null; updateSatellites(); home = false;
     // Release the subject without moving the eye or orbit target. Pan remains
     // freely available; permit close inspection and looking beneath the arms.
     controls.minDistance = 0.08; controls.maxPolarAngle = Math.PI - 0.015;
@@ -317,6 +375,7 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
   }
   function focusCraft() {
     if (disposed || state.mode !== 'mechanical') return false;
+    setFollow(null);
     const crowns = instrument.getObjectByName('black-opal-cabochons');
     if (!crowns?.count) return false;
     instrument.updateMatrixWorld(true);
@@ -386,16 +445,21 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
   function captureEvent(event) { event.preventDefault(); event.stopImmediatePropagation(); }
   function releasePointer() {
     const id = activeControl?.id;
+    lastPick = null;
     activeControl = null; down = null; controls.enabled = true;
     renderer.domElement.style.cursor = '';
     if (id !== undefined && renderer.domElement.hasPointerCapture(id)) renderer.domElement.releasePointerCapture(id);
   }
   function pointerDown(event) {
+    if (disposed || contextLost) return;
+    activePointers.add(event.pointerId);
+    if (activePointers.size > 1) { down = null; lastPick = null; }
     if (activeControl) {captureEvent(event); return;}
-    if (event.button !== 0 || down && down.id !== event.pointerId) { down = null; return; }
+    if (event.button !== 0 || activePointers.size > 1) { down = null; lastPick = null; return; }
     down = {x: event.clientX, y: event.clientY, id: event.pointerId};
     const kind = controlHit(event);
     if (!kind) return;
+    lastPick = null;
     activeControl = {kind, id: event.pointerId, angle: kind === 'crank' ? crankAngle(event) : null};
     controls.enabled = false; renderer.domElement.setPointerCapture(event.pointerId);
     renderer.domElement.style.cursor = kind === 'crank' ? 'grabbing' : 'pointer';
@@ -403,6 +467,9 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
     if (kind === 'crank') onManualTurn(0);
   }
   function pointerMove(event) {
+    if (down && event.pointerId === down.id && Math.hypot(event.clientX - down.x, event.clientY - down.y) > 6) {
+      down.moved = true; lastPick = null;
+    }
     if (!activeControl) {renderer.domElement.style.cursor = controlHit(event) === 'crank' ? 'grab' : controlHit(event) ? 'pointer' : ''; return;}
     captureEvent(event);
     if (activeControl.id !== event.pointerId || activeControl.kind !== 'crank') return;
@@ -413,28 +480,27 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
     if (delta) onManualTurn(delta);
   }
   function pointerUp(event) {
+    activePointers.delete(event.pointerId);
+    if (disposed || contextLost) return;
     if (activeControl) {
       captureEvent(event);
       if (activeControl.id !== event.pointerId) return;
       const toggle = activeControl.kind === 'auto' && down && Math.hypot(event.clientX - down.x, event.clientY - down.y) < 12;
       releasePointer(); if (toggle) onAutoToggle(); return;
     }
-    if (!down || event.pointerId !== down.id || Math.hypot(event.clientX - down.x, event.clientY - down.y) > 6) { down = null; return; }
+    if (!down || down.moved || event.pointerId !== down.id || Math.hypot(event.clientX - down.x, event.clientY - down.y) > 6) { down = null; lastPick = null; return; }
     down = null;
     const rect = renderer.domElement.getBoundingClientRect();
     pointer.set((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1);
-    scene.updateMatrixWorld(); raycaster.setFromCamera(pointer, camera);
-    const activeBodies = [...planets.values(), ...satellites.bodies.values()].filter(body => body.visible);
-    const hit = raycaster.intersectObjects([...activeBodies, ...(instrument.visible ? [instrument] : [])], true).find(result => {
-      for (let object = result.object; object; object = object.parent) if (!object.visible) return false;
-      return true;
-    });
+    scene.updateMatrixWorld(); camera.updateMatrixWorld(); raycaster.setFromCamera(pointer, camera);
+    const activeBodies = [...planets.values(), ...satellites.bodies.values()].filter(effectivelyVisible);
+    const hit = raycaster.intersectObjects([...activeBodies, ...(instrument.visible ? [instrument] : [])], true).find(result => effectivelyVisible(result.object));
     if (hit) {
       // A foreground mechanical part must not select a planet behind it.
       for (let object = hit.object; object; object = object.parent) {
-        if (activeBodies.includes(object)) { onSelect(object.userData.moonId || object.userData.bodyId); return; }
+        if (activeBodies.includes(object)) { pick(object.userData.moonId || object.userData.bodyId, event); return; }
       }
-      onSelect(null); return;
+      lastPick = null; onSelect(null); return;
     }
     // Tiny worlds remain tappable without expanding their rendered sphere size.
     let closest = null, minimum = event.pointerType === 'touch' ? 22 : 13;
@@ -444,11 +510,17 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
       const d = Math.hypot((p.x * 0.5 + 0.5) * rect.width - (event.clientX - rect.left), (-p.y * 0.5 + 0.5) * rect.height - (event.clientY - rect.top));
       if (d < minimum) { minimum = d; closest = body.userData.moonId || body.userData.bodyId; }
     }
-    onSelect(closest);
+    pick(closest, event);
   }
-  function onControlStart() { home = false; }
-  function onContextLost(event) { event.preventDefault(); contextLost = true; ready = false; onError(new Error('WebGL context lost. Reload to restore the instrument.')); }
-  function onPointerCancel(event) { if (activeControl && (!event || activeControl.id === event.pointerId)) releasePointer(); else down = null; }
+  function onControlStart() { home = false; if (!down) lastPick = null; }
+  function onContextLost(event) { event.preventDefault(); lastPick = null; down = null; activePointers.clear(); contextLost = true;setFollow(null); ready = false; onError(new Error('WebGL context lost. Reload to restore the instrument.')); }
+  function onPointerCancel(event) {
+    activePointers.delete(event.pointerId);
+    // OrbitControls normally releases capture after a completed click, too.
+    if (event.type === 'lostpointercapture' && !down && !activeControl) return;
+    lastPick = null;
+    if (activeControl && activeControl.id === event.pointerId) releasePointer(); else down = null;
+  }
   controls.addEventListener('start', onControlStart);
   renderer.domElement.addEventListener('pointerdown', pointerDown, true);
   renderer.domElement.addEventListener('pointermove', pointerMove, true);
@@ -478,13 +550,13 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
       const arm = arms.get(output.id);
       return {id: output.id, outputAngle: output.angle, armAngle: arm.rotation.y + arm.parent.rotation.y, planetPosition: planets.get(output.id).position.toArray(), visible: planets.get(output.id).visible};
     });
-    return {lightsOut: state.lightsOut, earthOrientation: {model: 'approximate UTC / solar-relative', georeferenced: !textureFallbacks.includes('earth'), quaternion: planets.get('earth').getObjectByName('earth-surface').parent.quaternion.toArray()}, sunlightShadow: {mapSize: sunLight.shadow.mapSize.toArray(), radius: sunLight.shadow.radius, bias: sunLight.shadow.bias, normalBias: sunLight.shadow.normalBias}, driveOutputs, lunarMechanism, moonOutputs, moonLabels: [...satellites.labels].map(([id, label]) => ({id, visible: label.visible, layer: label.layers.mask})), moonCount: [...satellites.bodies.values()].filter(body => body.visible).length, moonModel: satellites.model.model, controlPoints: controlPoints(), baseStyle: state.baseStyle, mechanism: mechanism.diagnostics(), draggingCrank: activeControl?.kind === 'crank', camera: {position: camera.position.toArray(), target: controls.target.toArray()}, controls: {crank: controlProjection(mechanism.crankHandle), crankCenter: controlProjection(mechanism.crankCenter), autoSwitch: controlProjection(mechanism.switchTip)},ready: ready && !disposed && !contextLost, revision: THREE.REVISION, backend: 'WebGL2', mode: state.mode, bodyCount: [...planets.values()].filter(body => body.visible).length, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, frame, width, height, pixelRatio: renderer.getPixelRatio(), selected: state.selected, scale: state.scale, disposed, textureFallbacks: [...textureFallbacks], stars: 'decorative seeded positions; not an astronomical catalogue'};
+    return {followSubject, reflectionSize: instrument.getObjectByName('glass-reflection').getRenderTarget().width, lightsOut: state.lightsOut, earthOrientation: {model: 'approximate UTC / solar-relative', georeferenced: !textureFallbacks.includes('earth'), quaternion: planets.get('earth').getObjectByName('earth-surface').parent.quaternion.toArray()}, sunlightShadow: {mapSize: sunLight.shadow.mapSize.toArray(), radius: sunLight.shadow.radius, bias: sunLight.shadow.bias, normalBias: sunLight.shadow.normalBias}, driveOutputs, lunarMechanism, moonOutputs, moonLabels: [...satellites.labels].map(([id, label]) => ({id, visible: label.visible, layer: label.layers.mask})), moonCount: [...satellites.bodies.values()].filter(body => body.visible).length, moonModel: satellites.model.model, controlPoints: controlPoints(), baseStyle: state.baseStyle, mechanism: mechanism.diagnostics(), draggingCrank: activeControl?.kind === 'crank', camera: {position: camera.position.toArray(), target: controls.target.toArray()}, controls: {crank: controlProjection(mechanism.crankHandle), crankCenter: controlProjection(mechanism.crankCenter), autoSwitch: controlProjection(mechanism.switchTip)},ready: ready && !disposed && !contextLost, revision: THREE.REVISION, backend: 'WebGL2', mode: state.mode, bodyCount: [...planets.values()].filter(body => body.visible).length, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, frame, width, height, pixelRatio: renderer.getPixelRatio(), selected: state.selected, scale: state.scale, disposed, textureFallbacks: [...textureFallbacks], stars: 'decorative seeded positions; not an astronomical catalogue'};
   }
   function dispose() {
     if (disposed) return;
-    releasePointer(); disposed = true; ready = false; observer.disconnect();
+    setFollow(null);releasePointer(); disposed = true; ready = false; observer.disconnect();
     disposeFinishes();
-    controls.removeEventListener('start', onControlStart); controls.dispose();
+    controls.removeEventListener('change', onControlChange);controls.removeEventListener('start', onControlStart); controls.dispose();
     renderer.domElement.removeEventListener('pointerdown', pointerDown, true);
     renderer.domElement.removeEventListener('pointermove', pointerMove, true);
     renderer.domElement.removeEventListener('pointerup', pointerUp, true);
@@ -506,5 +578,5 @@ export async function createOrrery({container, onSelect = () => {}, onError = ()
     renderer.renderLists.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
   }
   update(state); resize(); resetView(); render(0);
-  return {update, render, resize, resetView, focusBody, focusMoon, focusCraft, clearInspection, focusMechanism, projectLabels, controlPoints, diagnostics, dispose};
+  return {setFollow, update, render, resize, resetView, focusBody, focusMoon, focusCraft, clearInspection, focusMechanism, projectLabels, controlPoints, diagnostics, dispose};
 }

@@ -37,7 +37,7 @@ export function bindMechanicalControls({readState,manualTurn,toggleAuto,signal})
  on(document,'visibilitychange',()=>{if(document.hidden)release();});
  signal.addEventListener('abort',release,{once:true});
  return {
-  sync(){const s=readState();section.hidden=s.mode!=='mechanical';
+  sync(){const s=readState();section.hidden=false;
    auto.setAttribute('aria-checked',String(s.playing));
    document.querySelector('#drive-state').textContent=s.playing?'Drive engaged':'Disengaged';
    const turns=(s.date.getTime()-Date.UTC(2000,0,1,12))/(DAYS_PER_TURN*86400000);

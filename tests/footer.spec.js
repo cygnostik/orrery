@@ -14,7 +14,7 @@ for(const width of [1440,700,390])test(`footer credits are left-aligned, linked 
  await expect(link).toHaveAttribute('href','https://TrustEdge.gt/');
  await expect(link).toHaveAttribute('target','_blank');
  await expect(link).toHaveAttribute('rel','noopener noreferrer');
- await expect(footer).toContainText('Not everything needs to happen at human speed.');
+ await expect(footer).toContainText('A sky without a little mystery of the universe, is just being alone in the dark.');
  await expect(page.locator('#fullscreen')).toBeVisible();
  const geometry=await credits.evaluate(el=>{
   const r=el.getBoundingClientRect(),f=el.closest('footer'),fr=f.getBoundingClientRect();

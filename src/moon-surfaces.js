@@ -137,10 +137,18 @@ export function createMoonSurface(id) {
     }
     if (id === 'moon') value *= 1 - (1 - smooth(-0.45, -0.13, broad + middle * 0.25)) * 0.28;
     if (id === 'miranda') {
-      const ridge = Math.max(Math.abs(x + 0.22) * 0.85, Math.abs(y - 0.1));
-      const patch = smooth(-0.18, 0.0, z) * (1 - smooth(0.60, 0.7, ridge));
-      value *= 1 - patch * (0.12 + 0.27 * (0.5 + 0.5 * Math.sin(ridge * 88 + middle)));
-      value *= 1 - (1 - smooth(0.008, 0.031, Math.abs(y + x * 0.45 + 0.2))) * 0.27;
+      // Broken corona terrain: skewed, noise-warped scarps with intersecting
+      // angular patches, never concentric square contours. Sphere-space keeps
+      // the seams and deterministic resource contract of the other moons.
+      const u = x + 0.32 * y + broad * 0.13;
+      const v = y - 0.21 * x + middle * 0.06;
+      const terrain = Math.min(0.48-u, u+0.68, 0.55-v, v+0.43, 0.65-u-v);
+      const patch = smooth(-0.14, 0.10, z) * smooth(-0.035, 0.045, terrain);
+      const scarp = Math.abs(v + 0.18 + 0.31 * Math.abs(u + 0.12) + middle * 0.045);
+      const fractures = Math.abs(u - 0.24 * v + small * 0.025 - 0.13);
+      value *= 1 - patch * (0.28 + middle * 0.16 + (1-smooth(0.008,0.034,scarp))*0.23);
+      value *= 1 - (1-smooth(0.005,0.021,fractures))*patch*0.16;
+      value *= 1 - (1-smooth(0.007,0.028,Math.abs(terrain + middle*0.025)))*smooth(-0.15,0.1,z)*0.17;
     }
     if (id === 'charon') {
       const cap = smooth(0.64, 0.79, y + middle * 0.06 + broad * 0.04);

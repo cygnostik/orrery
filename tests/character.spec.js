@@ -1,3 +1,4 @@
+import {panelAction} from './panel-actions.js';
 import {test,expect} from '@playwright/test';
 import {BODIES} from '../src/science.js';
 const ready=async page=>{await page.goto('/');await expect.poll(()=>page.evaluate(()=>window.__orrery?.diagnostics().ready),{timeout:15000}).toBe(true);};
@@ -10,7 +11,7 @@ test('desktop reference detail scrolls within the stage instead of stretching an
 });
 
 test('every selected planet has a distinct surface portrait with reference tilt and eccentricity',async({page})=>{
- await page.goto('/');await expect(page.locator('#body-portrait')).toHaveAttribute('data-body','earth');await page.getByLabel('Include Pluto').check();
+ await page.goto('/');await expect(page.locator('#body-portrait')).toHaveAttribute('data-body','earth');await panelAction(page,'Settings',()=>page.getByLabel('Include Pluto').check());
  const portraits=[];
  for(const [index,body] of BODIES.entries()){
   await page.getByRole('button',{name:`${String(index+1).padStart(2,'0')} ${body.name}`,exact:true}).click();
@@ -47,13 +48,15 @@ test('Saturn favorites are surfaced as individual inspection controls with sourc
  const before=await page.evaluate(()=>window.__orrery.diagnostics().camera.position);
  await page.getByRole('switch',{name:'Automatic movement',exact:true}).click();
  await page.getByRole('button',{name:'Inspect Enceladus',exact:true}).click();
- expect(await page.evaluate(()=>window.__orrery.getState().playing)).toBe(false);
+ expect(await page.evaluate(()=>window.__orrery.getState().playing)).toBe(true);
+ await expect(page.locator('#follow-camera')).toBeChecked();
+ expect(await page.evaluate(()=>window.__orrery.diagnostics().followSubject)).toBe('enceladus');
  await expect(page.locator('#inspection-subject')).toContainText('Enceladus');
  expect(await page.evaluate(()=>window.__orrery.diagnostics().camera.position)).not.toEqual(before);
  const date=await page.evaluate(()=>window.__orrery.getState().date);
- await page.waitForTimeout(200);expect(await page.evaluate(()=>window.__orrery.getState().date)).toBe(date);
+ await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().date)).not.toBe(date);
  const moonTarget=await page.evaluate(()=>window.__orrery.diagnostics().camera.target);
- await page.getByLabel('Show moons').uncheck();await expect(page.locator('#inspection-subject')).toBeHidden();
+ await panelAction(page,'Settings',()=>page.getByLabel('Show moons').uncheck());await expect(page.locator('#inspection-subject')).toBeHidden();
  expect(await page.evaluate(()=>window.__orrery.diagnostics().camera.target)).not.toEqual(moonTarget);
 });
 

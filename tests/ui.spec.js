@@ -1,3 +1,4 @@
+import {panelAction} from './panel-actions.js';
 import {test,expect} from '@playwright/test';
 test('time flow starts at one day per second in the control and instrument state',async({page})=>{
  await page.goto('/');
@@ -14,13 +15,13 @@ test('planet selection, presentation and Pluto share one instrument state',async
  await expect(earth).toHaveAttribute('aria-pressed','true');
  await page.getByRole('button',{name:'06 Saturn',exact:true}).click();
  await expect(page.locator('#body-name')).toHaveText('Saturn');
- await page.getByRole('button',{name:'Observatory',exact:true}).click();
+ await panelAction(page,'Settings',()=>page.getByRole('button',{name:'Observatory',exact:true}).click());
  await expect(page.locator('#scale')).toBeEnabled();
  await expect(page.locator('#body-name')).toHaveText('Saturn');
- await page.getByLabel('Include Pluto').check();
+ await panelAction(page,'Settings',()=>page.getByLabel('Include Pluto').check());
  await page.getByRole('button',{name:'09 Pluto',exact:true}).click();
  await expect(page.locator('#body-kind')).toHaveText('DWARF PLANET');
- await page.getByLabel('Include Pluto').uncheck();
+ await panelAction(page,'Settings',()=>page.getByLabel('Include Pluto').uncheck());
  await expect(page.locator('#body-name')).toHaveText('Earth');
  await expect(page.getByRole('button',{name:'09 Pluto',exact:true})).toHaveCount(0);
 });
@@ -30,12 +31,12 @@ test('the live scene renders and time controls change physical positions without
  await expect.poll(()=>page.evaluate(()=>window.__orrery.diagnostics().drawCalls)).toBeGreaterThan(0);
  await page.locator('#simulation-date').fill('2024-02-29');
  await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().date)).toBe('2024-02-29T12:00:00.000Z');
- await page.getByRole('button',{name:'Play simulation',exact:true}).click();
- await expect(page.getByRole('button',{name:'Pause simulation',exact:true})).toBeVisible();
+ await page.locator('#auto-drive').click();
+ await expect(page.locator('#auto-drive')).toHaveAttribute('aria-checked','true');
  await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().date)).not.toBe('2024-02-29T12:00:00.000Z');
- await page.getByRole('button',{name:'Pause simulation',exact:true}).click();
+ await page.locator('#auto-drive').click();
  const date=await page.evaluate(()=>window.__orrery.getState().date);
- await page.getByRole('button',{name:'Top down',exact:true}).click();
+ await panelAction(page,'Settings',()=>page.getByRole('button',{name:'Top down',exact:true}).click());
  await page.waitForTimeout(200);
  expect(await page.evaluate(()=>window.__orrery.getState().date)).toBe(date);
  await page.getByRole('button',{name:'Science & sources',exact:true}).click();
@@ -43,25 +44,28 @@ test('the live scene renders and time controls change physical positions without
  await page.keyboard.press('Escape');
  await expect(page.getByRole('dialog')).not.toBeVisible();
 });
-test('inspecting a moving planet pauses time and preserves the selected body',async({page})=>{
+test('inspecting a moving planet follows it without pausing and preserves the selected body',async({page})=>{
  await page.goto('/');
  await expect.poll(()=>page.evaluate(()=>window.__orrery?.diagnostics().ready)).toBe(true);
- await page.getByRole('button',{name:'Observatory',exact:true}).click();
+ await panelAction(page,'Settings',()=>page.getByRole('button',{name:'Observatory',exact:true}).click());
  await page.getByRole('button',{name:'06 Saturn',exact:true}).click();
  await page.locator('#speed').selectOption('365.25');
- await page.getByRole('button',{name:'Play simulation',exact:true}).click();
+ await page.locator('#auto-drive').click();
  await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().playing)).toBe(true);
  await page.locator('#focus-body').click();
- expect(await page.evaluate(()=>window.__orrery.getState().playing)).toBe(false);
- await expect(page.locator('#play-state')).toHaveText('PAUSED');
+ expect(await page.evaluate(()=>window.__orrery.getState().playing)).toBe(true);
+ await expect(page.locator('#play-state')).toHaveText('RUNNING');
+ await expect(page.locator('#follow-camera')).toBeChecked();
+ expect(await page.evaluate(()=>window.__orrery.diagnostics().followSubject)).toBe('saturn');
  const date=await page.evaluate(()=>window.__orrery.getState().date);
  await page.waitForTimeout(300);
- expect(await page.evaluate(()=>window.__orrery.getState().date)).toBe(date);
+ expect(await page.evaluate(()=>window.__orrery.getState().date)).not.toBe(date);
  await expect(page.locator('#body-name')).toHaveText('Saturn');
 });
 test('the instrument presents a branded semantic shell with a readable scientific fallback',async({page})=>{
  await page.goto('/');
  await expect(page.getByRole('heading',{name:'Orrery',exact:true})).toBeVisible();
+ await page.getByRole('tab',{name:'Settings',exact:true}).click();
  await expect(page.getByRole('button',{name:'Mechanical',exact:true})).toBeVisible();
  await expect(page.getByRole('button',{name:'Observatory',exact:true})).toBeVisible();
  await expect(page.getByRole('button',{name:'Science & sources',exact:true})).toBeVisible();

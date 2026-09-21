@@ -1,3 +1,4 @@
+import {panelAction} from './panel-actions.js';
 import {test,expect} from '@playwright/test';
 
 async function ready(page){await page.goto('/');await expect.poll(()=>page.evaluate(()=>window.__orrery?.diagnostics().ready)).toBe(true);}
@@ -23,12 +24,12 @@ test('keyboard, dates, nullable selection and lifecycle keep paused frames stopp
  await page.locator('#universe').focus();const camera=await page.evaluate(()=>window.__orrery.diagnostics().camera);
  await page.keyboard.press('Escape');await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().selected)).toBe(null);
  expect(await page.evaluate(()=>window.__orrery.diagnostics().camera)).toEqual(camera);
- await page.getByRole('button',{name:'Observatory',exact:true}).click();expect(await page.evaluate(()=>window.__orrery.getState().selected)).toBe(null);
+ await panelAction(page,'Settings',()=>page.getByRole('button',{name:'Observatory',exact:true}).click());expect(await page.evaluate(()=>window.__orrery.getState().selected)).toBe(null);
  await page.locator('#focus-body').click();await stopped(page);
  const open=page.locator('#about-open');await open.focus();await page.keyboard.press('Enter');await expect(page.locator('#science-dialog')).toBeVisible();
  await page.keyboard.press('Escape');await expect(open).toBeFocused();await expect(page.locator('#science-dialog')).toBeHidden();
  const help=page.locator('#pwa-help-open');await help.click();await expect(page.locator('#pwa-help-title')).toBeFocused();await page.locator('#about-close').click();await expect(help).toBeFocused();
- await page.emulateMedia({reducedMotion:'no-preference'});await page.locator('#play').click();await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().playing)).toBe(true);
+ await page.emulateMedia({reducedMotion:'no-preference'});await page.locator('#auto-drive').click();await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().playing)).toBe(true);
  await page.emulateMedia({reducedMotion:'reduce'});await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().playing)).toBe(false);await stopped(page);
  // Exercise persisted-event handling deterministically, without claiming real BFCache eligibility.
  await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true})));const before=await stopped(page);
@@ -46,7 +47,7 @@ test('missing WebGL2 keeps references usable and all cached 3D actions disabled'
  expect(await page.evaluate(()=>window.__orrery.diagnostics().ready)).toBe(false);
  for(const name of ['05 Jupiter','06 Saturn','03 Earth']){
   await page.getByRole('button',{name,exact:true}).click();await expect(page.locator('#body-name')).toHaveText(name.slice(3));
-  for(const selector of ['#play','#focus-body','#view-home','#view-top','#focus-craft','#crank-forward','#crank-back','#auto-drive'])await expect(page.locator(selector)).toBeDisabled();
+  for(const selector of ['#auto-drive','#focus-body','#view-home','#view-top','#focus-craft','#crank-forward','#crank-back','#auto-drive'])await expect(page.locator(selector)).toBeDisabled();
   const moonButtons=page.locator('[data-focus-moon]');for(let i=0;i<await moonButtons.count();i++)await expect(moonButtons.nth(i)).toBeDisabled();
  }
  await page.locator('#about-open').click();await expect(page.locator('#science-dialog')).toBeVisible();await expect(page.locator('#model-source')).toHaveAttribute('href','https://ssd.jpl.nasa.gov/planets/approx_pos.html');
@@ -57,7 +58,7 @@ test('texture failure still renders, then actual context loss stops the instrume
  await page.route('**/textures/2k_earth_daymap.jpg',route=>route.abort());await ready(page);
  expect(await page.evaluate(()=>window.__orrery.diagnostics().textureFallbacks)).toContain('earth');
  expect(await page.evaluate(()=>window.__orrery.diagnostics().drawCalls)).toBeGreaterThan(0);
- await page.locator('#play').click();
+ await page.locator('#auto-drive').click();
  const extension=await page.evaluate(()=>{
   const gl=document.querySelector('#universe canvas').getContext('webgl2'),lose=gl.getExtension('WEBGL_lose_context');
   if(!lose)return false;lose.loseContext();return true;

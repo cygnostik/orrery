@@ -25,11 +25,11 @@ npm run preview -- --port 5195 --strictPort
 Open `http://127.0.0.1:5195/`. The server binds only to loopback. Serve `dist/`, not the project or the design-system source tree. A normal module build is not a double-click `file://` application.
 
 ## Explore
-- Mechanical: a cool-metal museum instrument with a connected drive train: crank → compound gear reductions → hollow output sleeves → attached planet arms. Switch between Nebula glass and Obsidian finishes below the instrument. Selection highlights the corresponding gearing; Follow the drive shows its reduction path and geared year.
+- Mechanical: a cool-metal museum instrument with a connected drive train: crank → compound gear reductions → hollow output sleeves → attached planet arms. Graphics contains the Nebula glass and Obsidian finishes, opal inspection and resolution controls. Opening Follow the drive shows its reduction path and geared year, with restrained gear highlighting outside Lights out.
 - Wind the actual side crank or the larger control-panel dial in either direction; one revolution advances 30 simulated days. The dial also accepts arrow keys (one day), Shift + arrow (one revolution), Home/End (model bounds), and quarter-turn buttons. Winding disengages automatic movement.
-- Flip the instrument’s physical switch or the accessible Automatic movement switch to use the selected time flow. Both share the Play button’s state rather than starting a second clock.
+- Flip the instrument’s physical switch or the accessible Automatic movement switch to use the selected time flow. Both share one clock; the accessible switch works in both presentations alongside the crank, date and time-flow controls.
 - Observatory: inclined, eccentric astronomical ellipses; switch to true distance mapping if desired. Bodies remain enlarged and may be very small in a system-wide view.
-- Select planets using the planet row or the scene. Use Inspect to pause time and examine a body, Perspective to return, or Top down to read the geometry. Inspect positions the camera once; it does not track a body if you explicitly resume playback.
+- Select planets using the planet row or the scene. Double-click or use Inspect to frame and follow a body without changing playback. Follow tracks position, not rotation; orbit and zoom remain available. Pan or choose Perspective/Top down to release the camera. Info, Settings, Graphics and Help organize the inspector; the planet row remains available.
 - Change the UTC date; play, pause, reverse or accelerate time. Date entry selects noon UTC. The clock clamps at the science model's supported endpoints.
 - Switch on **Lights out** for Sun-dominant illumination and ordinary model shadows. Earth's globe turns with the selected UTC date in either lighting state. These shadows use enlarged display geometry, not eclipse predictions; see [sunlight and Earth orientation](docs/sunlight.md).
 - Include Pluto independently; it is labeled as a dwarf planet.
@@ -87,6 +87,8 @@ The main browser suite discovers an installed Edge/Chrome executable or uses Pla
 For contributor media exports, run the preview and then `ORRERY_URL=http://127.0.0.1:5195 npm run media`. The media script captures the actual renderer rather than substituting an artist's rendition. Review images before publication.
 
 ## Hosting and contributing
+
+See the [roadmap](ROADMAP.md) for deferred refinements, including smoother moon-shadow edges.
 
 Deploy **only `dist/`** to a static HTTPS host. See [deployment and updates](docs/deployment.md), [contributing](CONTRIBUTING.md), and [security and privacy](SECURITY.md). Test results, internal research captures and private deployment data are intentionally excluded from this repository.
 

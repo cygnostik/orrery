@@ -8,6 +8,7 @@ import './character.css';
 import './museum.css';
 import './browser-support.css';
 import './pwa.js';
+import './panels.css';
 import {BODIES,positionAt,SCIENCE} from './science.js';
 import {createDriveTrain} from './drive-train.js';
 import {MOONS,MOON_MODEL} from './moons.js';
@@ -35,7 +36,7 @@ for(const [index,body] of BODIES.entries()){
  button.setAttribute('aria-label',`${String(index+1).padStart(2,'0')} ${body.name}`);
  const number=document.createElement('span');number.textContent=String(index+1).padStart(2,'0');
  button.append(number,document.createTextNode(body.name));
- on(button,'click',()=>select(body.id));bodyButtons.set(body.id,button);
+ on(button,'click',()=>select(body.id));on(button,'dblclick',()=>inspectBody());bodyButtons.set(body.id,button);
  const label=document.createElement('span');label.className='planet-label';label.textContent=body.name;label.hidden=true;
  $('#planet-labels').append(label);labelNodes.set(body.id,label);
 }
@@ -63,6 +64,7 @@ function syncBodies(){
  for(const body of BODIES){const button=bodyButtons.get(body.id);if(body.id==='pluto'&&!state.pluto){button.remove();labelNodes.get(body.id).hidden=true;}else if(!button.isConnected)$('#body-buttons').append(button);}
 }
 function clearMoonFocus(){
+ scene?.setFollow(null);
  const wasInspecting=inspectedMoon!==null;
  inspectedMoon=null;$('#inspection-subject').hidden=true;
  for(const row of moonRows.values())row.querySelector('button').setAttribute('aria-pressed','false');
@@ -71,18 +73,19 @@ function clearMoonFocus(){
 function inspectMoon(id){
  const moon=MOONS.find(moon=>moon.id===id);
  if(renderError||!state.moons||moon?.parentId!==state.selected||typeof scene?.focusMoon!=='function')return;
- state.playing=false;lastTime=0;syncTime();scene.update(state);
+ scene.update(state);
+ clearMoonFocus();
  if(scene.focusMoon(id)===false)return;
- clearMoonFocus();inspectedMoon=id;
+ inspectedMoon=id;
  moonRows.get(id).querySelector('button').setAttribute('aria-pressed','true');
  $('#inspection-subject').textContent=`${moon.name} · ${BODIES.find(body=>body.id===moon.parentId).name} system · illustrated surface`;
  $('#inspection-subject').hidden=false;syncInspector();syncTime();requestRender();
  $('.inspector').scrollTop=0;selectionMotion.acquire();
  $('#universe').scrollIntoView({block:'center',behavior:'instant'});
- announce(`Simulation paused. Inspecting ${moon.name}. Surface and orbit are illustrative.`);
+ syncFollow();announce(`Inspecting ${moon.name}. Camera follows position. Surface and orbit are illustrative.`);
 }
 function select(id){
- clearMoonFocus();state.selected=id;
+ clearMoonFocus();scene?.setFollow(null);state.selected=id;showPanel('info');
  $('#moon-family').open=id==='jupiter'||id==='saturn';
  if(id===null)scene?.clearInspection();
  sync();$('.inspector').scrollTop=0;
@@ -151,17 +154,14 @@ function sync(){
  $('#scale').value=state.scale;
  $('#lights-out').checked=state.lightsOut;
  $('#scale-help').textContent=state.mode==='mechanical'?'True distance in Observatory':'Body sizes remain enlarged';
- $('#presentation-label').textContent=state.mode==='mechanical'?'01 / MECHANICAL INSTRUMENT':'02 / ORBITAL OBSERVATORY';
  $('#scale-note').textContent=state.mode==='mechanical'?'Gear-driven mean motion · enlarged bodies':state.scale==='distance'?'True orbital distances · enlarged bodies':'Compressed orbital spacing · enlarged bodies';
- syncMoonFamily();syncTime();requestRender();
+ syncMoonFamily();syncTime();syncFollow();requestRender();
 }
 function syncTime(){
  const iso=state.date.toISOString();
  if(document.activeElement!==$('#simulation-date'))$('#simulation-date').value=iso.slice(0,10);
  $('#time-readout').textContent=`${iso.slice(11,19)} UTC`;
  $('#body-distance').textContent=state.selected?`${fmt(positionAt(state.selected,state.date).radiusAU,3)} AU`:'—';
- $('#play').setAttribute('aria-label',state.playing?'Pause simulation':'Play simulation');
- $('#play-symbol').textContent=state.playing?'Ⅱ':'▶';
  $('#play-state').textContent=state.playing?'RUNNING':'PAUSED';
  mechanics.sync();footerMotion.setPlaying(state.playing);
 }
@@ -191,15 +191,14 @@ function tick(now){
 }
 function fallback(message){
  renderError=message;state.playing=false;cancelAnimationFrame(raf);raf=0;mechanics.fail();
- clearMoonFocus();for(const control of document.querySelectorAll('#play,#focus-body,#focus-craft,#view-home,#view-top,#labels,#scale,#speed,#moons,#lights-out,[data-base-style],[data-mode],[data-focus-moon]'))control.disabled=true;
+ clearMoonFocus();for(const control of document.querySelectorAll('#follow-camera,#render-quality,#reflection-quality,#focus-body,#focus-craft,#view-home,#view-top,#labels,#scale,#speed,#moons,#lights-out,[data-base-style],[data-mode],[data-focus-moon]'))control.disabled=true;
  for(const row of moonRows.values())row.querySelector('button').disabled=true;
  $('#fallback').hidden=false;$('#load-message').textContent=message;syncTime();
  for(const label of labelNodes.values())label.hidden=true;
  announce(message);
 }
-function toggleDrive(){if(renderError)return;clearMoonFocus();state.playing=!state.playing;lastTime=0;syncTime();requestRender();}
+function toggleDrive(){if(renderError)return;state.playing=!state.playing;lastTime=0;syncTime();requestRender();}
 function windClock(turns){if(renderError||!turnCrank(state,turns))return;clearMoonFocus();lastTime=0;syncTime();requestRender();}
-on($('#play'),'click',toggleDrive);
 on($('#speed'),'change',()=>{state.speed=Number($('#speed').value);requestRender();});
 on($('#simulation-date'),'change',()=>{
  clearMoonFocus();
@@ -214,23 +213,38 @@ for(const button of document.querySelectorAll('[data-base-style]'))on(button,'cl
 on($('#scale'),'change',()=>{clearMoonFocus();state.scale=$('#scale').value;sync();scene?.resetView('home');requestRender();});
 on($('#view-home'),'click',()=>{clearMoonFocus();scene?.resetView('home');requestRender();});
 on($('#view-top'),'click',()=>{clearMoonFocus();scene?.resetView('top');requestRender();});
-on($('#focus-body'),'click',()=>{
+function inspectBody(){
  if(renderError)return;
  if(inspectedMoon){inspectMoon(inspectedMoon);return;}
- clearMoonFocus();state.playing=false;lastTime=0;syncTime();scene?.update(state);
+ scene?.update(state);
  if(state.selected)scene?.focusBody(state.selected);
  else if(state.mode==='mechanical')scene?.focusMechanism();
  else scene?.resetView('home');
- requestRender();announce(`Simulation paused. Camera focused on ${state.selected||(state.mode==='mechanical'?'the mechanism':'all planets')}`);
-});
+ syncFollow();requestRender();announce(`Camera focused on ${state.selected||(state.mode==='mechanical'?'the mechanism':'all planets')}`);
+}
+on($('#focus-body'),'click',inspectBody);
 on($('#focus-craft'),'click',()=>{
  if(renderError||state.mode!=='mechanical')return;
- clearMoonFocus();state.playing=false;lastTime=0;syncTime();scene?.update(state);
+ clearMoonFocus();scene?.setFollow(null);state.playing=false;lastTime=0;syncTime();scene?.update(state);
  if(scene?.focusCraft()){
-  $('#inspection-subject').textContent='Black opal · polished cabochon inlay';$('#inspection-subject').hidden=false;
   requestRender();announce('Simulation paused. Black opal inlay close-up. Drag to see the blue fire change with the light.');
  }
 });
+
+function showPanel(name){
+ for(const tab of document.querySelectorAll('[role=tab]')){const active=tab.id===`tab-${name}`;tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;document.getElementById(tab.getAttribute('aria-controls')).hidden=!active;}
+ requestRender();
+}
+for(const [index,tab] of [...document.querySelectorAll('[role=tab]')].entries()){
+ on(tab,'click',()=>showPanel(tab.id.slice(4)));
+ on(tab,'keydown',event=>{const tabs=[...document.querySelectorAll('[role=tab]')];let next;if(event.key==='ArrowRight')next=(index+1)%tabs.length;if(event.key==='ArrowLeft')next=(index+tabs.length-1)%tabs.length;if(event.key==='Home')next=0;if(event.key==='End')next=tabs.length-1;if(next!==undefined){event.preventDefault();showPanel(tabs[next].id.slice(4));tabs[next].focus();}});
+}
+function syncFollow(){ $('#follow-camera').checked=Boolean(scene?.diagnostics().followSubject);$('#follow-camera').disabled=Boolean(renderError)||!state.selected; }
+on($('#follow-camera'),'change',()=>{scene?.setFollow($('#follow-camera').checked?(inspectedMoon||state.selected):null);syncFollow();requestRender();});
+on($('#drive-reference'),'toggle',()=>{state.driveHighlight=$('#drive-reference').open;requestRender();});
+for(const [id,key] of [['render-quality','renderQuality'],['reflection-quality','reflectionQuality']])on($('#'+id),'change',()=>{state[key]=Number($('#'+id).value);requestRender();});
+on($('#help-sources'),'click',()=>$('#about-open').click());
+
 const dialog=$('#science-dialog');
 on(document,'keydown',event=>{if(event.key==='Escape'&&!dialog.hasAttribute('open')&&!event.target.closest('input,select,textarea'))select(null);});
 bindScienceDialog({dialog,openButton:$('#about-open'),closeButton:$('#about-close'),signal:listeners.signal});
@@ -266,6 +280,6 @@ try{
   if(moon&&state.moons&&(moon.parentId!=='pluto'||state.pluto)){
    select(moon.parentId);$('#moon-family').open=true;inspectMoon(id);
   }else if(id===null||BODIES.some(b=>b.id===id)&&(id!=='pluto'||state.pluto))select(id);
- },onError:error=>fallback(`3D unavailable: ${error?.message||String(error)}. Planet facts remain available.`)});
+ },onInspect:id=>{const moon=MOONS.find(m=>m.id===id);if(moon){if(state.selected!==moon.parentId)select(moon.parentId);inspectMoon(id);}else if(BODIES.some(b=>b.id===id)){if(state.selected!==id)select(id);inspectBody();}},onFollowChange:syncFollow,onError:error=>fallback(`3D unavailable: ${error?.message||String(error)}. Planet facts remain available.`)});
  if(disposed)created.dispose();else{scene=created;scene.update(state);scene.render(0);$('#fallback').hidden=true;requestRender();}
 }catch(error){fallback(`3D is unavailable in this browser. Planet facts and the science reference remain available.`);console.error('Orrery renderer initialization failed:',error);}

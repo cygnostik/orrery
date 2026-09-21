@@ -278,7 +278,9 @@ export function createPlanet(body, textureWidth = 512) {
     for (let i = 0; i < positions.count; i++) uv.setXY(i, (Math.hypot(positions.getX(i), positions.getY(i)) - inner) / (outer - inner), 0.5);
     const ring = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({map: ringMap, side: THREE.DoubleSide, transparent: true, opacity: 0.92, alphaTest: 0.05, roughness: 0.94, envMapIntensity: 0.18, depthWrite: true}));
     ring.name = 'saturn-rings'; ring.userData.bodyId = id;
-    ring.rotation.x = -Math.PI / 2; ring.castShadow = ring.receiveShadow = true;
+    // Thin alpha-banded rings alias badly in the finite point-shadow map.
+    // Keep their appearance and receiving shadows; omit ring-cast eclipses.
+    ring.rotation.x = -Math.PI / 2; ring.castShadow = false; ring.receiveShadow = true;
     ring.layers.set(1); tilted.add(ring);
   }
   return group;

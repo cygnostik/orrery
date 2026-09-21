@@ -1,0 +1,30 @@
+/* Local instrument panels: existing DSM tokens and no ambient animation. */
+.instrument-layout{grid-template-columns:minmax(0,1fr) 320px}
+.inspector{display:block;padding:var(--sp-5);min-width:0}
+.panel-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-1);border-bottom:var(--bw-hairline) solid var(--pd-line);position:sticky;top:calc(-1 * var(--sp-5));background:var(--pd-section);z-index:var(--z-content);padding:var(--sp-2) 0}
+.panel-tabs button{min-height:44px;padding:var(--sp-2) var(--sp-1);font:var(--fs-meta) var(--pd-font-hud);color:var(--pd-ivory-muted);background:none;border:0;border-bottom:var(--bw-signal) solid transparent}
+.panel-tabs button[aria-selected=true]{color:var(--pd-signal);border-color:var(--pd-signal)}
+[role=tabpanel]{min-width:0}
+.inspector [role=tabpanel][hidden]{display:none}
+[role=tabpanel] h3{font-size:var(--fs-lead);margin:var(--sp-6) 0 var(--sp-3)}
+[role=tabpanel] .mode-switch,[role=tabpanel] .view-buttons{display:flex;flex-wrap:wrap;margin:0}
+[role=tabpanel] .mode-switch button{flex:1;padding:var(--sp-3) var(--sp-2)}
+[role=tabpanel] select{width:100%;margin:var(--sp-2) 0 var(--sp-5)}
+[role=tabpanel] .display-controls{display:flex;flex-direction:column;gap:var(--sp-3);margin-bottom:var(--sp-6)}
+[role=tabpanel] .finish-control{display:block;border:0;padding:0}
+[role=tabpanel] #focus-craft{display:block;margin-top:var(--sp-4);white-space:normal;text-align:left}
+[role=tabpanel] .finish-buttons{display:flex;margin:var(--sp-3) 0}
+[role=tabpanel] .check-label{min-height:44px;display:flex;align-items:center}
+#panel-info .outline-button{margin:var(--sp-4) 0 var(--sp-2)}
+#panel-info .source-link{display:block}
+#panel-help p{color:var(--pd-ivory-muted)}
+.mechanical-console{grid-template-columns:1.1fr 1fr 1.6fr;gap:var(--sp-5);align-items:center}
+.mechanical-console .controls{display:grid;grid-template-columns:1fr 1fr;border:0;padding:0;gap:var(--sp-5);min-width:0}
+.mechanical-console .transport,.mechanical-console .rate-control{grid-column:auto;grid-row:auto;min-width:0}
+.mechanical-console .transport{flex-wrap:wrap}.mechanical-console .transport .text-button{display:block}
+.mechanical-console select{width:100%;max-width:100%}
+@media(max-width:1199px){.instrument-layout{grid-template-columns:minmax(0,1fr) 300px}.mechanical-console{grid-template-columns:1fr 1fr}.mechanical-console .controls{grid-column:1/-1}.manual-crank{width:88px;height:88px}}
+@media(max-width:767px){.instrument-layout{display:flex}.inspector{display:block}.panel-tabs{position:static}#panel-info{display:block}#panel-info .properties{margin:var(--sp-5) 0}#panel-info .body-fact{margin:var(--sp-4) 0}#panel-info .outline-button{width:100%}.mechanical-console{grid-template-columns:1fr}.mechanical-console .auto-drive{padding-top:0;border-top:0}.mechanical-console .controls{grid-column:auto}.stage-toolbar{bottom:var(--sp-4)}.inspector [role=tabpanel]{max-width:100%}}
+@media(min-width:640px) and (max-width:767px){.mechanical-console{grid-template-columns:1fr 1fr}.mechanical-console .controls{grid-column:1/-1}}
+
+.inspector[data-selection=none] #panel-info :is(.selection-trace,.body-portrait,.surface-reference,.properties,.position-readout,.source-link){display:none}

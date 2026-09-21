@@ -1,3 +1,4 @@
+import {panelAction} from './panel-actions.js';
 import {test,expect} from '@playwright/test';
 import * as THREE from 'three';
 import {BODY_HEIGHT,BODY_RADII} from '../src/scene-assets.js';
@@ -27,7 +28,7 @@ test('background and machinery clicks deselect without resetting the camera; Esc
  before=await page.evaluate(()=>window.__orrery.diagnostics().camera);
  await page.keyboard.press('Escape');await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().selected)).toBe(null);
  expect(await page.evaluate(()=>window.__orrery.diagnostics().camera)).toEqual(before);
- await page.getByRole('button',{name:'Observatory',exact:true}).click();await expect(page.locator('#body-name')).toHaveText('Observatory');
+ await panelAction(page,'Settings',()=>page.getByRole('button',{name:'Observatory',exact:true}).click());await expect(page.locator('#body-name')).toHaveText('Observatory');
  await page.locator('#focus-body').click();await expect(page.locator('#body-distance')).not.toBeVisible();
  await page.getByRole('button',{name:'03 Earth',exact:true}).click();await expect(page.locator('#body-distance')).toContainText('AU');
 });
@@ -59,8 +60,8 @@ test('planet labels start off and can still be enabled explicitly',async({page})
  expect(await page.evaluate(()=>window.__orrery.getState().labels)).toBe(false);
  await expect(page.locator('.planet-label:visible')).toHaveCount(0);
  expect(await page.evaluate(()=>window.__orrery.diagnostics().moonLabels.every(l=>!l.visible))).toBe(true);
- await page.locator('#labels').check();await expect.poll(()=>page.locator('.planet-label:visible').count()).toBeGreaterThan(0);
- await page.locator('#labels').uncheck();await expect(page.locator('.planet-label:visible')).toHaveCount(0);
+ await panelAction(page,'Settings',()=>page.locator('#labels').check());await expect.poll(()=>page.locator('.planet-label:visible').count()).toBeGreaterThan(0);
+ await panelAction(page,'Settings',()=>page.locator('#labels').uncheck());await expect(page.locator('.planet-label:visible')).toHaveCount(0);
 });
 
 test('starter perspective is slightly closer and lower while keeping planets and the base in frame',async({page})=>{
@@ -73,7 +74,7 @@ test('starter perspective is slightly closer and lower while keeping planets and
  for(const width of [1440,700,390]){
   await page.setViewportSize({width,height:1000});
   for(const pluto of [false,true]){
-   await page.locator('#pluto').setChecked(pluto);await page.locator('#view-home').click();
+   await panelAction(page,'Settings',()=>page.locator('#pluto').setChecked(pluto));await panelAction(page,'Settings',()=>page.locator('#view-home').click());
    for(const date of ['1800-01-01','2000-01-01','2049-12-31']){
     await page.locator('#simulation-date').fill(date);await page.waitForTimeout(80);
     const d=await page.evaluate(()=>window.__orrery.diagnostics()),camera=cameraFor(d),points=[];

@@ -1,3 +1,4 @@
+import {panelAction} from './panel-actions.js';
 import {test,expect} from '@playwright/test';
 
 async function ready(page){
@@ -49,7 +50,7 @@ test('renderer boots without ES2022 Object.hasOwn or Array.at',async({page})=>{
  const errors=[];page.on('pageerror',error=>errors.push(String(error)));
  await page.addInitScript(()=>{Object.hasOwn=undefined;Array.prototype.at=undefined;});
  await ready(page);await page.getByRole('button',{name:'05 Jupiter',exact:true}).click();
- await page.getByRole('button',{name:'Observatory',exact:true}).click();await page.locator('#simulation-date').fill('2024-02-29');await page.locator('#simulation-date').blur();
+ await panelAction(page,'Settings',()=>page.getByRole('button',{name:'Observatory',exact:true}).click());await page.locator('#simulation-date').fill('2024-02-29');await page.locator('#simulation-date').blur();
  await expect.poll(()=>page.evaluate(()=>window.__orrery.getState().date)).toBe('2024-02-29T12:00:00.000Z');
  expect(await page.evaluate(()=>window.__orrery.diagnostics().drawCalls)).toBeGreaterThan(0);expect(errors).toEqual([]);
 });

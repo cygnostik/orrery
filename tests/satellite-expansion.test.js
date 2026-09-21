@@ -60,7 +60,7 @@ test('all ten companions have deterministic distinct authored surfaces with reco
     assert.ok(stats(map('titan')).deviation < 12, 'haze, not exposed cratered terrain');
     const titan = map('titan').image.data;
     assert.ok(titan[0] > titan[2] * 1.5, 'golden haze specimen color');
-    assert.ok(stats(map('miranda')).deviation > 18, 'scarred terrain');
+    assert.ok(stats(map('miranda')).deviation > 15, 'irregular scarred terrain retains contrast without the old nested-square ridges');
     assert.ok(stats(map('triton')).deviation < stats(map('miranda')).deviation, 'muted frost');
     assert.ok(stats(map('charon'), 0.75, 1).mean < stats(map('charon'), 0.35, 0.65).mean * 0.65, 'dark north cap');
   } finally { dispose(model.group); dispose(repeat.group); }

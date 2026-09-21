@@ -1,3 +1,4 @@
+import {panelAction} from './panel-actions.js';
 import {test, expect} from '@playwright/test';
 
 test('future dates render in both presentations and stop at the shared 2250 boundary', async ({page}) => {
@@ -8,7 +9,7 @@ test('future dates render in both presentations and stop at the shared 2250 boun
   const date = page.locator('#simulation-date');
   await expect(date).toHaveAttribute('max', '2249-12-31');
   for (const mode of ['Mechanical', 'Observatory']) {
-    await page.getByRole('button', {name: mode, exact: true}).click();
+    await panelAction(page,'Settings',()=>page.getByRole('button', {name: mode, exact: true}).click());
     for (const value of ['2050-01-02', '2200-06-01', '2249-12-31']) {
       await date.fill(value);
       await date.blur();
@@ -17,7 +18,7 @@ test('future dates render in both presentations and stop at the shared 2250 boun
       await expect.poll(() => page.evaluate(() => window.__orrery.diagnostics().drawCalls)).toBeGreaterThan(0);
     }
   }
-  await page.getByRole('button', {name: 'Mechanical', exact: true}).click();
+  await panelAction(page,'Settings',()=>page.getByRole('button', {name: 'Mechanical', exact: true}).click());
   await page.locator('#manual-crank').focus();
   await page.keyboard.press('End');
   await expect.poll(() => page.evaluate(() => window.__orrery.getState().date)).toBe('2250-01-01T00:00:00.000Z');

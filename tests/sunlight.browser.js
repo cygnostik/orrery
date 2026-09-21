@@ -1,3 +1,4 @@
+import {panelAction} from './panel-actions.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp, mkdir, writeFile, readFile, readdir, rm} from 'node:fs/promises';
@@ -40,52 +41,52 @@ test('production sunlight controls and isolated same-budget shadow evidence', {t
   result.productionDefault=await diag();
   assert.equal(result.productionDefault.earthOrientation.georeferenced,true);
   await page.screenshot({path:join(evidence,'01-exhibit.png'),fullPage:true});
-  await page.locator('#lights-out').focus();await page.keyboard.press('Space');
+  await page.getByRole('tab',{name:'Settings',exact:true}).click();await page.locator('#lights-out').focus();await page.keyboard.press('Space');
   await page.waitForFunction(()=>window.__orrery.diagnostics().lightsOut);
   result.productionOut=await diag();
   assert.deepEqual(result.productionOut.driveOutputs,result.productionDefault.driveOutputs);
   assert.deepEqual(result.productionOut.moonOutputs,result.productionDefault.moonOutputs);
   assert.deepEqual(result.productionOut.sunlightShadow,{mapSize:[512,512],radius:1.5,bias:0,normalBias:.001});
   await page.locator('#universe').scrollIntoViewIfNeeded();await page.screenshot({path:join(evidence,'02-lights-out.png'),fullPage:true});
-  await page.locator('#focus-body').click();await page.locator('#view-home').click();
+  await page.getByRole('tab',{name:'Info',exact:true}).click();await page.locator('#focus-body').click();await panelAction(page,'Settings',()=>page.locator('#view-home').click());
   assert.equal((await diag()).lightsOut,true);
-  await page.locator('[data-mode="observatory"]').click();
+  await panelAction(page,'Settings',()=>page.locator('[data-mode="observatory"]').click());
   await page.waitForFunction(()=>window.__orrery.diagnostics().mode==='observatory');
-  await page.locator('#scale').selectOption('distance');
+  await panelAction(page,'Settings',()=>page.locator('#scale').selectOption('distance'));
   await page.locator('#simulation-date').fill('2249-12-31');await page.locator('#simulation-date').dispatchEvent('change');
   await page.waitForFunction(()=>window.__orrery.getState().date.startsWith('2249-12-31'));
   const future=await diag();assert.ok(future.earthOrientation.quaternion.every(Number.isFinite));
   assert.notDeepEqual(future.earthOrientation.quaternion,result.productionDefault.earthOrientation.quaternion);
-  await page.locator('#lights-out').uncheck();await page.waitForFunction(()=>!window.__orrery.diagnostics().lightsOut);
+  await panelAction(page,'Settings',()=>page.locator('#lights-out').uncheck());await page.waitForFunction(()=>!window.__orrery.diagnostics().lightsOut);
   assert.equal((await diag()).sunlightShadow.normalBias,.009);
-  await page.locator('#lights-out').check();
-  await page.locator('#moons').uncheck();await page.waitForFunction(()=>window.__orrery.diagnostics().moonCount===0);
-  await page.locator('#moons').check();
+  await panelAction(page,'Settings',()=>page.locator('#lights-out').check());
+  await panelAction(page,'Settings',()=>page.locator('#moons').uncheck());await page.waitForFunction(()=>window.__orrery.diagnostics().moonCount===0);
+  await panelAction(page,'Settings',()=>page.locator('#moons').check());
   for(const width of [390,700]) {
-    await page.setViewportSize({width,height:1000});await page.locator('#lights-out').uncheck();await page.locator('#lights-out').check();
+    await page.setViewportSize({width,height:1000});await panelAction(page,'Settings',()=>page.locator('#lights-out').uncheck());await panelAction(page,'Settings',()=>page.locator('#lights-out').check());
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     await page.screenshot({path:join(evidence,`03-narrow-${width}.png`),fullPage:true});
-    await page.locator('[data-mode="mechanical"]').click();await page.locator('#lights-out').uncheck();await page.locator('#lights-out').check();
+    await panelAction(page,'Settings',()=>page.locator('[data-mode="mechanical"]').click());await panelAction(page,'Settings',()=>page.locator('#lights-out').uncheck());await panelAction(page,'Settings',()=>page.locator('#lights-out').check());
     await page.screenshot({path:join(evidence,`03-narrow-mechanical-${width}.png`),fullPage:true});
-    await page.locator('[data-mode="observatory"]').click();
+    await panelAction(page,'Settings',()=>page.locator('[data-mode="observatory"]').click());
   }
   await page.reload();await ready();assert.equal(await page.locator('#lights-out').isChecked(),false);
-  await page.locator('#lights-out').check();
+  await panelAction(page,'Settings',()=>page.locator('#lights-out').check());
   await page.evaluate(()=>document.querySelector('#universe canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
   await page.waitForFunction(()=>Boolean(window.__orrery.diagnostics().renderError));
   assert.equal(await page.locator('#lights-out').isDisabled(),true);
   await page.locator('button[data-body="jupiter"]').click();assert.equal(await page.locator('#lights-out').isDisabled(),true);
   await page.reload();await ready();assert.equal(await page.locator('#lights-out').isChecked(),false);
-  await page.locator('#lights-out').check();await page.waitForFunction(()=>window.__orrery.diagnostics().lightsOut);
+  await panelAction(page,'Settings',()=>page.locator('#lights-out').check());await page.waitForFunction(()=>window.__orrery.diagnostics().lightsOut);
   await page.close();
 
   // Test-only source transform. No production API, query flag or staging control.
   const fixtureURL=await start(join(temp,'fixture'),{build:{rollupOptions:{input:join(root,'tests/fixtures/sunlight/index.html')}},plugins:[{
     name:'private-sunlight-handles',transform(code,id) {
       if(id!==join(root,'src/scene.js'))return;
-      const needle='return {update, render, resize, resetView';
+      const needle='return {setFollow, update, render, resize, resetView';
       assert.equal(code.split(needle).length,2,'scene return seam changed');
-      return code.replace(needle,'return {testHandles: {scene, renderer, camera, controls, planets, satellites, sunLight, key, fill, nightFill, instrument}, update, render, resize, resetView');
+      return code.replace(needle,'return {testHandles: {scene, renderer, camera, controls, planets, satellites, sunLight, key, fill, nightFill, instrument}, setFollow, update, render, resize, resetView');
     }
   }]});
   const p=harness.page(await browser.newPage({viewport:{width:1100,height:820},deviceScaleFactor:1}));

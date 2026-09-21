@@ -1,3 +1,4 @@
+import {panelAction} from './panel-actions.js';
 import {test,expect} from '@playwright/test';
 
 test.use({hasTouch:true,deviceScaleFactor:3});
@@ -8,7 +9,7 @@ test('touch surfaces explain pinch zoom without hiding camera controls',async({p
  await page.setViewportSize({width:320,height:740});await ready(page);
  await expect(page.locator('.gesture-hint')).toBeVisible();await expect(page.locator('.gesture-hint')).toContainText('PINCH');
  await expect(page.locator('#universe canvas')).toHaveAttribute('aria-label',/pinch/i);
- await page.locator('#view-home').tap();await page.locator('#view-top').tap();
+ await panelAction(page,'Settings',()=>page.locator('#view-home').tap());await panelAction(page,'Settings',()=>page.locator('#view-top').tap());
  const hint=await page.locator('.gesture-hint').boundingBox();expect(hint.x).toBeGreaterThanOrEqual(0);expect(hint.x+hint.width).toBeLessThanOrEqual(320);
 });
 
@@ -17,7 +18,7 @@ const sizes=[{width:320,height:740},{width:390,height:844},{width:640,height:100
 test('touch and high-DPR layouts remain bounded across seven viewports',async({page},testInfo)=>{
  test.setTimeout(180000);
  const errors=[];page.on('pageerror',error=>errors.push(String(error)));
- await ready(page);await page.locator('#pluto').check();await page.locator('#labels').check();
+ await ready(page);await panelAction(page,'Settings',()=>page.locator('#pluto').check());await panelAction(page,'Settings',()=>page.locator('#labels').check());
  const measurements=[];
  for(const size of sizes){
   await page.setViewportSize(size);

@@ -213,10 +213,10 @@ export function createMechanism({stoneMaterial, bezelMaterial} = {}) {
     inlays?.update();
     return state.outputs;
   }
-  function select(id, color) {
+  function select(id, color, lightsOut = false) {
     const selected = drive.outputs.find(o => o.id === id), path = new Set(selected?.path || []);
     for (const [node, material] of highlights) {
-      material.emissive.set(color || 0); material.emissiveIntensity = path.has(node) ? (material.name.includes('dlc') ? 0.012 : 0.09) : 0;
+      material.emissive.set(color || 0); material.emissiveIntensity = !lightsOut && path.has(node) ? (material.name.includes('dlc') ? 0.006 : 0.025) : 0;
     }
   }
   function diagnostics() {
